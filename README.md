@@ -22,9 +22,10 @@ ChaosBench is a framework to improve long-term forecasting of chaotic systems, i
     Vertical velocity, w ($Pas^{-1}$) | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; |  
     
 ## 2. Models
-- TBD
+- MLP
 
 ## 3. Metrics
+- MSE
 - RMSE
 
 ## 4. Tutorial
