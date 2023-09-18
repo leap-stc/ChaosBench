@@ -4,12 +4,14 @@ ChaosBench is a framework to improve long-term forecasting of chaotic systems, i
 ## 1. Benchmark and Dataset
 
 - __Subseasonal-to-seasonal (S2S) climate forecast__
-    - [x] Observations: ERA5 Reanalysis (2016-2022)
+    - Observations: 
+        - [x] ERA5 Reanalysis (2016-2022)
     - Evaluation:
         - [x] NCEP
-        - [ ] CMA
-        - [ ] UKMO
-        - [ ] ECMWF
+        - [x] CMA
+        - [x] UKMO
+        - [x] ECMWF
+    - Climatology: the long-term mean and sigma for ERA5, NCEP, CMA, UKMO, and ECMWF products are also available for (de)-normalization
     - Benchmark variables (ERA5 observations contains __ALL__ fields, including the unchecked boxes):
         
     Parameters/Levels (hPa) | 1000 | 925 | 850 | 700 | 500 | 300 | 200 | 100 | 50 | 10

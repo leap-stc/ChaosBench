@@ -47,8 +47,8 @@ def main(args):
 
         # Compute climatology
         all_vars = np.array(all_vars) # Shape: (time, param, level, lat, lon)
-        climatology_mean = all_vars.mean(axis=(0,3,4))
-        climatology_sigma = all_vars.std(axis=(0,3,4))
+        climatology_mean = np.nanmean(all_vars, axis=(0,3,4))
+        climatology_sigma = np.nanstd(all_vars, axis=(0,3,4))
 
         # Build Dataset object
         ds = xr.Dataset(

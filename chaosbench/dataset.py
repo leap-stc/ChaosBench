@@ -102,7 +102,7 @@ class S2SEvalDataset(Dataset):
         return len(self.file_paths)
 
     def __getitem__(self, idx):
-        data = xr.open_dataset(self.file_paths[idx], engine='zarr') # load data
+        data = xr.open_dataset(self.file_paths[idx], engine='zarr') # load data (file store instead of file)
         timestamp = data.time.values.item() # retrieve timestamp
         
         data = data[config.PARAMS].to_array().values # convert to array

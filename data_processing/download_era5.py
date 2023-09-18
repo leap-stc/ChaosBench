@@ -52,11 +52,14 @@ def main():
                 ds['z'] = ds['z'] / config.G_CONSTANT ## Convert to gpm
                 n_timesteps = len(ds.time)
                 
+                ## list() over multiple days
                 for n_idx in range(n_timesteps):
                     subset_ds = ds.isel(time=n_idx)
                     yy, mm, dd = ds.time[n_idx].dt.strftime('%Y-%m-%d').item().split('-')
                     output_daily_file = output_dir / f'era5_full_1.5deg_{yy}{mm}{dd}.zarr'
                     subset_ds.to_zarr(output_daily_file)
+                    
+                ## xarray.concat(list()).to_zarr()
                 
                 output_file.unlink()
 
