@@ -28,7 +28,7 @@ class MSE(nn.Module):
     """
     
     def __init__(self):
-        super(RMSE, self).__init__()
+        super(MSE, self).__init__()
 
     def forward(self, predictions, targets):
         

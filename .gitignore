@@ -2,7 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
-nohup.out
+*.out
+scripts/
+logs/
 
 # C extensions
 *.so

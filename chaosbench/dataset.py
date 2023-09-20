@@ -20,16 +20,17 @@ class S2SObsDataset(Dataset):
     
     def __init__(
         self, 
-        years: List[int]
+        years: List[int],
+        time_step: int = 1
     ) -> None:
         
         self.data_dir = Path(config.DATA_DIR) / 's2s' / 'era5'
         self.normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / 'climatology_era5.zarr'
+        self.time_step = time_step
         
         # Check if years specified are within valid bounds
         self.years = years
         self.years = [str(year) for year in self.years]
-        
         assert set(self.years).issubset(set(config.YEARS))
         
         
@@ -54,17 +55,18 @@ class S2SObsDataset(Dataset):
         
 
     def __len__(self):
-        return len(self.file_paths)
+        return len(self.file_paths) - self.time_step
 
     def __getitem__(self, idx):
-        data = xr.open_dataset(self.file_paths[idx], engine='zarr') # load data
-        timestamp = data.time.values.item() # retrieve timestamp
+        x = xr.open_dataset(self.file_paths[idx], engine='zarr') # load data
+        y = xr.open_dataset(self.file_paths[idx + self.time_step], engine='zarr') # load data
+        timestamp = x.time.values.item() # retrieve input timestamp
         
-        data = data[config.PARAMS].to_array().values # convert to array
-        data = (data - self.normalization_mean) / self.normalization_sigma # normalize
-        data = torch.tensor(data) # load as tensor
+        x, y = x[config.PARAMS].to_array().values, y[config.PARAMS].to_array().values # convert to array
+        x, y = (x - self.normalization_mean) / self.normalization_sigma, (y - self.normalization_mean) / self.normalization_sigma
+        x, y = torch.tensor(x), torch.tensor(y)
         
-        return timestamp, data
+        return timestamp, x, y
     
 class S2SEvalDataset(Dataset):
     """
@@ -77,7 +79,8 @@ class S2SEvalDataset(Dataset):
     
     def __init__(
         self, 
-        s2s_name: str
+        s2s_name: str,
+        years: List[int]
     ) -> None:
         
         assert s2s_name in list(config.S2S_CENTERS.keys())
@@ -85,11 +88,26 @@ class S2SEvalDataset(Dataset):
         self.s2s_name = s2s_name
         self.data_dir = Path(config.DATA_DIR) / 's2s' / self.s2s_name
         self.normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / f'climatology_{self.s2s_name}.zarr'
-        self.years = config.YEARS
+        
+        # Check if years specified are within valid bounds
+        self.years = years
+        self.years = [str(year) for year in self.years]
+        assert set(self.years).issubset(set(config.YEARS))
         
         
         # Subset files that match with patterns (eg. years specified)
-        self.file_paths = list(self.data_dir.glob(f'*.zarr'))
+        file_paths = list()
+        
+        for year in self.years:
+            
+            file_paths.extend(
+                list(
+                    self.data_dir.glob(f'*{year}*.zarr')
+                )
+            )
+            
+        # Subset files that match with patterns (eg. years specified)
+        self.file_paths = file_paths
         self.file_paths.sort()
         
         # # Retrieve climatology to normalize
@@ -102,12 +120,12 @@ class S2SEvalDataset(Dataset):
         return len(self.file_paths)
 
     def __getitem__(self, idx):
-        data = xr.open_dataset(self.file_paths[idx], engine='zarr') # load data (file store instead of file)
-        timestamp = data.time.values.item() # retrieve timestamp
+        x = xr.open_dataset(self.file_paths[idx], engine='zarr') # load data 
+        timestamp = x.time.values.item() # retrieve input timestamp
         
-        data = data[config.PARAMS].to_array().values # convert to array
-        data = (data - self.normalization_mean) / self.normalization_sigma # normalize
-        data = torch.tensor(data) # load as tensor of shape (param, step, level, lat, lon)
-        data = data.permute((1, 0, 2, 3, 4))
+        x = x[config.PARAMS].to_array().values # convert to array
+        x = (x - self.normalization_mean) / self.normalization_sigma
+        x = torch.tensor(x) 
+        x = x.permute((1, 0, 2, 3, 4)) # to shape (param, step, level, lat, lon)
         
-        return timestamp, data
+        return timestamp, x

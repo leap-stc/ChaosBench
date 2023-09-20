@@ -31,7 +31,7 @@ ChaosBench is a framework to improve long-term forecasting of chaotic systems, i
 - RMSE
 
 ## 4. Tutorial
-You can learn more about our benchmarking approach through our assortment of Jupyter notebooks under `notebooks`. It covers topics ranging from `dataset_exploration`, `modeling`, and `evaluation`. 
+You can learn more about our benchmarking approach through our assortment of Jupyter notebooks under `notebooks`. It covers topics ranging from `dataset_exploration`, `modeling`, `training`, and `evaluation`. 
 
     
 
