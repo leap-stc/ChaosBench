@@ -5,7 +5,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 import lightning.pytorch as pl
 import yaml
 
-from chaosbench.models import mlp
+from chaosbench.models import mlp, unet
 from chaosbench import dataset, config, utils, criterion
 
 class S2SBenchmarkModel(pl.LightningModule):
@@ -28,7 +28,9 @@ class S2SBenchmarkModel(pl.LightningModule):
                                  hidden_sizes = self.model_args['hidden_sizes'], 
                                  output_size = self.model_args['output_size'])
             
-        # TODO: more models
+        elif 'unet' in self.model_args['model_name']:
+            self.model = unet.UNet(input_size = self.model_args['input_size'],
+                                   output_size = self.model_args['output_size'])
             
         # Initialize criteria
         self.mse = criterion.MSE()
@@ -55,7 +57,7 @@ class S2SBenchmarkModel(pl.LightningModule):
         return {
             'optimizer': optimizer,
             'lr_scheduler': {
-                'scheduler': CosineAnnealingLR(optimizer, T_max=self.model_args['epochs']),
+                'scheduler': CosineAnnealingLR(optimizer, T_max=self.model_args['t_max'], eta_min=self.model_args['learning_rate'] / 100),
                 'interval': 'epoch',
             }
         }

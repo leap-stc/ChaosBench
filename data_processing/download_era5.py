@@ -18,7 +18,7 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # Download the corresponding data based on year/month
-    for year in config.YEARS:
+    for year in config.ERA5_YEARS:
         
         for month in config.MONTHS:
             
@@ -58,8 +58,6 @@ def main():
                     yy, mm, dd = ds.time[n_idx].dt.strftime('%Y-%m-%d').item().split('-')
                     output_daily_file = output_dir / f'era5_full_1.5deg_{yy}{mm}{dd}.zarr'
                     subset_ds.to_zarr(output_daily_file)
-                    
-                ## xarray.concat(list()).to_zarr()
                 
                 output_file.unlink()
 

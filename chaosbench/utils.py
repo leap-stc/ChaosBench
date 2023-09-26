@@ -17,8 +17,14 @@ def convert_time(timestamp, time_format='%Y-%m-%d'):
 def denormalize(x, param, level, dataset_name, is_diff=False):
     "Denormalize x given param/level and dataset name"
     
-    normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / f'climatology_{dataset_name}.zarr'
-    normalization = xr.open_dataset(normalization_file, engine='zarr')
+    # For some use-cases (eg. climatology, persistence forecasts), we use ERA5 as the benchmark climatology
+    try:
+        normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / f'climatology_{dataset_name}.zarr'
+        normalization = xr.open_dataset(normalization_file, engine='zarr')
+    except:
+        normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / f'climatology_era5.zarr'
+        normalization = xr.open_dataset(normalization_file, engine='zarr')
+        
     normalization_mean = normalization['mean'].values
     normalization_sigma = normalization['sigma'].values
     
@@ -27,10 +33,10 @@ def denormalize(x, param, level, dataset_name, is_diff=False):
     
     # Check if its a difference denormalization (eg. no +mean since it'll cancel out)
     if is_diff:
-        x = x * sigma
+        x = x * np.nanmean(sigma)
         
     else:
-        x = (x * sigma) + mean
+        x = (x * np.nanmean(sigma)) + np.nanmean(mean)
     
     return x
     

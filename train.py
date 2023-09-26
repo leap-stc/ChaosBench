@@ -34,10 +34,10 @@ def main(args):
     log_dir = Path('logs') / model_args['model_name']
     
     tb_logger = pl_loggers.TensorBoardLogger(save_dir=log_dir)
-    checkpoint_callback = ModelCheckpoint(monitor='val_loss')
+    checkpoint_callback = ModelCheckpoint(monitor='val_loss', mode='min')
 
     trainer = pl.Trainer(
-        devices=1,
+        devices=-1,
         accelerator='gpu',
         strategy='auto',
         max_epochs=model_args['epochs'],

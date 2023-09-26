@@ -7,6 +7,8 @@ import config
 
 import logging
 logging.basicConfig(level=logging.INFO)
+import warnings
+warnings.filterwarnings("ignore")
 
 def main(args):
     """

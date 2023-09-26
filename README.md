@@ -1,17 +1,17 @@
 # ChaosBench - A benchmark for long-term forecasting of chaotic systems
-ChaosBench is a framework to improve long-term forecasting of chaotic systems, including subseasonal-to-seasonal (S2S) climate systems and many other nonlinear toy problems, such as Rayleigh-Benard, Quasi-Geostrophic flow, Kelvin-Helmholtz. Our design paradigm revolves around __modularity__ and __extensibility__ so that you can easily separate modeling from benchmarking for instance, and to build on existing pieces with ease. Current features include:
+ChaosBench is a benchmark project to improve long-term forecasting of chaotic systems, including subseasonal-to-seasonal (S2S) climate systems and other nonlinear dynamical problems including Rayleigh-Benard, Quasi-Geostrophic, Kelvin-Helmholtz, etc. Our design paradigm revolves around __modularity__ and __extensibility__ so that you can easily separate modeling from benchmarking for instance, and to build on existing pieces with ease. Current features include:
 
 ## 1. Benchmark and Dataset
 
-- __Subseasonal-to-seasonal (S2S) climate forecast__
+- __(ChaosBench-S2S) Subseasonal-to-seasonal (S2S) climate forecast__
     - Observations: 
-        - [x] ERA5 Reanalysis (2016-2022)
-    - Evaluation:
+        - [x] ERA5 Reanalysis (1979-2022)
+    - Physics-based Evaluation Benchmark:
         - [x] NCEP
         - [x] CMA
         - [x] UKMO
         - [x] ECMWF
-    - Climatology: the long-term mean and sigma for ERA5, NCEP, CMA, UKMO, and ECMWF products are also available for (de)-normalization
+    - Climatology: the long-term mean and sigma for ERA5, NCEP, CMA, UKMO, and ECMWF products are also available for (de)-normalization and the compute of metrics (eg. ACC)
     - Benchmark variables (ERA5 observations contains __ALL__ fields, including the unchecked boxes):
         
     Parameters/Levels (hPa) | 1000 | 925 | 850 | 700 | 500 | 300 | 200 | 100 | 50 | 10
@@ -23,15 +23,26 @@ ChaosBench is a framework to improve long-term forecasting of chaotic systems, i
     V component of wind, v ($ms^{-1}$) | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; |  
     Vertical velocity, w ($Pas^{-1}$) | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; |  
     
-## 2. Models
+- TBD
+
+## 2. Data-Driven Models
 - MLP
+- UNet
 
 ## 3. Metrics
-- MSE
 - RMSE
+- MAE
+- Bias
+- Anomaly Correlation Coefficient (ACC)
+- Coefficient of Determination ($R^2$)
+
 
 ## 4. Tutorial
-You can learn more about our benchmarking approach through our assortment of Jupyter notebooks under `notebooks`. It covers topics ranging from `dataset_exploration`, `modeling`, `training`, and `evaluation`. 
+You can learn more about our benchmarking approach through our assortment of Jupyter notebooks under `notebooks`. It covers topics ranging from 
+- `01*_dataset_exploration`
+- `02*_modeling`
+- `03*_training`
+- `04*_evaluation`
 
     
 
