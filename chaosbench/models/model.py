@@ -5,7 +5,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 import lightning.pytorch as pl
 import yaml
 
-from chaosbench.models import mlp, unet
+from chaosbench.models import mlp, cnn, ae, fno
 from chaosbench import dataset, config, utils, criterion
 
 class S2SBenchmarkModel(pl.LightningModule):
@@ -29,26 +29,71 @@ class S2SBenchmarkModel(pl.LightningModule):
                                  output_size = self.model_args['output_size'])
             
         elif 'unet' in self.model_args['model_name']:
-            self.model = unet.UNet(input_size = self.model_args['input_size'],
+            self.model = cnn.UNet(input_size = self.model_args['input_size'],
                                    output_size = self.model_args['output_size'])
             
-        # Initialize criteria
-        self.mse = criterion.MSE()
+        elif 'resnet' in self.model_args['model_name']:
+            self.model = cnn.ResNet(input_size = self.model_args['input_size'],
+                                   output_size = self.model_args['output_size'])
+            
+        elif 'vae' in self.model_args['model_name']:
+            self.model = ae.VAE(input_size = self.model_args['input_size'],
+                                 output_size = self.model_args['output_size'],
+                                 latent_size = self.model_args['latent_size'])
+            
+        elif 'ed' in self.model_args['model_name']:
+            self.model = ae.EncoderDecoder(input_size = self.model_args['input_size'],
+                                           output_size = self.model_args['output_size'])
+            
+        elif 'fno' in self.model_args['model_name']:
+            self.model = fno.FNO2d(input_size = self.model_args['input_size'],
+                                   modes1 = self.model_args['modes1'], 
+                                   modes2 = self.model_args['modes2'], 
+                                   width = self.model_args['width'], 
+                                   initial_step = self.model_args['initial_step'])
+            
+        self.loss = self.init_loss_fn()
+            
+    def init_loss_fn(self):
+        loss = criterion.KL_MSE() if 'vae' in self.model_args['model_name'] else criterion.MSE()
+        return loss
     
     def forward(self, x):
         return self.model(x)
 
     def training_step(self, batch, batch_idx):
         timestamp, x, y = batch
-        preds = self(x)
-        loss = self.mse(preds, y)
+        
+        ################## Iterative loss ##################
+        n_steps = y.size(1)
+        loss = 0
+        
+        for step_idx in range(n_steps):
+            preds = self(x)
+            loss += self.loss(preds, y[:, step_idx])
+            x = preds[0] if 'vae' in self.model_args['model_name'] else preds
+            
+        loss = loss / n_steps
+        ####################################################
+        
         self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
         timestamp, x, y = batch
-        preds = self(x)
-        loss = self.mse(preds, y)
+        
+        ################## Iterative loss ##################
+        n_steps = y.size(1)
+        loss = 0
+        
+        for step_idx in range(n_steps):
+            preds = self(x)
+            loss += self.loss(preds, y[:, step_idx])
+            x = preds[0] if 'vae' in self.model_args['model_name'] else preds
+            
+        loss = loss / n_steps
+        ####################################################
+        
         self.log("val_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
@@ -57,14 +102,14 @@ class S2SBenchmarkModel(pl.LightningModule):
         return {
             'optimizer': optimizer,
             'lr_scheduler': {
-                'scheduler': CosineAnnealingLR(optimizer, T_max=self.model_args['t_max'], eta_min=self.model_args['learning_rate'] / 100),
+                'scheduler': CosineAnnealingLR(optimizer, T_max=self.model_args['t_max'], eta_min=self.model_args['learning_rate'] / 10),
                 'interval': 'epoch',
             }
         }
 
     def setup(self, stage=None):
-        self.train_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'])
-        self.val_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'])
+        self.train_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'], n_step=self.data_args['n_step'])
+        self.val_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'], n_step=self.data_args['n_step'])
         
 
     def train_dataloader(self):

@@ -16,22 +16,19 @@ class S2SObsDataset(Dataset):
     
     Params:
         years <List[int]>: list of years to load and process,
-        time_step <int>  : number of time-lag (default = 1)
-        is_val <bool>    : if the mode is validation (y is going to be n-step into the future)
+        n_step <int>     : number of contiguous timesteps included in the data (default: 1)
     
     """
     
     def __init__(
         self, 
         years: List[int],
-        time_step: int = 1,
-        is_val: bool = False
+        n_step: int = 1
     ) -> None:
         
         self.data_dir = Path(config.DATA_DIR) / 's2s' / 'era5'
         self.normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / 'climatology_era5.zarr'
-        self.time_step = time_step
-        self.is_val = is_val
+        self.n_step = n_step
         
         # Check if years specified are within valid bounds
         self.years = years
@@ -57,42 +54,27 @@ class S2SObsDataset(Dataset):
         
 
     def __len__(self):
-        data_length = (len(self.file_paths) - config.N_STEPS) if self.is_val else (len(self.file_paths) - self.time_step)
+        data_length = len(self.file_paths) - self.n_step
         return data_length
 
     def __getitem__(self, idx):
+        data = list() 
+        for step_idx in range(self.n_step + 1):
+            data.append(xr.open_dataset(self.file_paths[idx + step_idx], engine='zarr'))
+
+        data = xr.concat(data, dim='step')
+        data = data[config.PARAMS].to_array().values
+        data = (data - self.normalization_mean[:, np.newaxis, :, :, :]) / self.normalization_sigma[:, np.newaxis, :, :, :]
+        data = torch.tensor(data)
+        data = data.permute((1, 0, 2, 3, 4)) # to shape (step, param, level, lat, lon)
         
-        # Process x
-        x = xr.open_dataset(self.file_paths[idx], engine='zarr') # load data
-        timestamp = x.time.values.item() # retrieve current input timestamp
+        x = data[0]
+        y = data[1:]
         
-        x = x[config.PARAMS].to_array().values # convert to array
-        x = (x - self.normalization_mean) / self.normalization_sigma
-        x = torch.tensor(x)
-        
-        # Process y
-        if self.is_val:
-            ## if under evaluation, it will return n_step future observations
-            y = list() 
-            for step_idx in range(config.N_STEPS):
-                y.append(xr.open_dataset(self.file_paths[idx + step_idx], engine='zarr'))
-            
-            y = xr.concat(y, dim='step')
-            y = y[config.PARAMS].to_array().values
-            y = (y - self.normalization_mean[:, np.newaxis, :, :, :]) / self.normalization_sigma[:, np.newaxis, :, :, :]
-            y = torch.tensor(y)
-            y = y.permute((1, 0, 2, 3, 4)) # to shape (step, param, level, lat, lon)
-            
-            return timestamp, y
-                
-        else:
-            ## Otherwhise, just the next time_step
-            y = xr.open_dataset(self.file_paths[idx + self.time_step], engine='zarr')
-            y = y[config.PARAMS].to_array().values
-            y = (y - self.normalization_mean) / self.normalization_sigma
-            y = torch.tensor(y)
-        
-            return timestamp, x, y
+        timestamp = xr.open_dataset(self.file_paths[idx], engine='zarr').time.values.item()
+
+        return timestamp, x, y
+    
     
 class S2SEvalDataset(Dataset):
     """
@@ -146,12 +128,16 @@ class S2SEvalDataset(Dataset):
         return (len(self.file_paths) - config.N_STEPS)
 
     def __getitem__(self, idx):
-        x = xr.open_dataset(self.file_paths[idx], engine='zarr') # load data 
-        timestamp = x.time.values.item() # retrieve input timestamp
+        data = xr.open_dataset(self.file_paths[idx], engine='zarr') # load data 
         
-        x = x[config.PARAMS].to_array().values # convert to array
-        x = (x - self.normalization_mean[:, np.newaxis, :, :, :]) / self.normalization_sigma[:, np.newaxis, :, :, :]
-        x = torch.tensor(x) 
-        x = x.permute((1, 0, 2, 3, 4)) # to shape (step, param, level, lat, lon)
+        data = data[config.PARAMS].to_array().values # convert to array
+        data = (data - self.normalization_mean[:, np.newaxis, :, :, :]) / self.normalization_sigma[:, np.newaxis, :, :, :]
+        data = torch.tensor(data) 
+        data = data.permute((1, 0, 2, 3, 4)) # to shape (step, param, level, lat, lon)
         
-        return timestamp, x
+        x = data[0]
+        y = data[1:]
+        
+        timestamp = xr.open_dataset(self.file_paths[idx], engine='zarr').time.values.item()
+        
+        return timestamp, x, y

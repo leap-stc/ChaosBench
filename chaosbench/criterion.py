@@ -128,7 +128,26 @@ class ACC(nn.Module):
         acc = numerator / denominator
         
         return acc
-        
-        
     
+class KL_MSE(nn.Module):
+    """
+    Compute mean squared error (MSE) and KL-divergence
+    """
     
+    def __init__(self):
+        super(KL_MSE, self).__init__()
+
+    def forward(self, predictions, targets):
+        
+        predictions, mu, logvar = predictions
+        
+        # Calculate the squared differences between predictions and targets
+        squared_diff = (predictions - targets) ** 2
+        
+        # Calculate the mean squared error
+        mean_squared_error = torch.nanmean(squared_diff)
+        
+        # Compute KL-divergence
+        kld_loss = -0.5 * torch.nansum(1 + logvar - mu.pow(2) - logvar.exp())
+        
+        return mean_squared_error + kld_loss

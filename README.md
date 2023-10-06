@@ -26,8 +26,9 @@ ChaosBench is a benchmark project to improve long-term forecasting of chaotic sy
 - TBD
 
 ## 2. Data-Driven Models
-- MLP
-- UNet
+- CNN (UNet, ResNet)
+- Generative (Autoencoder, VAE)
+- Fourier Neural Operator
 
 ## 3. Metrics
 - RMSE
@@ -44,5 +45,8 @@ You can learn more about our benchmarking approach through our assortment of Jup
 - `03*_training`
 - `04*_evaluation`
 
-    
-
+## 5. Experiments
+We perform the following experiments:
+- Comparing the forecasting performance of physical and data-driven models
+- Evaluating the value of temporal information
+- TBD

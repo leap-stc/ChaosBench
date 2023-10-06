@@ -3,7 +3,7 @@ import torch.nn as nn
 
 class MLP(nn.Module):
     """
-    A simple single-layer MLP for benchmarking purposes
+    Multi-layer Perceptron
     """
     
     def __init__(self, input_size, hidden_sizes, output_size):

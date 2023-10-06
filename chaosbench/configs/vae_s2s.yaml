@@ -1,8 +1,8 @@
 model_args:
-    model_name: 'mlp_s2s'
+    model_name: 'vae_s2s'
     input_size: 60
-    hidden_sizes: [768, 640, 512, 640, 640]
     output_size: 60
+    latent_size: 64
     learning_rate: 0.00001
     num_workers: 12
     epochs: 500

@@ -19,7 +19,7 @@ import sys
 sys.path.append('..')
 
 from chaosbench import dataset, config, utils, criterion
-from chaosbench.models import mlp, model
+from chaosbench.models import model
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -28,9 +28,9 @@ def main(args):
     Evaluation script given .yaml config and trained model checkpoint
     
     Example usage:
-        (Persistence)              1) `python eval.py --model_name persistence --eval_years 2021 2022`
-        (Physical models)          3) `python eval.py --model_name ecmwf --eval_years 2021 2022`
-        (Data-driven models)       4) `python eval.py --model_name mlp_s2s --eval_years 2021 2022`
+        (Persistence)              1) `python eval.py --model_name persistence --eval_years 2022`
+        (Physical models)          3) `python eval.py --model_name ecmwf --eval_years 2022`
+        (Data-driven models)       4) `python eval.py --model_name mlp_s2s --eval_years 2022 --version_num 0`
     
     """
     print(f'Evaluating ERA5 observations against {args.model_name}...')
@@ -42,18 +42,16 @@ def main(args):
     IS_AI_MODEL, IS_PERSISTENCE = False, False
     BATCH_SIZE = 32
     
-    ## Prepare directory to load model / store metrics
+    ## Prepare directory to load model
     log_dir = Path('logs') / args.model_name
-    eval_dir = log_dir / 'eval'
-    eval_dir.mkdir(parents=True, exist_ok=True)
     
     ## Case 1: Persistence
     if args.model_name == 'persistence':
         IS_PERSISTENCE = True
         
-        input_dataset = dataset.S2SObsDataset(years=args.eval_years, is_val=True)
+        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, is_val=True)
+        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
     
@@ -61,7 +59,7 @@ def main(args):
     elif args.model_name in list(config.S2S_CENTERS.keys()):
         input_dataset = dataset.S2SEvalDataset(s2s_name=args.model_name, years=args.eval_years)
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, is_val=True)
+        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
     ## Case 3: Data-driven models
@@ -81,14 +79,14 @@ def main(args):
         baseline = model.S2SBenchmarkModel(model_args=model_args, data_args=data_args)
         
         ## Load model from checkpoint
-        ckpt_filepath = log_dir / 'lightning_logs/version_0/checkpoints/'
+        ckpt_filepath = log_dir / f'lightning_logs/version_{args.version_num}/checkpoints/'
         ckpt_filepath = list(ckpt_filepath.glob('*.ckpt'))[0]
         baseline = baseline.load_from_checkpoint(ckpt_filepath)
         
         ## Prepare input/output dataset
-        input_dataset = dataset.S2SObsDataset(years=args.eval_years, is_val=True)
+        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
         input_dataloader = DataLoader(input_dataset, batch_size=data_args['batch_size'], shuffle=False)
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, is_val=True)
+        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
         output_dataloader = DataLoader(output_dataset, batch_size=data_args['batch_size'], shuffle=False)
         
     
@@ -110,39 +108,34 @@ def main(args):
 
     for input_batch, output_batch in tqdm(zip(input_dataloader, output_dataloader), total=len(input_dataloader)):
         
-        _, test_x = input_batch # of shape (batch, step, param, level, lat, lon)
-        _, test_y = output_batch # of shape (batch, step, param, level, lat, lon)
-
-        ## Removing days where there are no forecasts
-        mask = (torch.isnan(test_x).sum(dim=(1,2,3,4,5)) != torch.prod(torch.tensor(test_x.shape[1:])))
-        test_x = test_x[mask]
-        test_y = test_y[mask]
+        _, preds_x, preds_y = input_batch
+        _, truth_x, truth_y = output_batch
         
-        assert config.N_STEPS == test_x.size(1)
-
-        test_x = torch.nan_to_num(test_x, nan=0.0)
-        curr_x = test_x[:, 0].to(device)
+        assert preds_y.size(1) == truth_y.size(1)
+        
+        curr_x = preds_x.to(device) # Initialize current x
 
         ## Step metric placeholders
         step_rmse, step_bias, step_mae, step_r2, step_acc = dict(), dict(), dict(), dict(), dict()
 
-        for step_idx in range(config.N_STEPS - 1):
+        for step_idx in range(truth_y.size(1)):
 
             with torch.no_grad():
-                curr_y = test_y[:, step_idx + 1].to(device)
+                curr_y = truth_y[:, step_idx].to(device)
                 
                 
                 ############## Getting predictions ##############
-                
                 if IS_AI_MODEL:
                     preds = baseline(curr_x)
+                    
+                    if 'vae' in args.model_name:
+                        preds = preds[0] # original is of shape (x, mu, logvar)
                 
                 elif IS_PERSISTENCE:
-                    preds = test_x[:, 0].to(device)
+                    preds = preds_x.to(device)
                 
                 else:
-                    preds = test_x[:, step_idx + 1].to(device)
-                
+                    preds = preds_y[:, step_idx].to(device)
                 #################################################
                 
 
@@ -192,12 +185,14 @@ def main(args):
                 ## Make next-step input as the current prediction (used for AI models)
                 curr_x = preds
 
-            ## Cleaning up to release memory
+            ## (1) Cleaning up to release memory at each time_step
             curr_y, preds = curr_y.cpu().detach(), preds.cpu().detach()
             del curr_y, preds
                     
-        test_x, test_y = test_x.cpu().detach(), test_y.cpu().detach()
-        del test_x, test_y
+        ## (2) Cleaning up to release memory at each batch
+        preds_x, preds_y = preds_x.cpu().detach(), preds_y.cpu().detach()
+        truth_x, truth_y = truth_x.cpu().detach(), truth_y.cpu().detach()
+        del preds_x, preds_y, truth_x, truth_y
         gc.collect()
         
         all_rmse.append(step_rmse)
@@ -235,6 +230,9 @@ def main(args):
         merged_acc[acc_k] = np.array(merged_acc[acc_k]).mean(axis=0)
         
     ## Save metrics
+    eval_dir = log_dir / 'eval' / f'version_{args.version_num}' if IS_AI_MODEL else log_dir / 'eval'
+    eval_dir.mkdir(parents=True, exist_ok=True)
+    
     rmse_df, bias_df, mae_df, r2_df, acc_df = pd.DataFrame(merged_rmse), pd.DataFrame(merged_bias), pd.DataFrame(merged_mae), pd.DataFrame(merged_r2), pd.DataFrame(merged_acc)
     rmse_df.to_csv(eval_dir / f'rmse_{args.model_name}.csv', index=False)
     bias_df.to_csv(eval_dir / f'bias_{args.model_name}.csv', index=False)
@@ -246,7 +244,8 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', help='Name of the model specified in your config file, including one of [ecmwf, cma, ukmo, ncep, persistence]')
-    parser.add_argument('--eval_years', nargs='+', help='Provide the evaluation years...')
+    parser.add_argument('--eval_years', nargs='+', help='Provide the evaluation years')
+    parser.add_argument('--version_num', default=0, help='Version number of the model')
     
     args = parser.parse_args()
     main(args)
