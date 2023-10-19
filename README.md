@@ -27,7 +27,7 @@ ChaosBench is a benchmark project to improve long-term forecasting of chaotic sy
 
 ## 2. Data-Driven Models
 - CNN (UNet, ResNet)
-- Generative (Autoencoder, VAE)
+- Generative (Autoencoder)
 - Fourier Neural Operator
 
 ## 3. Metrics
@@ -36,6 +36,7 @@ ChaosBench is a benchmark project to improve long-term forecasting of chaotic sy
 - Bias
 - Anomaly Correlation Coefficient (ACC)
 - Coefficient of Determination ($R^2$)
+- Spectral Divergence (*NEW*)
 
 
 ## 4. Tutorial

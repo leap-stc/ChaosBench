@@ -35,11 +35,9 @@ def main(args):
     
     tb_logger = pl_loggers.TensorBoardLogger(save_dir=log_dir)
     checkpoint_callback = ModelCheckpoint(monitor='val_loss', mode='min')
-    
-    n_devices = 1 if 'fno' in model_args['model_name'] else -1 # Complex variable unsupported in distributed torch
 
     trainer = pl.Trainer(
-        devices=n_devices,
+        devices=-1,
         accelerator='gpu',
         strategy='auto',
         max_epochs=model_args['epochs'],

@@ -6,6 +6,7 @@ model_args:
     num_workers: 12
     epochs: 500
     t_max: 500
+    only_headline: True
     
 data_args:
     batch_size: 32

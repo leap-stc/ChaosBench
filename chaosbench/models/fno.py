@@ -16,13 +16,17 @@ class SpectralConv2d_fast(nn.Module):
         self.modes2 = modes2
 
         self.scale = (1 / (input_size * output_size))
-        self.weights1 = nn.Parameter(self.scale * torch.rand(input_size, output_size, self.modes1, self.modes2, dtype=torch.cfloat))
-        self.weights2 = nn.Parameter(self.scale * torch.rand(input_size, output_size, self.modes1, self.modes2, dtype=torch.cfloat))
+        self.weights1 = nn.Parameter(self.scale * torch.view_as_real(
+            torch.rand(input_size, output_size, self.modes1, self.modes2, dtype=torch.cfloat)
+        ))
+        self.weights2 = nn.Parameter(self.scale * torch.view_as_real(
+            torch.rand(input_size, output_size, self.modes1, self.modes2, dtype=torch.cfloat)
+        ))
 
     # Complex multiplication
     def compl_mul2d(self, input, weights):
         # (batch, input_size, x, y), (input_size, output_size, x, y) -> (batch, output_size, x, y)
-        return torch.einsum("bixy,ioxy->boxy", input, weights)
+        return torch.einsum("bixy,ioxy->boxy", input, torch.view_as_complex(weights))
 
     def forward(self, x):
         B = x.shape[0]
@@ -31,7 +35,7 @@ class SpectralConv2d_fast(nn.Module):
         x_ft = torch.fft.rfft2(x)
 
         # Multiply relevant Fourier modes
-        out_ft = torch.zeros(B, self.output_size,  x.size(-2), x.size(-1)//2 + 1, dtype=torch.cfloat, device=x.device)
+        out_ft = torch.zeros(B, self.output_size,  x.size(-2), x.size(-1)//2 + 1, device=x.device, dtype=torch.cfloat)
         out_ft[:, :, :self.modes1, :self.modes2] = self.compl_mul2d(x_ft[:, :, :self.modes1, :self.modes2], self.weights1)
         out_ft[:, :, -self.modes1:, :self.modes2] = self.compl_mul2d(x_ft[:, :, -self.modes1:, :self.modes2], self.weights2)
 
@@ -41,7 +45,7 @@ class SpectralConv2d_fast(nn.Module):
 
 
 class FNO2d(nn.Module):
-    def __init__(self, input_size=60, modes1=20, modes2=20, width=128, initial_step=1):
+    def __init__(self, input_size=60, modes1=4, modes2=4, width=128, initial_step=1):
         super(FNO2d, self).__init__()
 
         """
@@ -61,20 +65,29 @@ class FNO2d(nn.Module):
         self.modes2 = modes2
         self.width = width
         self.padding = 2 # pad the domain if input is non-periodic
-        self.fc0 = nn.Linear(initial_step*input_size, self.width)
+        self.fc0 = nn.Linear(initial_step*input_size, self.width[0])
 
-        self.conv0 = SpectralConv2d_fast(self.width, self.width, self.modes1, self.modes2)
-        self.conv1 = SpectralConv2d_fast(self.width, self.width, self.modes1, self.modes2)
-        self.conv2 = SpectralConv2d_fast(self.width, self.width, self.modes1, self.modes2)
-        self.conv3 = SpectralConv2d_fast(self.width, self.width, self.modes1, self.modes2)
-        self.w0 = nn.Conv2d(self.width, self.width, 1)
-        self.w1 = nn.Conv2d(self.width, self.width, 1)
-        self.w2 = nn.Conv2d(self.width, self.width, 1)
-        self.w3 = nn.Conv2d(self.width, self.width, 1)
+        self.conv0 = SpectralConv2d_fast(self.width[0], self.width[1], self.modes1, self.modes2)
+        self.conv1 = SpectralConv2d_fast(self.width[1], self.width[2], self.modes1, self.modes2)
+        self.conv2 = SpectralConv2d_fast(self.width[2], self.width[3], self.modes1, self.modes2)
+        self.conv3 = SpectralConv2d_fast(self.width[3], self.width[4], self.modes1, self.modes2)
+        self.w0 = nn.Conv2d(self.width[0], self.width[1], 1)
+        self.w1 = nn.Conv2d(self.width[1], self.width[2], 1)
+        self.w2 = nn.Conv2d(self.width[2], self.width[3], 1)
+        self.w3 = nn.Conv2d(self.width[3], self.width[4], 1)
 
-        self.fc1 = nn.Linear(self.width, 128)
-        self.fc2 = nn.Linear(128, input_size)
-
+        self.decoder = nn.Sequential(
+            nn.Linear(self.width[4], self.width[3]),
+            nn.GELU(),
+            nn.Linear(self.width[3], self.width[2]),
+            nn.GELU(),
+            nn.Linear(self.width[2], self.width[1]),
+            nn.GELU(),
+            nn.Linear(self.width[1], self.width[0]),
+            nn.GELU(),
+            nn.Linear(self.width[0], input_size)
+        )
+        
     def forward(self, x):
         B, P, L, H, W = x.shape
         
@@ -108,11 +121,8 @@ class FNO2d(nn.Module):
         ###############################################################
 
         x = x[..., :-self.padding, :-self.padding] # Unpad the tensor
-        x = x.permute(0, 2, 3, 1) # to shape (B, H, W, width)
-        x = self.fc1(x) 
-        x = F.gelu(x)
-        x = self.fc2(x)
-        
+        x = x.permute(0, 2, 3, 1) # to shape (B, H, W, P*L)
+        x = self.decoder(x)
         x = x.permute((0, 3, 1, 2)) # to shape (B, P*L, H, W)
         x = x.reshape((B, P, L, H, W))
         

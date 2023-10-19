@@ -1,5 +1,6 @@
 import os
 import torch
+torch.autograd.set_detect_anomaly(True)
 from torch.utils.data import Dataset, DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import lightning.pytorch as pl
@@ -55,7 +56,7 @@ class S2SBenchmarkModel(pl.LightningModule):
         self.loss = self.init_loss_fn()
             
     def init_loss_fn(self):
-        loss = criterion.KL_MSE() if 'vae' in self.model_args['model_name'] else criterion.MSE()
+        loss = criterion.MSE()
         return loss
     
     def forward(self, x):
@@ -70,8 +71,24 @@ class S2SBenchmarkModel(pl.LightningModule):
         
         for step_idx in range(n_steps):
             preds = self(x)
-            loss += self.loss(preds, y[:, step_idx])
-            x = preds[0] if 'vae' in self.model_args['model_name'] else preds
+            
+            # Optimize for headline variables
+            if self.model_args['only_headline']:
+                headline_idx = [
+                    config.PARAMS.index(headline_var.split('-')[0]) * len(config.PRESSURE_LEVELS)
+                    + config.PRESSURE_LEVELS.index(int(headline_var.split('-')[1])) for headline_var in config.HEADLINE_VARS
+                ]
+                
+                loss += self.loss(
+                    preds.view(preds.size(0), -1, preds.size(-2), preds.size(-1))[:, headline_idx],
+                    y[:, step_idx].view(y.size(0), -1, y.size(-2), y.size(-1))[:, headline_idx]
+                )
+            
+            # Otherwise, for all variables
+            else:
+                loss += self.loss(preds, y[:, step_idx])
+            
+            x = preds
             
         loss = loss / n_steps
         ####################################################
@@ -88,8 +105,24 @@ class S2SBenchmarkModel(pl.LightningModule):
         
         for step_idx in range(n_steps):
             preds = self(x)
-            loss += self.loss(preds, y[:, step_idx])
-            x = preds[0] if 'vae' in self.model_args['model_name'] else preds
+            
+            # Optimize for headline variables
+            if self.model_args['only_headline']:
+                headline_idx = [
+                    config.PARAMS.index(headline_var.split('-')[0]) * len(config.PRESSURE_LEVELS)
+                    + config.PRESSURE_LEVELS.index(int(headline_var.split('-')[1])) for headline_var in config.HEADLINE_VARS
+                ]
+                
+                loss += self.loss(
+                    preds.view(preds.size(0), -1, preds.size(-2), preds.size(-1))[:, headline_idx],
+                    y[:, step_idx].view(y.size(0), -1, y.size(-2), y.size(-1))[:, headline_idx]
+                )
+                
+            # Otherwise, for all variables
+            else:
+                loss += self.loss(preds, y[:, step_idx])
+            
+            x = preds
             
         loss = loss / n_steps
         ####################################################
