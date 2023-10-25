@@ -202,3 +202,158 @@ class KL_MSE(nn.Module):
         kld_loss = -0.5 * torch.nansum(1 + logvar - mu.pow(2) - logvar.exp())
         
         return mean_squared_error + kld_loss
+
+
+class MS_SSIM(nn.Module):
+    """
+    Compute Multi-Scale Structural SIMilarity(MS-SSIM) index
+    """
+    
+    def __init__(
+        self,
+        data_range=255,
+        size_average=True,
+        kernel_size=11,
+        sigma=1.5,
+        weights=[0.0448, 0.2856, 0.3001, 0.2363, 0.1333],
+        k1=0.01,
+        k2=0.03
+    ):
+        """
+        Args:
+            data_range: max-min, usually use 1 or 255
+            kernel_size: size of the Gaussian kernel
+            sigma: standard deviation of the Gaussian kernel
+            
+        """
+        super(MS_SSIM, self).__init__()
+        self.data_range = data_range
+        self.size_average = size_average
+        self.kernel_size = kernel_size
+        self.sigma = sigma
+        self.weights = weights
+        self.k1 = k1
+        self.k2 = k2
+
+    def rescale(self, data):
+        """
+        (B, H, W) -> (B,1,H,W) and rescale to (0,255) for each sample
+        """
+        # Add the additional axis to the data
+        data_reshaped = data.unsqueeze(1)
+        data_rescaled = torch.zeros_like(data_reshaped)
+        
+        for i in range(len(data)):
+            min_val = data_reshaped[i].min()
+            max_val = data_reshaped[i].max()
+            data_rescaled[i] = self.data_range * (data_reshaped[i] - min_val) / (max_val - min_val)
+        
+        return data_rescaled
+        
+        
+    def gaussian_1d(self):
+        """
+        1-d Gaussian filter
+        """
+        coords = torch.arange(self.kernel_size, dtype=torch.float)
+        coords -= self.kernel_size // 2
+        
+        g = torch.exp(-(coords ** 2)/(2*self.sigma**2))
+        g /= g.sum()
+        
+        return g.unsqueeze(0).unsqueeze(0)
+    
+    
+    def gaussian_filter(self, data, gaussian_kernel):
+        """
+        Gaussian filtering
+        """
+        conv = nn.functional.conv2d
+        C = data.shape[1]
+        out = data
+        for i, s in enumerate(data.shape[2:]):
+            if s>= gaussian_kernel.shape[-1]:
+                out = conv(out, weight=gaussian_kernel.transpose(2+i, -1), stride=1, padding=0, groups=C)
+                
+        return out
+            
+        
+    def ssim(self,
+             X,
+             Y,
+             gaussian_kernel,
+    ):
+        C1 = (self.k1 * self.data_range) ** 2
+        C2 = (self.k2 * self.data_range) ** 2
+        
+        compensation = 1.0
+        
+        gaussian_kernel = gaussian_kernel.to(X.device, dtype=X.dtype)
+        
+        mu1 = self.gaussian_filter(X, gaussian_kernel)
+        mu2 = self.gaussian_filter(Y, gaussian_kernel)
+        
+        mu1_sq = mu1.pow(2)
+        mu2_sq = mu2.pow(2)
+        mu1_mu2 = mu1 * mu2
+
+        sigma1_sq = compensation * (self.gaussian_filter(X * X, gaussian_kernel) - mu1_sq)
+        sigma2_sq = compensation * (self.gaussian_filter(Y * Y, gaussian_kernel) - mu2_sq)
+        sigma12 = compensation * (self.gaussian_filter(X * Y, gaussian_kernel) - mu1_mu2)
+
+        cs_map = (2 * sigma12 + C2) / (sigma1_sq + sigma2_sq + C2)  # set alpha=beta=gamma=1
+        ssim_map = ((2 * mu1_mu2 + C1) / (mu1_sq + mu2_sq + C1)) * cs_map
+
+        ssim_per_channel = torch.flatten(ssim_map, 2).mean(-1)
+        cs = torch.flatten(cs_map, 2).mean(-1)
+        return ssim_per_channel, cs
+    
+    def ms_ssim(
+        self,
+        predictions,
+        targets,
+        size_average=True
+    ):
+        
+        """
+        predictions: a batch of a specific predicted physical variable at a specific level (B,H,W)
+        targets: a batch of a specific target physical variable at a specific level (B,H,W)
+        """
+        predictions = self.rescale(predictions).squeeze(dim=-1).squeeze(dim=-1)
+        targets = self.rescale(targets).squeeze(dim=-1).squeeze(dim=-1)
+        
+        avg_pool = nn.functional.avg_pool2d
+        
+        window = self.gaussian_1d()
+        window = window.repeat([predictions.shape[1]] + [1] * ( len(predictions.shape)-1))
+        
+        weights_tensor = predictions.new_tensor(self.weights)
+        
+        levels = len(self.weights)
+        mcs = []
+        for i in range(levels):
+            ssim_per_channel, cs = self.ssim(predictions, targets, window)
+            
+            if i < levels - 1:
+                mcs.append(torch.relu(cs))
+                padding = [s%2 for s in predictions.shape[2:]]
+                predictions = avg_pool(predictions, kernel_size=2, padding=padding)
+                targets = avg_pool(targets, kernel_size=2, padding=padding)
+        
+        ssim_per_channel = torch.relu(ssim_per_channel)  
+        mcs_and_ssim = torch.stack(mcs + [ssim_per_channel], dim=0)  
+        ms_ssim_val = torch.prod(mcs_and_ssim ** weights_tensor.view(-1, 1, 1), dim=0)
+
+        if size_average:
+        
+            return ms_ssim_val.mean()
+        else:
+        
+            return ms_ssim_val.mean(1)
+
+                
+    def forward(self, predictions, targets):
+        return self.ms_ssim(
+            predictions,
+            targets,
+        )
