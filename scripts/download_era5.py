@@ -1,10 +1,11 @@
 import xarray as xr
-import cdsapi
 from pathlib import Path
 import config
 
 import logging
 logging.basicConfig(level=logging.INFO)
+
+import cdsapi
 
 def main():
     """

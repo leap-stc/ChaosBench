@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torchist
 import xarray as xr
 from pathlib import Path
 
@@ -19,6 +20,7 @@ class RMSE(nn.Module):
     
     def __init__(self,
                  lat_adjusted=True):
+        
         super(RMSE, self).__init__()
         
         self.lat_adjusted = lat_adjusted
@@ -41,6 +43,7 @@ class RMSE(nn.Module):
         
         return rmse
     
+
 class MSE(nn.Module):
     """
     Compute mean squared error (MSE)
@@ -67,6 +70,7 @@ class Bias(nn.Module):
     
     def __init__(self,
                 lat_adjusted=True):
+        
         super(Bias, self).__init__()
         
         self.lat_adjusted = lat_adjusted
@@ -85,6 +89,7 @@ class Bias(nn.Module):
         
         return mean_bias
     
+
 class MAE(nn.Module):
     """Compute mean absolute error
     """
@@ -111,6 +116,7 @@ class MAE(nn.Module):
         
         return mean_absolute_error
     
+
 class R2(nn.Module):
     """
     Compute R^2 = 1 - (RSS/TSS)
@@ -126,6 +132,10 @@ class R2(nn.Module):
         self.weights = get_adjusting_weights() if lat_adjusted else None
         
     def forward(self, predictions, targets):
+        
+        # Compute only valid values
+        valid_mask = ~torch.isnan(predictions) & ~torch.isnan(targets)
+        predictions, targets = predictions[valid_mask], targets[valid_mask]
          
         if self.lat_adjusted:
             predictions = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * predictions
@@ -141,6 +151,7 @@ class R2(nn.Module):
         
         return r2
     
+
 class ACC(nn.Module):
     """
     Compute anomaly correlation coefficient (ACC) given climatology
@@ -163,10 +174,13 @@ class ACC(nn.Module):
         # Retrieve mean climatology
         climatology = self.normalization_mean[config.PARAMS.index(param), config.PRESSURE_LEVELS.index(level)]
         
+        # Compute only valid values
+        valid_mask = ~torch.isnan(predictions) & ~torch.isnan(targets)
+        predictions, targets = predictions[valid_mask], targets[valid_mask]
+        
         # Compute anomalies
         anomalies_targets = targets - climatology
         anomalies_predictions = predictions - climatology
-         
          
         if self.lat_adjusted:
             anomalies_targets = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * anomalies_targets
@@ -176,16 +190,18 @@ class ACC(nn.Module):
         numerator = torch.nansum(anomalies_targets * anomalies_predictions)
         denominator = torch.sqrt(torch.nansum(anomalies_targets ** 2) * torch.nansum(anomalies_predictions ** 2))
 
-        acc = numerator / denominator
+        acc = numerator / (denominator + 1e-10)
         
         return acc
     
+
 class KL_MSE(nn.Module):
     """
-    Compute mean squared error (MSE) and KL-divergence
+    Compute mean squared error (MSE) and KL-divergence, mostly for Variational Autoencoder implementation
     """
     
     def __init__(self):
+        
         super(KL_MSE, self).__init__()
 
     def forward(self, predictions, targets):
@@ -259,7 +275,7 @@ class MS_SSIM(nn.Module):
         coords -= self.kernel_size // 2
         
         g = torch.exp(-(coords ** 2)/(2*self.sigma**2))
-        g /= g.sum()
+        g /= torch.nansum(g)
         
         return g.unsqueeze(0).unsqueeze(0)
     
@@ -304,8 +320,8 @@ class MS_SSIM(nn.Module):
         cs_map = (2 * sigma12 + C2) / (sigma1_sq + sigma2_sq + C2)  # set alpha=beta=gamma=1
         ssim_map = ((2 * mu1_mu2 + C1) / (mu1_sq + mu2_sq + C1)) * cs_map
 
-        ssim_per_channel = torch.flatten(ssim_map, 2).mean(-1)
-        cs = torch.flatten(cs_map, 2).mean(-1)
+        ssim_per_channel = torch.nanmean(torch.flatten(ssim_map, 2), dim=-1)
+        cs = torch.nanmean(torch.flatten(cs_map, 2), dim=-1)
         return ssim_per_channel, cs
     
     def ms_ssim(
@@ -319,6 +335,11 @@ class MS_SSIM(nn.Module):
         predictions: a batch of a specific predicted physical variable at a specific level (B,H,W)
         targets: a batch of a specific target physical variable at a specific level (B,H,W)
         """
+        
+        # Handling missing values in predictions
+        pred_means = torch.nanmean(predictions, dim=(-2, -1))[:, None, None]
+        predictions = torch.where(torch.isnan(predictions), pred_means, predictions)
+        
         predictions = self.rescale(predictions).squeeze(dim=-1).squeeze(dim=-1)
         targets = self.rescale(targets).squeeze(dim=-1).squeeze(dim=-1)
         
@@ -345,15 +366,137 @@ class MS_SSIM(nn.Module):
         ms_ssim_val = torch.prod(mcs_and_ssim ** weights_tensor.view(-1, 1, 1), dim=0)
 
         if size_average:
+            return torch.nanmean(ms_ssim_val)
         
-            return ms_ssim_val.mean()
         else:
-        
-            return ms_ssim_val.mean(1)
+            return torch.nanmean(ms_ssim_val, dim=1)
 
                 
     def forward(self, predictions, targets):
+        
         return self.ms_ssim(
             predictions,
             targets,
         )
+
+
+class SpectralDiv(nn.Module):
+    """
+    Compute Spectral divergence given the top-k percentile wavenumber (higher k means higher frequency)
+    """
+    def __init__(
+        self,   
+        percentile=0.9,
+        input_shape=(121,240)
+    ):
+        
+        super(SpectralDiv, self).__init__()
+        
+        self.percentile = percentile
+        
+        # Compute the discrete Fourier Transform sample frequencies for a signal of size
+        nx, ny = input_shape
+        kx = torch.fft.fftfreq(nx) * nx
+        ky = torch.fft.fftfreq(ny) * ny
+        kx, ky = torch.meshgrid(kx, ky)
+        
+        self.k = torch.sqrt(kx**2 + ky**2).reshape(-1).to(config.device)
+        self.k_low = 0.5
+        self.k_upp = torch.max(self.k)
+        self.k_nbin = torch.arange(self.k_low, torch.max(self.k), 1).size(0)
+        
+        # Get percentile index
+        self.k_percentile_idx = int(self.k_nbin * self.percentile)
+        
+    def forward(self, predictions, targets):
+        
+        # Handling missing values in predictions
+        pred_means = torch.nanmean(predictions, dim=(-2, -1))[:, None, None]
+        predictions = torch.where(torch.isnan(predictions), pred_means, predictions)
+        
+        # Compute along mini-batch
+        predictions, targets = torch.nanmean(predictions, dim=0), torch.nanmean(targets, dim=0)
+        
+        # Transform prediction and targets onto the Fourier space and compute the energy
+        predictions_energy, targets_energy = torch.fft.fft2(predictions), torch.fft.fft2(targets)
+        predictions_energy, targets_energy = torch.abs(predictions_energy)**2, torch.abs(targets_energy)**2
+
+        # Compute pdf along wavenumber k
+        predictions_Ek = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=predictions_energy) \
+                        / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
+        
+        targets_Ek = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=targets_energy) \
+                    / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
+        
+        # Extract top-k percentile wavenumber and its corresponding Energy spectrum
+        predictions_Ek = predictions_Ek[self.k_percentile_idx:]
+        targets_Ek = targets_Ek[self.k_percentile_idx:]
+        
+        # Normalize as pdf
+        predictions_Ek = predictions_Ek / torch.nansum(predictions_Ek)
+        targets_Ek = targets_Ek / torch.nansum(targets_Ek)
+
+        # Compute spectral Ek divergence
+        div = torch.nanmean(torch.clamp(-torch.log(predictions_Ek / targets_Ek), min=0))
+        return div
+    
+
+class SpectralRes(nn.Module):
+    """
+    Compute Spectral residual given the top-k percentile wavenumber (higher k means higher frequency)
+    """
+    def __init__(
+        self,   
+        percentile=0.9,
+        input_shape=(121,240)
+    ):
+        
+        super(SpectralRes, self).__init__()
+        
+        self.percentile = percentile
+        
+        # Compute the discrete Fourier Transform sample frequencies for a signal of size
+        nx, ny = input_shape
+        kx = torch.fft.fftfreq(nx) * nx
+        ky = torch.fft.fftfreq(ny) * ny
+        kx, ky = torch.meshgrid(kx, ky)
+        
+        self.k = torch.sqrt(kx**2 + ky**2).reshape(-1).to(config.device)
+        self.k_low = 0.5
+        self.k_upp = torch.max(self.k)
+        self.k_nbin = torch.arange(self.k_low, torch.max(self.k), 1).size(0)
+        
+        # Get percentile index
+        self.k_percentile_idx = int(self.k_nbin * self.percentile)
+        
+    def forward(self, predictions, targets):
+        
+        # Handling missing values in predictions
+        pred_means = torch.nanmean(predictions, dim=(-2, -1))[:, None, None]
+        predictions = torch.where(torch.isnan(predictions), pred_means, predictions)
+        
+        # Compute along mini-batch
+        predictions, targets = torch.nanmean(predictions, dim=0), torch.nanmean(targets, dim=0)
+        
+        # Transform prediction and targets onto the Fourier space and compute the energy
+        predictions_energy, targets_energy = torch.fft.fft2(predictions), torch.fft.fft2(targets)
+        predictions_energy, targets_energy = torch.abs(predictions_energy)**2, torch.abs(targets_energy)**2
+
+        # Compute pdf along wavenumber k
+        predictions_Ek = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=predictions_energy) \
+                        / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
+        
+        targets_Ek = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=targets_energy) \
+                        / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
+        
+        # Extract top-k percentile wavenumber and its corresponding Energy spectrum
+        predictions_Ek = predictions_Ek[self.k_percentile_idx:]
+        targets_Ek = targets_Ek[self.k_percentile_idx:]
+        
+        # Normalize as pdf
+        predictions_Ek = predictions_Ek / torch.nansum(predictions_Ek)
+        targets_Ek = targets_Ek / torch.nansum(targets_Ek)
+
+        # Compute spectral Ek residual
+        res = torch.sqrt(torch.nanmean(torch.square(predictions_Ek - targets_Ek)))
+        return res

@@ -1,4 +1,3 @@
-from ecmwfapi import ECMWFDataServer
 from pathlib import Path
 import xarray as xr
 import pandas as pd
@@ -10,8 +9,10 @@ import config
 import logging
 logging.basicConfig(level=logging.INFO)
 
+from ecmwfapi import ECMWFDataServer
+
 def _increment_days(all_dates, end_date):
-    "This is a utility function especially for ECMWF data processing"
+    "This is a utility function especially for ECMWF/CMA data processing involving sparse forecast"
     
     # Define the increments
     increments = [3, 4]
@@ -38,7 +39,7 @@ def _increment_days(all_dates, end_date):
 
 def main(args):
     """
-    Main driver to download ERA5 data based on individual variable
+    Main driver to download S2S physics-based benchmark data based on individual variable
     Usage example: `python download_s2s.py --s2s_name ncep`
     """
     assert args.s2s_name in list(config.S2S_CENTERS.keys())

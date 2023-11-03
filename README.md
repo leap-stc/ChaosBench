@@ -1,18 +1,11 @@
 # ChaosBench - A benchmark for long-term forecasting of chaotic systems
-ChaosBench is a benchmark project to improve long-term forecasting of chaotic systems, including subseasonal-to-seasonal (S2S) climate systems and other nonlinear dynamical problems including Rayleigh-Benard, Quasi-Geostrophic, Kelvin-Helmholtz, etc. Our design paradigm revolves around __modularity__ and __extensibility__ so that you can easily separate modeling from benchmarking for instance, and to build on existing pieces with ease. Current features include:
+ChaosBench is a benchmark project to improve long-term forecasting of chaotic systems, in particular subseasonal-to-seasonal (S2S) weather. Current features include:
 
 ## 1. Benchmark and Dataset
 
-- __(ChaosBench-S2S) Subseasonal-to-seasonal (S2S) climate forecast__
-    - Observations: 
-        - [x] ERA5 Reanalysis (1979-2022)
-    - Physics-based Evaluation Benchmark:
-        - [x] NCEP
-        - [x] CMA
-        - [x] UKMO
-        - [x] ECMWF
-    - Climatology: the long-term mean and sigma for ERA5, NCEP, CMA, UKMO, and ECMWF products are also available for (de)-normalization and the compute of metrics (eg. ACC)
-    - Benchmark variables (ERA5 observations contains __ALL__ fields, including the unchecked boxes):
+- __Input:__ ERA5 Reanalysis (1979-2022)
+    
+- __Target:__ The following table indicates the 48 variables (channels) that are available for Physics-based models. Note that the __Input__ ERA5 observations contains __ALL__ fields, including the unchecked boxes:
         
     Parameters/Levels (hPa) | 1000 | 925 | 850 | 700 | 500 | 300 | 200 | 100 | 50 | 10
     :---------------------- | :----| :---| :---| :---| :---| :---| :---| :---| :--| :-|
@@ -23,31 +16,43 @@ ChaosBench is a benchmark project to improve long-term forecasting of chaotic sy
     V component of wind, v ($ms^{-1}$) | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; |  
     Vertical velocity, w ($Pas^{-1}$) | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; |  
     
-- TBD
+- __Baselines:__
+    - Physics-based models:
+        - [x] NCEP: National Centers for Environmental Prediction
+        - [x] CMA: China Meteorological Administration
+        - [x] UKMO: UK Meteorological Office
+        - [x] ECMWF: European Centre for Medium-Range Weather Forecasts
+    - Data-driven models:
+        - [x] UNet
+        - [x] Resnet
+        - [x] Lagged-Autoencoder
+        - [x] Fourier Neural Operator (FNO)
+        
+## 2. Metrics
+We divide our metrics into 2 classes: (1) ML-based, which cover evaluation used in conventional computer vision and forecasting tasks, (2) Physics-based, which are aimed to construct a more physically-faithful and explainable data-driven forecast.
 
-## 2. Data-Driven Models
-- CNN (UNet, ResNet)
-- Generative (Autoencoder)
-- Fourier Neural Operator
-
-## 3. Metrics
-- RMSE
-- MAE
-- Bias
-- Anomaly Correlation Coefficient (ACC)
-- Coefficient of Determination ($R^2$)
-- Spectral Divergence (*NEW*)
+- __Vision-based:__
+    - [x] RMSE
+    - [x] Bias
+    - [x] Anomaly Correlation Coefficient (ACC)
+    - [x] Structural Similarity Index (SSIM)
+- __Physics-based:__
+    - [x] Spectral Divergence
+    - [x] Spectral Residual
 
 
-## 4. Tutorial
-You can learn more about our benchmarking approach through our assortment of Jupyter notebooks under `notebooks`. It covers topics ranging from 
+## 3. Tasks
+We presented two task, where the model still takes as inputs the __FULL__ 60 variables, but the benchmarking is done on either __ALL__ or __INDIVIDUAL__ target variable(s).
+
+- __Task 1: Full Dynamics Prediction.__
+It is aimed to target __ALL__ target channels simultaneously. This task is generally harder to perform but is useful to build a model that emulates the entire weather conditions.
+
+- __Task 2: Sparse Dynamics Prediction.__
+It is aimed to target an __INDIVIDUAL__ target channel. This task is useful to build long-term forecasting model for specific variables, such as surface temperature (t-1000) or surface humidity (q-1000). 
+
+## 4. Getting Started
+You can learn more about how to use our benchmark product through the following Jupyter notebooks under the `notebooks` directory. It covers topics ranging from:
 - `01*_dataset_exploration`
 - `02*_modeling`
 - `03*_training`
 - `04*_evaluation`
-
-## 5. Experiments
-We perform the following experiments:
-- Comparing the forecasting performance of physical and data-driven models
-- Evaluating the value of temporal information
-- TBD

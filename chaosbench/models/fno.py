@@ -77,15 +77,19 @@ class FNO2d(nn.Module):
         self.w3 = nn.Conv2d(self.width[3], self.width[4], 1)
 
         self.decoder = nn.Sequential(
-            nn.Linear(self.width[4], self.width[3]),
+            nn.Conv2d(self.width[4], self.width[3], 1),
+            nn.BatchNorm2d(self.width[3]),
             nn.GELU(),
-            nn.Linear(self.width[3], self.width[2]),
+            nn.Conv2d(self.width[3], self.width[2], 1),
+            nn.BatchNorm2d(self.width[2]),
             nn.GELU(),
-            nn.Linear(self.width[2], self.width[1]),
+            nn.Conv2d(self.width[2], self.width[1], 1),
+            nn.BatchNorm2d(self.width[1]),
             nn.GELU(),
-            nn.Linear(self.width[1], self.width[0]),
+            nn.Conv2d(self.width[1], self.width[0], 1),
+            nn.BatchNorm2d(self.width[0]),
             nn.GELU(),
-            nn.Linear(self.width[0], input_size)
+            nn.Conv2d(self.width[0], input_size, 1)
         )
         
     def forward(self, x):
@@ -121,7 +125,6 @@ class FNO2d(nn.Module):
         ###############################################################
 
         x = x[..., :-self.padding, :-self.padding] # Unpad the tensor
-        x = x.permute(0, 2, 3, 1) # to shape (B, H, W, P*L)
         x = self.decoder(x)
         x = x.permute((0, 3, 1, 2)) # to shape (B, P*L, H, W)
         x = x.reshape((B, P, L, H, W))

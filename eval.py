@@ -18,10 +18,11 @@ pl.seed_everything(42)
 import sys
 sys.path.append('..')
 
+import warnings
+warnings.filterwarnings('ignore')
+
 from chaosbench import dataset, config, utils, criterion
 from chaosbench.models import model
-
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def main(args):
     """
@@ -93,9 +94,10 @@ def main(args):
     ##### Initialize criteria #####
     RMSE = criterion.RMSE()
     Bias = criterion.Bias()
-    MAE = criterion.MAE()
-    R2 = criterion.R2()
     ACC = criterion.ACC()
+    SSIM = criterion.MS_SSIM()
+    SpecDiv = criterion.SpectralDiv(percentile=0.9)
+    SpecRes = criterion.SpectralRes(percentile=0.9)
     ###############################
     
     
@@ -104,7 +106,7 @@ def main(args):
     ######################################
     
     ## All metric placeholders
-    all_rmse, all_bias, all_mae, all_r2, all_acc = list(), list(), list(), list(), list()
+    all_rmse, all_bias, all_acc, all_ssim, all_sdiv, all_sres = list(), list(), list(), list(), list(), list()
 
     for input_batch, output_batch in tqdm(zip(input_dataloader, output_dataloader), total=len(input_dataloader)):
         
@@ -113,29 +115,26 @@ def main(args):
         
         assert preds_y.size(1) == truth_y.size(1)
         
-        curr_x = preds_x.to(device) # Initialize current x
+        curr_x = preds_x.to(config.device) # Initialize current x
 
         ## Step metric placeholders
-        step_rmse, step_bias, step_mae, step_r2, step_acc = dict(), dict(), dict(), dict(), dict()
+        step_rmse, step_bias, step_acc, step_ssim, step_sdiv, step_sres = dict(), dict(), dict(), dict(), dict(), dict()
 
         for step_idx in range(truth_y.size(1)):
 
             with torch.no_grad():
-                curr_y = truth_y[:, step_idx].to(device)
+                curr_y = truth_y[:, step_idx].to(config.device)
                 
                 
                 ############## Getting predictions ##############
                 if IS_AI_MODEL:
                     preds = baseline(curr_x)
-                    
-                    if 'vae' in args.model_name:
-                        preds = preds[0] # original is of shape (x, mu, logvar)
                 
                 elif IS_PERSISTENCE:
-                    preds = preds_x.to(device)
+                    preds = preds_x.to(config.device)
                 
                 else:
-                    preds = preds_y[:, step_idx].to(device)
+                    preds = preds_y[:, step_idx].to(config.device)
                 #################################################
                 
 
@@ -157,30 +156,35 @@ def main(args):
 
                         ################################## Criterion 2: Bias #####################################
                         bias = Bias(preds[:, param_idx, level_idx], curr_y[:, param_idx, level_idx]).cpu().numpy()
-
-                        ################################## Criterion 3: MAE ######################################
-                        mae = MAE(preds[:, param_idx, level_idx], curr_y[:, param_idx, level_idx]).cpu().numpy()
-
-                        ################################## Criterion 4: R2 #######################################
-                        r2 = R2(preds[:, param_idx, level_idx], curr_y[:, param_idx, level_idx]).cpu().numpy()
                         
-                        ################################## Criterion 4: ACC ######################################
+                        ################################## Criterion 3: ACC ######################################
                         acc = ACC(preds[:, param_idx, level_idx], curr_y[:, param_idx, level_idx], param, level).cpu().numpy()
+                        
+                        ################################## Criterion 4: SSIM ######################################
+                        ssim = SSIM(preds[:, param_idx, level_idx], curr_y[:, param_idx, level_idx]).cpu().numpy()
+                        
+                        ################################ Criterion 5: SpecDiv #####################################
+                        sdiv = SpecDiv(preds[:, param_idx, level_idx], curr_y[:, param_idx, level_idx]).cpu().numpy()
+                        
+                        ################################ Criterion 5: SpecRes #####################################
+                        sres = SpecRes(preds[:, param_idx, level_idx], curr_y[:, param_idx, level_idx]).cpu().numpy()
 
 
                         try:
                             step_rmse[f'{param}-{level}'].extend([error])
                             step_bias[f'{param}-{level}'].extend([bias])
-                            step_mae[f'{param}-{level}'].extend([mae])
-                            step_r2[f'{param}-{level}'].extend([r2])
                             step_acc[f'{param}-{level}'].extend([acc])
+                            step_ssim[f'{param}-{level}'].extend([ssim])
+                            step_sdiv[f'{param}-{level}'].extend([sdiv])
+                            step_sres[f'{param}-{level}'].extend([sres])
 
                         except:
                             step_rmse[f'{param}-{level}'] = [error]
                             step_bias[f'{param}-{level}'] = [bias]
-                            step_mae[f'{param}-{level}'] = [mae]
-                            step_r2[f'{param}-{level}'] = [r2]
                             step_acc[f'{param}-{level}'] = [acc]
+                            step_ssim[f'{param}-{level}'] = [ssim]
+                            step_sdiv[f'{param}-{level}'] = [sdiv]
+                            step_sres[f'{param}-{level}'] = [sres]
 
                 ## Make next-step input as the current prediction (used for AI models)
                 curr_x = preds
@@ -197,48 +201,64 @@ def main(args):
         
         all_rmse.append(step_rmse)
         all_bias.append(step_bias)
-        all_mae.append(step_mae)
-        all_r2.append(step_r2)
         all_acc.append(step_acc)
+        all_ssim.append(step_ssim)
+        all_sdiv.append(step_sdiv)
+        all_sres.append(step_sres)
     
     ## Combine metrics
-    merged_rmse, merged_bias, merged_mae, merged_r2, merged_acc = dd(list), dd(list), dd(list), dd(list), dd(list)
+    merged_rmse, merged_bias, merged_acc, \
+    merged_ssim, merged_sdiv, merged_sres = dd(list), dd(list), dd(list), dd(list), dd(list), dd(list)
     
-    for d_rmse, d_bias, d_mae, d_r2, d_acc in zip(all_rmse, all_bias, all_mae, all_r2, all_acc):
-        for (rmse_k, rmse_v), (bias_k, bias_v), (mae_k, mae_v), (r2_k, r2_v), (acc_k, acc_v) in zip(d_rmse.items(), 
-                                                                                                    d_bias.items(),
-                                                                                                    d_mae.items(),
-                                                                                                    d_r2.items(),
-                                                                                                    d_acc.items()):
+    for d_rmse, d_bias, d_acc, d_ssim, d_sdiv, d_sres in zip(all_rmse, all_bias, all_acc, all_ssim, all_sdiv, all_sres):
+        for (rmse_k, rmse_v), (bias_k, bias_v), (acc_k, acc_v), \
+            (ssim_k, ssim_v), (sdiv_k, sdiv_v), (sres_k, sres_v) in zip(d_rmse.items(),
+                                                                        d_bias.items(),
+                                                                        d_acc.items(),
+                                                                        d_ssim.items(),
+                                                                        d_sdiv.items(),
+                                                                        d_sres.items()):
+            
             merged_rmse[rmse_k].append(rmse_v)
             merged_bias[bias_k].append(bias_v)
-            merged_mae[mae_k].append(mae_v)
-            merged_r2[r2_k].append(r2_v)
             merged_acc[acc_k].append(acc_v)
+            merged_ssim[ssim_k].append(ssim_v)
+            merged_sdiv[sdiv_k].append(sdiv_v)
+            merged_sres[sres_k].append(sres_v)
 
     ## Compute the mean metrics over valid evaluation time horizon (for each timestep)
-    merged_rmse, merged_bias, merged_mae, merged_r2, merged_acc = dict(merged_rmse), dict(merged_bias), dict(merged_mae), dict(merged_r2), dict(merged_acc)
-    for (rmse_k, rmse_v), (bias_k, bias_v), (mae_k, mae_v), (r2_k, r2_v), (acc_k, acc_v) in zip(merged_rmse.items(), 
-                                                                                                merged_bias.items(),
-                                                                                                merged_mae.items(),
-                                                                                                merged_r2.items(),
-                                                                                                merged_acc.items()):
+    merged_rmse, \
+    merged_bias, \
+    merged_acc, \
+    merged_ssim, \
+    merged_sdiv, \
+    merged_sres = dict(merged_rmse), dict(merged_bias), dict(merged_acc), dict(merged_ssim), dict(merged_sdiv), dict(merged_sres)
+    
+    for (rmse_k, rmse_v), (bias_k, bias_v), (acc_k, acc_v), \
+        (ssim_k, ssim_v), (sdiv_k, sdiv_v), (sres_k, sres_v) in zip(merged_rmse.items(), 
+                                                                    merged_bias.items(),
+                                                                    merged_acc.items(),
+                                                                    merged_ssim.items(),
+                                                                    merged_sdiv.items(),
+                                                                    merged_sres.items()):
+        
         merged_rmse[rmse_k] = np.array(merged_rmse[rmse_k]).mean(axis=0)
         merged_bias[bias_k] = np.array(merged_bias[bias_k]).mean(axis=0)
-        merged_mae[mae_k] = np.array(merged_mae[mae_k]).mean(axis=0)
-        merged_r2[r2_k] = np.array(merged_r2[r2_k]).mean(axis=0)
         merged_acc[acc_k] = np.array(merged_acc[acc_k]).mean(axis=0)
+        merged_ssim[ssim_k] = np.array(merged_ssim[ssim_k]).mean(axis=0)
+        merged_sdiv[sdiv_k] = np.array(merged_sdiv[sdiv_k]).mean(axis=0)
+        merged_sres[sres_k] = np.array(merged_sres[sres_k]).mean(axis=0)
         
     ## Save metrics
     eval_dir = log_dir / 'eval' / f'version_{args.version_num}' if IS_AI_MODEL else log_dir / 'eval'
     eval_dir.mkdir(parents=True, exist_ok=True)
     
-    rmse_df, bias_df, mae_df, r2_df, acc_df = pd.DataFrame(merged_rmse), pd.DataFrame(merged_bias), pd.DataFrame(merged_mae), pd.DataFrame(merged_r2), pd.DataFrame(merged_acc)
-    rmse_df.to_csv(eval_dir / f'rmse_{args.model_name}.csv', index=False)
-    bias_df.to_csv(eval_dir / f'bias_{args.model_name}.csv', index=False)
-    mae_df.to_csv(eval_dir / f'mae_{args.model_name}.csv', index=False)
-    r2_df.to_csv(eval_dir / f'r2_{args.model_name}.csv', index=False)
-    acc_df.to_csv(eval_dir / f'acc_{args.model_name}.csv', index=False)
+    pd.DataFrame(merged_rmse).to_csv(eval_dir / f'rmse_{args.model_name}.csv', index=False)
+    pd.DataFrame(merged_bias).to_csv(eval_dir / f'bias_{args.model_name}.csv', index=False)
+    pd.DataFrame(merged_acc).to_csv(eval_dir / f'acc_{args.model_name}.csv', index=False)
+    pd.DataFrame(merged_ssim).to_csv(eval_dir / f'ssim_{args.model_name}.csv', index=False)
+    pd.DataFrame(merged_sdiv).to_csv(eval_dir / f'sdiv_{args.model_name}.csv', index=False)
+    pd.DataFrame(merged_sres).to_csv(eval_dir / f'sres_{args.model_name}.csv', index=False)
 
     
 if __name__ == "__main__":
