@@ -13,14 +13,18 @@ warnings.filterwarnings("ignore")
 def main(args):
     """
     Main driver to compute climatology of individual param/level pair
-    Usage example: `python compute_climatology.py --dataset_name era5`
+    Usage example: `python compute_climatology.py --dataset_name era5 --is_spatial False`
     """
     
     # Set output directory
     output_dir = Path(config.DATA_DIR) / 's2s' / 'climatology'
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    output_file = output_dir/ f'climatology_{args.dataset_name}.zarr'
+    if args.is_spatial:
+        output_file = output_dir/ f'climatology_{args.dataset_name}_spatial.zarr'
+        
+    else:
+        output_file = output_dir/ f'climatology_{args.dataset_name}.zarr'
 
     # Skip processing if file exists 
     if output_file.exists():
@@ -49,21 +53,42 @@ def main(args):
 
         # Compute climatology
         all_vars = np.array(all_vars) # Shape: (time, param, level, lat, lon)
-        climatology_mean = np.nanmean(all_vars, axis=(0,3,4))
-        climatology_sigma = np.nanstd(all_vars, axis=(0,3,4))
+        
+        ## Along the spatial domain
+        if args.is_spatial:
+            climatology_mean = np.nanmean(all_vars, axis=(0))
+            climatology_sigma = np.nanstd(all_vars, axis=(0))
+            
+            ds = xr.Dataset(
+                {
+                    'mean': (('param', 'level', 'lat', 'lon'), climatology_mean),
+                    'sigma': (('param', 'level', 'lat', 'lon'), climatology_sigma),
+                },
 
-        # Build Dataset object
-        ds = xr.Dataset(
-            {
-                'mean': (('param', 'level'), climatology_mean),
-                'sigma': (('param', 'level'), climatology_sigma),
-            },
+                coords = {
+                    'param': [str(param) for param in config.PARAMS],
+                    'level': [int(pressure_level) for pressure_level in config.PRESSURE_LEVELS],
+                    'lat': ds.latitude.values,
+                    'lon': ds.longitude.values
+                }
+            )
+        
+        ## Aggregate on the spatial domain
+        else:
+            climatology_mean = np.nanmean(all_vars, axis=(0,3,4))
+            climatology_sigma = np.nanstd(all_vars, axis=(0,3,4))
 
-            coords = {
-                'param': [str(param) for param in config.PARAMS],
-                'level': [int(pressure_level) for pressure_level in config.PRESSURE_LEVELS]
-            }
-        )
+            ds = xr.Dataset(
+                {
+                    'mean': (('param', 'level'), climatology_mean),
+                    'sigma': (('param', 'level'), climatology_sigma),
+                },
+
+                coords = {
+                    'param': [str(param) for param in config.PARAMS],
+                    'level': [int(pressure_level) for pressure_level in config.PRESSURE_LEVELS]
+                }
+            )
 
         # Save climatology
         ds.to_zarr(output_file)
@@ -72,6 +97,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_name', help='Provide the name of the dataset...')
+    parser.add_argument('--is_spatial', help='If we perform climatology computation over the spatial grid...')
     
     args = parser.parse_args()
     main(args)

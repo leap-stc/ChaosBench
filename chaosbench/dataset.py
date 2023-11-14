@@ -17,18 +17,21 @@ class S2SObsDataset(Dataset):
     Params:
         years <List[int]>: list of years to load and process,
         n_step <int>     : number of contiguous timesteps included in the data (default: 1)
+        lead_time <int>  : delta_t ahead in time, useful for direct prediction (default: 1)
     
     """
     
     def __init__(
         self, 
         years: List[int],
-        n_step: int = 1
+        n_step: int = 1,
+        lead_time: int = 1
     ) -> None:
         
         self.data_dir = Path(config.DATA_DIR) / 's2s' / 'era5'
         self.normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / 'climatology_era5.zarr'
         self.n_step = n_step
+        self.lead_time = lead_time
         
         # Check if years specified are within valid bounds
         self.years = years
@@ -54,13 +57,15 @@ class S2SObsDataset(Dataset):
         
 
     def __len__(self):
-        data_length = len(self.file_paths) - self.n_step
+        data_length = len(self.file_paths) - self.n_step - self.lead_time
         return data_length
 
     def __getitem__(self, idx):
-        data = list() 
-        for step_idx in range(self.n_step + 1):
-            data.append(xr.open_dataset(self.file_paths[idx + step_idx], engine='zarr'))
+        step_indices = [idx] + [target_idx for target_idx in range(idx + self.lead_time, idx + self.lead_time + self.n_step)]
+        
+        data = list()
+        for step_idx in step_indices:
+            data.append(xr.open_dataset(self.file_paths[step_idx], engine='zarr'))
 
         data = xr.concat(data, dim='step')
         data = data[config.PARAMS].to_array().values
@@ -78,7 +83,7 @@ class S2SObsDataset(Dataset):
     
 class S2SEvalDataset(Dataset):
     """
-    Dataset object to handle evaluation benchmarks.
+    Dataset object to load evaluation benchmarks.
     
     Params:
         s2s_name str: center name where evaluation is going to be performed

@@ -6,7 +6,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 import lightning.pytorch as pl
 import yaml
 
-from chaosbench.models import mlp, cnn, ae, fno
+from chaosbench.models import mlp, cnn, ae, fno, vit
 from chaosbench import dataset, config, utils, criterion
 
 class S2SBenchmarkModel(pl.LightningModule):
@@ -52,6 +52,9 @@ class S2SBenchmarkModel(pl.LightningModule):
                                    modes2 = self.model_args['modes2'], 
                                    width = self.model_args['width'], 
                                    initial_step = self.model_args['initial_step'])
+            
+        elif 'segformer' in self.model_args['model_name']:
+            self.model = vit.Segformer(input_size = self.model_args['input_size'])
             
         self.loss = self.init_loss_fn()
             
@@ -141,8 +144,12 @@ class S2SBenchmarkModel(pl.LightningModule):
         }
 
     def setup(self, stage=None):
-        self.train_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'], n_step=self.data_args['n_step'])
-        self.val_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'], n_step=self.data_args['n_step'])
+        self.train_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'], 
+                                                   n_step=self.data_args['n_step'],
+                                                   lead_time=self.data_args['lead_time'])
+        self.val_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'], 
+                                                 n_step=self.data_args['n_step'],
+                                                 lead_time=self.data_args['lead_time'])
         
 
     def train_dataloader(self):

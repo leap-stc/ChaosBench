@@ -18,15 +18,16 @@ ChaosBench is a benchmark project to improve long-term forecasting of chaotic sy
     
 - __Baselines:__
     - Physics-based models:
+        - [x] UKMO: UK Meteorological Office
         - [x] NCEP: National Centers for Environmental Prediction
         - [x] CMA: China Meteorological Administration
-        - [x] UKMO: UK Meteorological Office
         - [x] ECMWF: European Centre for Medium-Range Weather Forecasts
     - Data-driven models:
-        - [x] UNet
-        - [x] Resnet
         - [x] Lagged-Autoencoder
         - [x] Fourier Neural Operator (FNO)
+        - [x] ResNet
+        - [x] UNet
+        - [x] ClimaX
         
 ## 2. Metrics
 We divide our metrics into 2 classes: (1) ML-based, which cover evaluation used in conventional computer vision and forecasting tasks, (2) Physics-based, which are aimed to construct a more physically-faithful and explainable data-driven forecast.
@@ -35,7 +36,7 @@ We divide our metrics into 2 classes: (1) ML-based, which cover evaluation used 
     - [x] RMSE
     - [x] Bias
     - [x] Anomaly Correlation Coefficient (ACC)
-    - [x] Structural Similarity Index (SSIM)
+    - [x] Multiscale Structural Similarity Index (MS-SSIM)
 - __Physics-based:__
     - [x] Spectral Divergence
     - [x] Spectral Residual

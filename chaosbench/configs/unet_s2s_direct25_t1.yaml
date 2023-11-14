@@ -1,0 +1,16 @@
+model_args:
+    model_name: 'unet_s2s'
+    input_size: 60
+    output_size: 60
+    learning_rate: 0.01
+    num_workers: 12
+    epochs: 500
+    t_max: 500
+    only_headline: False
+    
+data_args:
+    batch_size: 32
+    train_years: [1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015]
+    val_years: [2016, 2017, 2018, 2019, 2020, 2021]
+    n_step: 1
+    lead_time: 25
