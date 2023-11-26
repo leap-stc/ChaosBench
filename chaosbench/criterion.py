@@ -422,22 +422,22 @@ class SpectralDiv(nn.Module):
         predictions_power, targets_power = torch.abs(predictions_power)**2, torch.abs(targets_power)**2
 
         # Compute pdf along wavenumber k
-        predictions_Ek = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=predictions_power) \
+        predictions_Sk = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=predictions_power) \
                         / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
         
-        targets_Ek = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=targets_power) \
+        targets_Sk = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=targets_power) \
                     / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
         
         # Extract top-k percentile wavenumber and its corresponding power spectrum
-        predictions_Ek = predictions_Ek[self.k_percentile_idx:]
-        targets_Ek = targets_Ek[self.k_percentile_idx:]
+        predictions_Sk = predictions_Sk[self.k_percentile_idx:]
+        targets_Sk = targets_Sk[self.k_percentile_idx:]
         
         # Normalize as pdf
-        predictions_Ek = predictions_Ek / torch.nansum(predictions_Ek)
-        targets_Ek = targets_Ek / torch.nansum(targets_Ek)
+        predictions_Sk = predictions_Sk / torch.nansum(predictions_Sk)
+        targets_Sk = targets_Sk / torch.nansum(targets_Sk)
 
-        # Compute spectral Ek divergence
-        div = torch.nanmean(torch.clamp(-torch.log(predictions_Ek / targets_Ek), min=0))
+        # Compute spectral Sk divergence
+        div = torch.nanmean(torch.clamp(-torch.log(predictions_Sk / targets_Sk), min=0))
         return div
     
 
@@ -483,20 +483,20 @@ class SpectralRes(nn.Module):
         predictions_power, targets_power = torch.abs(predictions_power)**2, torch.abs(targets_power)**2
 
         # Compute pdf along wavenumber k
-        predictions_Ek = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=predictions_power) \
+        predictions_Sk = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=predictions_power) \
                         / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
         
-        targets_Ek = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=targets_power) \
+        targets_Sk = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=targets_power) \
                         / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
         
         # Extract top-k percentile wavenumber and its corresponding power spectrum
-        predictions_Ek = predictions_Ek[self.k_percentile_idx:]
-        targets_Ek = targets_Ek[self.k_percentile_idx:]
+        predictions_Sk = predictions_Sk[self.k_percentile_idx:]
+        targets_Sk = targets_Sk[self.k_percentile_idx:]
         
         # Normalize as pdf
-        predictions_Ek = predictions_Ek / torch.nansum(predictions_Ek)
-        targets_Ek = targets_Ek / torch.nansum(targets_Ek)
+        predictions_Sk = predictions_Sk / torch.nansum(predictions_Sk)
+        targets_Sk = targets_Sk / torch.nansum(targets_Sk)
 
-        # Compute spectral Ek residual
-        res = torch.sqrt(torch.nanmean(torch.square(predictions_Ek - targets_Ek)))
+        # Compute spectral Sk residual
+        res = torch.sqrt(torch.nanmean(torch.square(predictions_Sk - targets_Sk)))
         return res

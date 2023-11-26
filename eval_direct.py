@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 from collections import defaultdict as dd
+import copy
 import gc
 import pickle
 from pathlib import Path
@@ -27,8 +28,7 @@ from chaosbench import dataset, config, utils, criterion
 from chaosbench.models import model
 
 def interpolate(values, indices):
-    """Interpolate in between values"""
-    
+    """Interpolate in between values if delta_t is not dense"""
     # First, we check if there are NaN values (i.e., no param/level combination in prediction)
     has_nan = np.any(np.isnan(values)) 
     new_indices = np.arange(indices[0], indices[-1])
@@ -54,6 +54,8 @@ def main(args):
         (External predictions)     2) `python eval_direct.py --model_name climax --eval_years 2022 --task_num 1`
     
     """
+    assert args.task_num in [1, 2]
+    
     print(f'Evaluating ERA5 observations against {args.model_name}...')
     
     #########################################
@@ -79,13 +81,18 @@ def main(args):
         model_args = hyperparams['model_args']
         data_args = hyperparams['data_args']
         
-        ## Initialize model given hyperparameters (TODO: initialize multiple models)
-        baseline = model.S2SBenchmarkModel(model_args=model_args, data_args=data_args)
+        ## Initialize model given hyperparameters
+        version_nums = [0,4,5,6,7,8,9,10,11,12] if args.task_num == 1 else [2,13,14,15,16,17,18,19,20,21]
+        assert len(version_nums) == len(DELTA_T)
         
-        ## Load model from checkpoint
-        ckpt_filepath = log_dir / f'lightning_logs/version_{args.version_num}/checkpoints/'
-        ckpt_filepath = list(ckpt_filepath.glob('*.ckpt'))[0]
-        baseline = baseline.load_from_checkpoint(ckpt_filepath)
+        ## Load each model from checkpoint
+        baselines = list()
+        for version_num in version_nums:
+            ckpt_filepath = log_dir / f'lightning_logs/version_{version_num}/checkpoints/'
+            ckpt_filepath = list(ckpt_filepath.glob('*.ckpt'))[0]
+            baseline = model.S2SBenchmarkModel(model_args=model_args, data_args=data_args)
+            baseline = baseline.load_from_checkpoint(ckpt_filepath)
+            baselines.append(copy.deepcopy(baseline))
         
         ## Prepare input/output dataset
         input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
@@ -102,12 +109,12 @@ def main(args):
         output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
-        # List external prediction
+        ## List external prediction
         preds_filepath = log_dir / 'preds' / f'task{args.task_num}'
         preds_files = list(preds_filepath.glob('*.pkl'))
         preds_files.sort()
         
-        # Load prediction
+        ## Load prediction
         all_preds = list()
         for file_path in preds_files:
             with open(file_path, 'rb') as file:
@@ -156,7 +163,7 @@ def main(args):
                 
                 ############## Getting predictions ##############
                 if IS_AI_MODEL:
-                    preds = baseline(curr_x)
+                    preds = baselines[step_idx](curr_x)
                 
                 else:
                     preds = all_preds[step_idx]
@@ -176,6 +183,7 @@ def main(args):
                             unique_preds = preds[:, param_idx, level_idx]
                         
                         else:
+                            ### Some param/level pairs are not available 
                             param_exist = f'{param}_{level}' in list(preds.keys())
                             if param_exist:
                                 unique_preds = preds[f'{param}_{level}']
@@ -193,7 +201,9 @@ def main(args):
                         )
                         
                         unique_labels = curr_y[:, param_idx, level_idx]
-                        unique_labels = unique_labels.double()
+                        
+                        if IS_PREDICTION:
+                            unique_labels = unique_labels.double()
 
                         ################################## Criterion 1: RMSE #####################################
                         error = RMSE(unique_preds, unique_labels).cpu().numpy()
@@ -229,10 +239,6 @@ def main(args):
                             step_ssim[f'{param}-{level}'] = [ssim]
                             step_sdiv[f'{param}-{level}'] = [sdiv]
                             step_sres[f'{param}-{level}'] = [sres]
-        
-                        
-                ## Make next-step input as the current prediction (used for AI models)
-                curr_x = preds
 
         
         all_rmse.append(step_rmse)
@@ -305,7 +311,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', help='Name of the model either specified in your config file or external')
     parser.add_argument('--eval_years', nargs='+', help='Provide the evaluation years')
-    parser.add_argument('--task_num', default=1, help='Task number, one of [1,2]')
+    parser.add_argument('--task_num', type=int, default=1, help='Task number, one of [1,2]')
     
     args = parser.parse_args()
     main(args)
