@@ -383,16 +383,20 @@ class MS_SSIM(nn.Module):
 class SpectralDiv(nn.Module):
     """
     Compute Spectral divergence given the top-k percentile wavenumber (higher k means higher frequency)
+    (1) Validation mode: targeting specific top-k percentile wavenumber (higher k means higher frequency) is permissible
+    (2) Training mode: computing metric along the entire wavenumber since some operation e.g., binning is nonautograd-able
     """
     def __init__(
         self,   
         percentile=0.9,
-        input_shape=(121,240)
+        input_shape=(121,240),
+        is_train=True
     ):
         
         super(SpectralDiv, self).__init__()
         
         self.percentile = percentile
+        self.is_train = is_train
         
         # Compute the discrete Fourier Transform sample frequencies for a signal of size
         nx, ny = input_shape
@@ -410,8 +414,14 @@ class SpectralDiv(nn.Module):
         
     def forward(self, predictions, targets):
         
+        predictions = predictions.reshape(predictions.shape[0], -1, predictions.shape[-2], predictions.shape[-1])
+        targets = targets.reshape(targets.shape[0], -1, targets.shape[-2], targets.shape[-1])
+        
+        assert predictions.shape[1] == targets.shape[1]
+        nc = predictions.shape[1]
+        
         # Handling missing values in predictions
-        pred_means = torch.nanmean(predictions, dim=(-2, -1))[:, None, None]
+        pred_means = torch.nanmean(predictions, dim=(-2, -1), keepdim=True)
         predictions = torch.where(torch.isnan(predictions), pred_means, predictions)
         
         # Compute along mini-batch
@@ -421,39 +431,53 @@ class SpectralDiv(nn.Module):
         predictions_power, targets_power = torch.fft.fft2(predictions), torch.fft.fft2(targets)
         predictions_power, targets_power = torch.abs(predictions_power)**2, torch.abs(targets_power)**2
 
-        # Compute pdf along wavenumber k
-        predictions_Sk = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=predictions_power) \
-                        / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
+        ## If validation, we can target specific quantiles by binning and sorting
+        if not self.is_train:
+            predictions_Sk = torchist.histogram(self.k.repeat(nc), self.k_nbin, self.k_low, self.k_upp, weights=predictions_power) \
+                            / torchist.histogram(self.k.repeat(nc), self.k_nbin, self.k_low, self.k_upp)
+
+            targets_Sk = torchist.histogram(self.k.repeat(nc), self.k_nbin, self.k_low, self.k_upp, weights=targets_power) \
+                        / torchist.histogram(self.k.repeat(nc), self.k_nbin, self.k_low, self.k_upp)
+            
+            # Extract top-k percentile wavenumber and its corresponding power spectrum
+            predictions_Sk = predictions_Sk[self.k_percentile_idx:]
+            targets_Sk = targets_Sk[self.k_percentile_idx:]
+            
+            # Normalize as pdf along ordered k
+            predictions_Sk = predictions_Sk / torch.nansum(predictions_Sk)
+            targets_Sk = targets_Sk / torch.nansum(targets_Sk)
         
-        targets_Sk = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=targets_power) \
-                    / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
+        ## If training, compute the entire power spectrum 
+        ## NOTE: targeting specific quantiles is yet to be implemented in autograd (i.e., binning operation)
+        else:
+            predictions_Sk, targets_Sk = predictions_power, targets_power
         
-        # Extract top-k percentile wavenumber and its corresponding power spectrum
-        predictions_Sk = predictions_Sk[self.k_percentile_idx:]
-        targets_Sk = targets_Sk[self.k_percentile_idx:]
-        
-        # Normalize as pdf
-        predictions_Sk = predictions_Sk / torch.nansum(predictions_Sk)
-        targets_Sk = targets_Sk / torch.nansum(targets_Sk)
+            # Normalize as pdf of each channel dimension
+            predictions_Sk = predictions_Sk / torch.nansum(predictions_Sk, dim=(-2, -1), keepdim=True)
+            targets_Sk = targets_Sk / torch.nansum(targets_Sk, dim=(-2, -1), keepdim=True)
 
         # Compute spectral Sk divergence
-        div = torch.nanmean(torch.clamp(-torch.log(predictions_Sk / targets_Sk), min=0))
+        div = torch.nanmean(torch.clamp(-torch.log(predictions_Sk / targets_Sk), min=1e-9))
         return div
     
 
 class SpectralRes(nn.Module):
     """
-    Compute Spectral residual given the top-k percentile wavenumber (higher k means higher frequency)
+    Compute Spectral residual 
+    (1) Validation mode: targeting specific top-k percentile wavenumber (higher k means higher frequency) is permissible
+    (2) Training mode: computing metric along the entire wavenumber since some operation e.g., binning is nonautograd-able
     """
     def __init__(
         self,   
         percentile=0.9,
-        input_shape=(121,240)
+        input_shape=(121,240),
+        is_train=True
     ):
         
         super(SpectralRes, self).__init__()
         
         self.percentile = percentile
+        self.is_train = is_train
         
         # Compute the discrete Fourier Transform sample frequencies for a signal of size
         nx, ny = input_shape
@@ -471,8 +495,14 @@ class SpectralRes(nn.Module):
         
     def forward(self, predictions, targets):
         
+        predictions = predictions.reshape(predictions.shape[0], -1, predictions.shape[-2], predictions.shape[-1])
+        targets = targets.reshape(targets.shape[0], -1, targets.shape[-2], targets.shape[-1])
+        
+        assert predictions.shape[1] == targets.shape[1]
+        nc = predictions.shape[1]
+        
         # Handling missing values in predictions
-        pred_means = torch.nanmean(predictions, dim=(-2, -1))[:, None, None]
+        pred_means = torch.nanmean(predictions, dim=(-2, -1), keepdim=True)
         predictions = torch.where(torch.isnan(predictions), pred_means, predictions)
         
         # Compute along mini-batch
@@ -482,20 +512,30 @@ class SpectralRes(nn.Module):
         predictions_power, targets_power = torch.fft.fft2(predictions), torch.fft.fft2(targets)
         predictions_power, targets_power = torch.abs(predictions_power)**2, torch.abs(targets_power)**2
 
-        # Compute pdf along wavenumber k
-        predictions_Sk = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=predictions_power) \
-                        / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
+        ## If validation, we can target specific quantiles by binning and sorting
+        if not self.is_train:
+            predictions_Sk = torchist.histogram(self.k.repeat(nc), self.k_nbin, self.k_low, self.k_upp, weights=predictions_power) \
+                            / torchist.histogram(self.k.repeat(nc), self.k_nbin, self.k_low, self.k_upp)
+
+            targets_Sk = torchist.histogram(self.k.repeat(nc), self.k_nbin, self.k_low, self.k_upp, weights=targets_power) \
+                        / torchist.histogram(self.k.repeat(nc), self.k_nbin, self.k_low, self.k_upp)
+            
+            # Extract top-k percentile wavenumber and its corresponding power spectrum
+            predictions_Sk = predictions_Sk[self.k_percentile_idx:]
+            targets_Sk = targets_Sk[self.k_percentile_idx:]
+            
+            # Normalize as pdf along ordered k
+            predictions_Sk = predictions_Sk / torch.nansum(predictions_Sk)
+            targets_Sk = targets_Sk / torch.nansum(targets_Sk)
         
-        targets_Sk = torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp, weights=targets_power) \
-                        / torchist.histogram(self.k, bins=self.k_nbin, low=self.k_low, upp=self.k_upp)
+        ## If training, compute the entire power spectrum 
+        ## NOTE: targeting specific quantiles is yet to be implemented in autograd (i.e., binning operation)
+        else:
+            predictions_Sk, targets_Sk = predictions_power, targets_power
         
-        # Extract top-k percentile wavenumber and its corresponding power spectrum
-        predictions_Sk = predictions_Sk[self.k_percentile_idx:]
-        targets_Sk = targets_Sk[self.k_percentile_idx:]
-        
-        # Normalize as pdf
-        predictions_Sk = predictions_Sk / torch.nansum(predictions_Sk)
-        targets_Sk = targets_Sk / torch.nansum(targets_Sk)
+            # Normalize as pdf of each channel dimension
+            predictions_Sk = predictions_Sk / torch.nansum(predictions_Sk, dim=(-2, -1), keepdim=True)
+            targets_Sk = targets_Sk / torch.nansum(targets_Sk, dim=(-2, -1), keepdim=True)
 
         # Compute spectral Sk residual
         res = torch.sqrt(torch.nanmean(torch.square(predictions_Sk - targets_Sk)))

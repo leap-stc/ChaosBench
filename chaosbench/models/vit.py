@@ -7,21 +7,19 @@ import torch.nn.functional as F
 from einops import rearrange, reduce
 from einops.layers.torch import Rearrange
 
-# helpers
-
 def exists(val):
     return val is not None
 
 def cast_tuple(val, depth):
     return val if isinstance(val, tuple) else (val,) * depth
 
-# classes
 
 class DsConv2d(nn.Module):
     def __init__(self, dim_in, dim_out, kernel_size, padding, stride = 1, bias = True):
         super().__init__()
         self.net = nn.Sequential(
             nn.Conv2d(dim_in, dim_in, kernel_size = kernel_size, padding = padding, groups = dim_in, stride = stride, bias = bias),
+            nn.BatchNorm2d(dim_in),
             nn.Conv2d(dim_in, dim_out, kernel_size = 1, bias = bias)
         )
     def forward(self, x):
@@ -71,7 +69,7 @@ class EfficientSelfAttention(nn.Module):
         h, w = x.shape[-2:]
         heads = self.heads
 
-        q, k, v = (self.to_q(x), *self.to_kv(x).chunk(2, dim = 1))
+        q, k, v = (self.to_q(x), * self.to_kv(x).chunk(2, dim = 1))
         q, k, v = map(lambda t: rearrange(t, 'b (h c) x y -> (b h) (x y) c', h = heads), (q, k, v))
 
         sim = einsum('b i d, b j d -> b i j', q, k) * self.scale
@@ -93,8 +91,13 @@ class MixFeedForward(nn.Module):
         hidden_dim = dim * expansion_factor
         self.net = nn.Sequential(
             nn.Conv2d(dim, hidden_dim, 1),
-            DsConv2d(hidden_dim, hidden_dim, 3, padding = 1),
+            nn.BatchNorm2d(hidden_dim),
             nn.GELU(),
+            
+            DsConv2d(hidden_dim, hidden_dim, 3, padding = 1),
+            nn.BatchNorm2d(hidden_dim),
+            nn.GELU(),
+            
             nn.Conv2d(hidden_dim, dim, 1)
         )
 
@@ -188,15 +191,25 @@ class Segformer(nn.Module):
 
         self.to_fused = nn.ModuleList([nn.Sequential(
             nn.Conv2d(dim, decoder_dim, 1),
+            nn.BatchNorm2d(decoder_dim),
+            
             nn.Upsample(scale_factor = 2 ** i)
         ) for i, dim in enumerate(dims)])
 
         self.to_segmentation = nn.Sequential(
             nn.Conv2d(4 * decoder_dim, decoder_dim, 1),
+            nn.BatchNorm2d(decoder_dim),
+            
             nn.Conv2d(decoder_dim, decoder_dim // 2, 1),
+            nn.BatchNorm2d(decoder_dim // 2),
+            
             nn.Upsample(scale_factor = len(dims) // 2),
+            
             nn.Conv2d(decoder_dim // 2, input_size, kernel_size=3, padding=1),
+            nn.BatchNorm2d(input_size),
+            
             nn.Upsample(scale_factor = len(dims) // 2),
+            
             nn.Conv2d(input_size, input_size, kernel_size=3, padding=1),
         )
 

@@ -33,7 +33,7 @@ def main(args):
         (Climatology)              0) `python eval_iter.py --model_name climatology --eval_years 2022`
         (Persistence)              1) `python eval_iter.py --model_name persistence --eval_years 2022`
         (Physical models)          2) `python eval_iter.py --model_name ecmwf --eval_years 2022`
-        (Data-driven models)       3) `python eval_iter.py --model_name mlp_s2s --eval_years 2022 --version_num 0`
+        (Data-driven models)       3) `python eval_iter.py --model_name unet_s2s --eval_years 2022 --version_num 0`
     
     """
     print(f'Evaluating ERA5 observations against {args.model_name}...')
@@ -108,8 +108,8 @@ def main(args):
     Bias = criterion.Bias()
     ACC = criterion.ACC()
     SSIM = criterion.MS_SSIM()
-    SpecDiv = criterion.SpectralDiv(percentile=0.9)
-    SpecRes = criterion.SpectralRes(percentile=0.9)
+    SpecDiv = criterion.SpectralDiv(percentile=0.9, is_train=False)
+    SpecRes = criterion.SpectralRes(percentile=0.9, is_train=False)
     ###############################
     
     

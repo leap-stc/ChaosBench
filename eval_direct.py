@@ -130,8 +130,8 @@ def main(args):
     Bias = criterion.Bias()
     ACC = criterion.ACC()
     SSIM = criterion.MS_SSIM()
-    SpecDiv = criterion.SpectralDiv(percentile=0.9)
-    SpecRes = criterion.SpectralRes(percentile=0.9)
+    SpecDiv = criterion.SpectralDiv(percentile=0.9, is_train=False)
+    SpecRes = criterion.SpectralRes(percentile=0.9, is_train=False)
     ###############################
     
     
@@ -239,7 +239,6 @@ def main(args):
                             step_ssim[f'{param}-{level}'] = [ssim]
                             step_sdiv[f'{param}-{level}'] = [sdiv]
                             step_sres[f'{param}-{level}'] = [sres]
-
         
         all_rmse.append(step_rmse)
         all_bias.append(step_bias)

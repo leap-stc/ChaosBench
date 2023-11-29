@@ -27,7 +27,7 @@ ChaosBench is a benchmark project to improve long-term forecasting of chaotic sy
         - [x] Fourier Neural Operator (FNO)
         - [x] ResNet
         - [x] UNet
-        - [x] ClimaX
+        - [x] ViT-ClimaX
         
 ## 2. Metrics
 We divide our metrics into 2 classes: (1) ML-based, which cover evaluation used in conventional computer vision and forecasting tasks, (2) Physics-based, which are aimed to construct a more physically-faithful and explainable data-driven forecast.
@@ -38,18 +38,18 @@ We divide our metrics into 2 classes: (1) ML-based, which cover evaluation used 
     - [x] Anomaly Correlation Coefficient (ACC)
     - [x] Multiscale Structural Similarity Index (MS-SSIM)
 - __Physics-based:__
-    - [x] Spectral Divergence
-    - [x] Spectral Residual
+    - [x] Spectral Divergence (SpecDiv)
+    - [x] Spectral Residual (SpecRes)
 
 
 ## 3. Tasks
-We presented two task, where the model still takes as inputs the __FULL__ 60 variables, but the benchmarking is done on either __ALL__ or __INDIVIDUAL__ target variable(s).
+We presented two task, where the model still takes as inputs the __FULL__ 60 variables, but the benchmarking is done on either __ALL__ or a __SUBSET__ of target variable(s).
 
 - __Task 1: Full Dynamics Prediction.__
-It is aimed to target __ALL__ target channels simultaneously. This task is generally harder to perform but is useful to build a model that emulates the entire weather conditions.
+It is aimed at __ALL__ target channels simultaneously. This task is generally harder to perform but is useful to build a model that emulates the entire weather conditions.
 
 - __Task 2: Sparse Dynamics Prediction.__
-It is aimed to target an __INDIVIDUAL__ target channel. This task is useful to build long-term forecasting model for specific variables, such as surface temperature (t-1000) or surface humidity (q-1000). 
+It is aimed at a __SUBSET__ of target channel(s). This task is useful to build long-term forecasting model for specific variables, such as near-surface temperature (t-1000) or near-surface humidity (q-1000). 
 
 ## 4. Getting Started
 You can learn more about how to use our benchmark product through the following Jupyter notebooks under the `notebooks` directory. It covers topics ranging from:
