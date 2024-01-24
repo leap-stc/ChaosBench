@@ -6,6 +6,9 @@ __pycache__/
 scripts/train.sh
 logs/
 
+eval_sota*
+env/
+scripts/graphcast*
 # C extensions
 *.so
 

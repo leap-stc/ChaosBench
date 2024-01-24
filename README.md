@@ -27,7 +27,9 @@ ChaosBench is a benchmark project to improve long-term forecasting of chaotic sy
         - [x] Fourier Neural Operator (FNO)
         - [x] ResNet
         - [x] UNet
-        - [x] ViT-ClimaX
+        - [x] ViT/ClimaX
+        - [x] PanguWeather
+        - [x] Fourcastnetv2
         
 ## 2. Metrics
 We divide our metrics into 2 classes: (1) ML-based, which cover evaluation used in conventional computer vision and forecasting tasks, (2) Physics-based, which are aimed to construct a more physically-faithful and explainable data-driven forecast.
