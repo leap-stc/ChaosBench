@@ -7,7 +7,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Search - ChaosBench</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Evaluation &#8212; ChaosBench</title>
   
   
   
@@ -60,12 +62,11 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'search';</script>
-  <script src="_static/searchtools.js"></script>
-  <script src="_static/language_data.js"></script>
-  <script src="searchindex.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'evaluation';</script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Baseline Models" href="baseline.html" />
+    <link rel="prev" title="Training" href="training.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -101,7 +102,7 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
-      action="#"
+      action="search.html"
       method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search"
@@ -126,8 +127,6 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="bd-container__inner bd-page-width">
       
       
-      
-        
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -165,12 +164,12 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
 <li class="toctree-l1"><a class="reference internal" href="task.html">Task Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="training.html">Training</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Evaluation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="baseline.html">Baseline Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="leaderboard.html">Leaderboard</a></li>
 </ul>
@@ -244,7 +243,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2Fsearch.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2Fevaluation.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -256,6 +255,54 @@ const thebe_selector_output = ".output, .cell_output"
   </span>
 <span class="btn__text-container">Open issue</span>
 </a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/evaluation.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
 </li>
       
   </ul>
@@ -297,7 +344,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -306,42 +355,125 @@ document.write(`
 </div>
               
               
-  <div class="bd-search-container">
-    <h1>Search</h1>
-    <noscript>
-      <div class="admonition error">
-        <p class="admonition-title">Error</p>
-        <p>Please activate JavaScript to enable the search functionality.</p>
-      </div>
-    </noscript>
-    
-<form class="bd-search d-flex align-items-center"
-      action="#"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search this book..."
-         aria-label="Search this book..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    <div id="search-results"></div>
-  </div>
-  <script>
-    // Activate the search field on page load
-    let searchInput = document.querySelector("form.bd-search input");
-    if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-        console.log("[PST]: Set focus on search field.");
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Evaluation</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-baseline-scores">Accessing Baseline Scores</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="evaluation">
+<h1>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this heading">#</a></h1>
+<p>After training your model, you can simply perform evaluation by running:</p>
+<ol class="arabic simple">
+<li><p><strong>Autoregressive</strong></p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">eval_iter</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">model_name</span> <span class="o">&lt;</span><span class="n">YOUR_MODEL</span><span class="o">&gt;</span><span class="n">_s2s</span> <span class="o">--</span><span class="n">eval_years</span> <span class="mi">2023</span> <span class="o">--</span><span class="n">version_num</span> <span class="o">&lt;</span><span class="n">VERSION_NUM</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>Direct</strong></p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">eval_direct</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">model_name</span> <span class="o">&lt;</span><span class="n">YOUR_MODEL</span><span class="o">&gt;</span><span class="n">_s2s</span> <span class="o">--</span><span class="n">eval_years</span> <span class="mi">2023</span> <span class="o">--</span><span class="n">version_nums</span> <span class="o">&lt;</span><span class="n">VERSION_NUM</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">task_num</span> <span class="o">&lt;</span><span class="n">TASK_NUM</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">&lt;VERSION_NUM(S)&gt;</span></code> corresponds to the version(s) that <code class="docutils literal notranslate"><span class="pre">pytorch_lightning</span></code> generated during training.</p>
+<p><strong>For example</strong>, in our <code class="docutils literal notranslate"><span class="pre">unet_s2s</span></code> baseline model, we can run:</p>
+<ul class="simple">
+<li><p>Autoregressive: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">eval_iter.py</span> <span class="pre">--model_name</span> <span class="pre">unet_s2s</span> <span class="pre">--eval_years</span> <span class="pre">2023</span> <span class="pre">--version_num</span> <span class="pre">0</span></code></p></li>
+<li><p>Direct: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">eval_direct.py</span> <span class="pre">--model_name</span> <span class="pre">unet_s2s</span> <span class="pre">--eval_years</span> <span class="pre">2023</span> <span class="pre">--version_nums</span> <span class="pre">0</span> <span class="pre">4</span> <span class="pre">5</span> <span class="pre">6</span> <span class="pre">7</span> <span class="pre">8</span> <span class="pre">9</span> <span class="pre">10</span> <span class="pre">11</span> <span class="pre">12</span> <span class="pre">--task_num</span> <span class="pre">1</span></code></p></li>
+</ul>
+<section id="accessing-baseline-scores">
+<h2>Accessing Baseline Scores<a class="headerlink" href="#accessing-baseline-scores" title="Permalink to this heading">#</a></h2>
+<p>You can access the complete scores (in <code class="docutils literal notranslate"><span class="pre">.csv</span></code> format) for data-driven, physics-based models, climatology, and persistence <a class="reference external" href="https://huggingface.co/datasets/juannat7/ChaosBench/tree/main/logs">here</a>. Below is a snippet from <code class="docutils literal notranslate"><span class="pre">logs/climatology/eval/rmse_climatology.csv</span></code>, where each row represents <code class="docutils literal notranslate"><span class="pre">&lt;METRIC&gt;</span></code>, such as <code class="docutils literal notranslate"><span class="pre">RMSE</span></code>, at each future timestep.</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>z-10</p></th>
+<th class="head"><p>z-50</p></th>
+<th class="head"><p>z-100</p></th>
+<th class="head"><p>z-200</p></th>
+<th class="head"><p>z-300</p></th>
+<th class="head"><p>…</p></th>
+<th class="head"><p>w-1000</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>539.7944</p></td>
+<td><p>285.9499</p></td>
+<td><p>215.14742</p></td>
+<td><p>186.43161</p></td>
+<td><p>166.28784</p></td>
+<td><p>…</p></td>
+<td><p>0.07912156</p></td>
+</tr>
+<tr class="row-odd"><td><p>538.9591</p></td>
+<td><p>285.43832</p></td>
+<td><p>214.82317</p></td>
+<td><p>186.23743</p></td>
+<td><p>166.16902</p></td>
+<td><p>…</p></td>
+<td><p>0.07907272</p></td>
+</tr>
+<tr class="row-even"><td><p>538.1366</p></td>
+<td><p>284.96063</p></td>
+<td><p>214.51791</p></td>
+<td><p>186.04941</p></td>
+<td><p>166.04732</p></td>
+<td><p>…</p></td>
+<td><p>0.07903882</p></td>
+</tr>
+<tr class="row-odd"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
     }
-  </script>
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
 
               
               
@@ -350,6 +482,24 @@ document.write(`
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="training.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Training</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="baseline.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Baseline Models</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -357,7 +507,20 @@ document.write(`
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"></div>
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-baseline-scores">Accessing Baseline Scores</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

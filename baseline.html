@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>ChaosBench: A Multi-Channel, Physics-Based Benchmark for Subseasonal-to-Seasonal Climate Prediction &#8212; ChaosBench</title>
+    <title>Baseline Models &#8212; ChaosBench</title>
   
   
   
@@ -62,10 +62,13 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'README';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'baseline';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Quickstart" href="quickstart.html" />
+    <link rel="next" title="Leaderboard" href="leaderboard.html" />
+    <link rel="prev" title="Evaluation" href="evaluation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -127,8 +130,6 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar">
         
 
@@ -145,7 +146,7 @@ const thebe_selector_output = ".output, .cell_output"
 
   
 
-<a class="navbar-brand logo" href="#">
+<a class="navbar-brand logo" href="README.html">
   
   
   
@@ -159,19 +160,19 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
-            <li class="toctree-l1 current active">
-                <a class="reference internal" href="#">
+            <li class="toctree-l1">
+                <a class="reference internal" href="README.html">
                     ChaosBench: A Multi-Channel, Physics-Based Benchmark for Subseasonal-to-Seasonal Climate Prediction
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
 <li class="toctree-l1"><a class="reference internal" href="task.html">Task Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="training.html">Training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="baseline.html">Baseline Models</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Baseline Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="leaderboard.html">Leaderboard</a></li>
 </ul>
 
@@ -244,7 +245,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2FREADME.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2Fbaseline.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -274,7 +275,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="_sources/README.md" target="_blank"
+      <li><a href="_sources/baseline.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -358,7 +359,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>ChaosBench: A Multi-Channel, Physics-Based Benchmark for Subseasonal-to-Seasonal Climate Prediction</h1>
+    <h1>Baseline Models</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -368,10 +369,8 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-your-own-model">Build Your Own Model</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarking">Benchmarking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-definition">Model Definition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-checkpoints">Model Checkpoints</a></li>
 </ul>
             </nav>
         </div>
@@ -383,44 +382,74 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="chaosbench-a-multi-channel-physics-based-benchmark-for-subseasonal-to-seasonal-climate-prediction">
-<h1>ChaosBench: A Multi-Channel, Physics-Based Benchmark for Subseasonal-to-Seasonal Climate Prediction<a class="headerlink" href="#chaosbench-a-multi-channel-physics-based-benchmark-for-subseasonal-to-seasonal-climate-prediction" title="Permalink to this heading">#</a></h1>
-<p>ChaosBench is a benchmark project to improve long-term forecasting of chaotic systems, in particular subseasonal-to-seasonal (S2S) climate, using ML approaches.</p>
-<p>Homepage 🔗: <a class="reference external" href="https://leap-stc.github.io/ChaosBench">https://leap-stc.github.io/ChaosBench</a></p>
-<p>Paper 📚: <a class="reference external" href="https://arxiv.org/">https://arxiv.org/</a></p>
-<p>Dataset 🤗: <a class="reference external" href="https://huggingface.co/datasets/juannat7/ChaosBench">https://huggingface.co/datasets/juannat7/ChaosBench</a></p>
-<section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h2>
-<p><img alt="Overview of ChaosBench" src="docs/scheme/chaosbench_scheme.jpg" /></p>
-<p>1️⃣ <strong>Extended Observations</strong>. Spanning over 45 years (1979 - 2023) of ERA5 reanalysis</p>
-<p>2️⃣ <strong>Diverse Baselines</strong>. Wide selection of physics-based forecasts from leading national agencies in Europe, the UK, America, and Asia</p>
-<p>3️⃣ <strong>Differentiable Physics Metrics</strong>. Introduces two differentiable physics-based metrics to minimize the decay of power spectra at long forecasting horizon (blurriness)</p>
-<p>4️⃣ <strong>Large-Scale Benchmarking</strong>. Systematic evaluation for state-of-the-art ML-based weather models like PanguWeather, FourcastNetV2, ViT/ClimaX, and Graphcast</p>
-</section>
-<section id="getting-started">
-<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/quickstart.html">Quickstart</a></p></li>
-<li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/dataset.html">Dataset Overview</a></p></li>
-<li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/task.html">Task Overview</a></p></li>
-</ul>
-</section>
-<section id="build-your-own-model">
-<h2>Build Your Own Model<a class="headerlink" href="#build-your-own-model" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/training.html">Training</a></p></li>
-<li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/evaluation.html">Evaluation</a></p></li>
-</ul>
-</section>
-<section id="benchmarking">
-<h2>Benchmarking<a class="headerlink" href="#benchmarking" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/baseline.html">Baseline Models</a></p></li>
-<li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/leaderboard.html">Leaderboard</a></p></li>
-</ul>
-</section>
-<div class="toctree-wrapper compound">
+  <section class="tex2jax_ignore mathjax_ignore" id="baseline-models">
+<h1>Baseline Models<a class="headerlink" href="#baseline-models" title="Permalink to this heading">#</a></h1>
+<p>We differentiate between physics-based and data-driven models. The former is succintly illustrated as in the figure below.</p>
+<div style="text-align: center;">
+    <img src="../docs/scheme/chaosbench_scheme-physics-model.jpg" style="width:300px;"/>
 </div>
+<section id="model-definition">
+<h2>Model Definition<a class="headerlink" href="#model-definition" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Physics-Based Models</strong>:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> UKMO: UK Meteorological Office</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> NCEP: National Centers for Environmental Prediction</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> CMA: China Meteorological Administration</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> ECMWF: European Centre for Medium-Range Weather Forecasts</p></li>
+</ul>
+</li>
+<li><p><strong>Data-Driven Models</strong>:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Lagged-Autoencoder</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Fourier Neural Operator (FNO)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> ResNet</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> UNet</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> ViT/ClimaX</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> PanguWeather</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Fourcastnetv2</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> GraphCast</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="model-checkpoints">
+<h2>Model Checkpoints<a class="headerlink" href="#model-checkpoints" title="Permalink to this heading">#</a></h2>
+<p>Checkpoints for data-driven models are accessible from <a class="reference external" href="https://huggingface.co/datasets/juannat7/ChaosBench/tree/main/logs">here</a></p>
+<ul class="simple">
+<li><p>Data-driven models are indicated by the <code class="docutils literal notranslate"><span class="pre">_s2s</span></code> suffix (e.g., <code class="docutils literal notranslate"><span class="pre">unet_s2s</span></code>).</p></li>
+<li><p>The hyperparameter specifications are located in <code class="docutils literal notranslate"><span class="pre">version_xx/lightning_logs/hparams.yaml</span></code>. The hyperparameters encode the following:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lead_time</span></code> (default: 1): arbitrary delta_t to finetune the model, for direct approach</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_step</span></code> (default: 1): number of autoregressive step, s, for autoregressive approach</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">only_headline</span></code>: if false, optimize for task 1; if true for task 2</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">batch_size</span></code>: the batch size used for training</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">train_years</span></code>: list of years used for training</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">val_years</span></code>: list of years used for validation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epochs</span></code>: number of epoch</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">input_size</span></code>: number of input channel</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code>: update step at each iteration</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model_name</span></code>: the name of the model used for consistency</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_workers</span></code>: number of workers used in dataloader</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_size</span></code>: number of output channel</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">t_max</span></code>: number of cosine learning rate scheduler cycle</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>NOTE</strong>: You will notice that for each data-driven model, there are 4 checkpoints.</p>
+<ol class="arabic simple">
+<li><p>Version 0 - Task 1; autoregressive up to 1-day ahead</p></li>
+<li><p>Version 1 - Task 1; autoregressive up to 5-day ahead</p></li>
+<li><p>Version 2 - Task 2; autoregressive up to 1-day ahead</p></li>
+<li><p>Version 3 - Task 2; autoregressive up to 5-day ahead</p></li>
+</ol>
+<p>Only for <code class="docutils literal notranslate"><span class="pre">unet_s2s</span></code> do we have many more checkpoints. This is to check for the effect of <code class="docutils literal notranslate"><span class="pre">direct</span></code> vs. <code class="docutils literal notranslate"><span class="pre">autoregressive</span></code> training approach described in the paper. In particular, the <code class="docutils literal notranslate"><span class="pre">direct</span></code> models have the following version numbers,</p>
+<ol class="arabic simple">
+<li><p>Version {0, 4, 5, 6, 7, 8, 9, 10, 11, 12} - Task 1</p></li>
+<li><p>Version {2, 13, 14, 15, 16, 17, 18, 19, 20, 21} - Task 2</p></li>
+</ol>
+<p>Each element in the array corresponds to checkpoints optimized for each <span class="math notranslate nohighlight">\(\Delta T \in \{1, 5, 10, 15, 20, 25, 30, 35, 40, 44\}\)</span>.</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -453,12 +482,21 @@ document.write(`
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="evaluation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Evaluation</p>
+      </div>
+    </a>
     <a class="right-next"
-       href="quickstart.html"
+       href="leaderboard.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Quickstart</p>
+        <p class="prev-next-title">Leaderboard</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -478,10 +516,8 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-your-own-model">Build Your Own Model</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarking">Benchmarking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-definition">Model Definition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-checkpoints">Model Checkpoints</a></li>
 </ul>
   </nav></div>
 

@@ -7,7 +7,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Search - ChaosBench</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Task Overview &#8212; ChaosBench</title>
   
   
   
@@ -60,12 +62,13 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'search';</script>
-  <script src="_static/searchtools.js"></script>
-  <script src="_static/language_data.js"></script>
-  <script src="searchindex.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'task';</script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Training" href="training.html" />
+    <link rel="prev" title="Dataset Information" href="dataset.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -101,7 +104,7 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
-      action="#"
+      action="search.html"
       method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search"
@@ -126,8 +129,6 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="bd-container__inner bd-page-width">
       
       
-      
-        
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -165,10 +166,10 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="task.html">Task Overview</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Task Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="training.html">Training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="baseline.html">Baseline Models</a></li>
@@ -244,7 +245,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2Fsearch.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2Ftask.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -256,6 +257,54 @@ const thebe_selector_output = ".output, .cell_output"
   </span>
 <span class="btn__text-container">Open issue</span>
 </a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/task.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
 </li>
       
   </ul>
@@ -306,42 +355,65 @@ document.write(`
 </div>
               
               
-  <div class="bd-search-container">
-    <h1>Search</h1>
-    <noscript>
-      <div class="admonition error">
-        <p class="admonition-title">Error</p>
-        <p>Please activate JavaScript to enable the search functionality.</p>
-      </div>
-    </noscript>
-    
-<form class="bd-search d-flex align-items-center"
-      action="#"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search this book..."
-         aria-label="Search this book..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    <div id="search-results"></div>
-  </div>
-  <script>
-    // Activate the search field on page load
-    let searchInput = document.querySelector("form.bd-search input");
-    if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-        console.log("[PST]: Set focus on search field.");
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Task Overview</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="task-overview">
+<h1>Task Overview<a class="headerlink" href="#task-overview" title="Permalink to this heading">#</a></h1>
+<p>We presented <strong>TWO</strong> task, where the model still takes as <strong>inputs the FULL</strong> 60 variables, but the benchmarking <strong>targets ALL or SUBSET</strong> of variable(s).</p>
+<ol class="arabic simple">
+<li><p><strong>Task 1️⃣: Full Dynamics Prediction.</strong>
+It is aimed at <strong>ALL</strong> target channels simultaneously. This task is generally harder to perform but is useful to build a model that emulates the entire weather conditions.</p></li>
+<li><p><strong>Task 2️⃣: Sparse Dynamics Prediction.</strong>
+It is aimed at a <strong>SUBSET</strong> of target channel(s). This task is useful to build long-term forecasting model for specific variables, such as near-surface temperature (t-1000) or near-surface humidity (q-1000).</p></li>
+</ol>
+<p><strong>NOTE</strong>: Before training your own model <a class="reference external" href="https://leap-stc.github.io/ChaosBench/training.html">instructions here</a>, you can specify the Task you are optimizing for by changing <code class="docutils literal notranslate"><span class="pre">only_headline</span></code> field in <code class="docutils literal notranslate"><span class="pre">chaosbench/configs/&lt;YOUR_MODEL&gt;_s2s.yaml</span></code> file:</p>
+<ul class="simple">
+<li><p>Task 1️⃣: <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">False</span></code></p></li>
+<li><p>Task 2️⃣: <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">True</span></code>. By default, it is going to optimize on {t-850, z-500, q-700}. To change this, modify the <code class="docutils literal notranslate"><span class="pre">HEADLINE_VARS</span></code> field in <code class="docutils literal notranslate"><span class="pre">chaosbench/config.py</span></code></p></li>
+</ul>
+<p>In addition, we also provide flags to train the model either <strong>autoregressively</strong> or <strong>directly</strong>.</p>
+<ul class="simple">
+<li><p>Autoregressive: Using current output as the next model input. The number of iterative steps is defined in the <code class="docutils literal notranslate"><span class="pre">n_step:</span> <span class="pre">&lt;N_STEP&gt;</span></code> field. For our baselines, we set <code class="docutils literal notranslate"><span class="pre">N_STEP</span> <span class="pre">=</span> <span class="pre">5</span></code>.</p></li>
+<li><p>Direct: Directly targeting specific time in the future. The lead time can be specified in the <code class="docutils literal notranslate"><span class="pre">lead_time:</span> <span class="pre">&lt;LEAD_TIME&gt;</span></code> field. Ensure that <code class="docutils literal notranslate"><span class="pre">n_step:</span> <span class="pre">1</span></code> for this case. For our baselines, we set <code class="docutils literal notranslate"><span class="pre">&lt;LEAD_TIME&gt;</span></code> <span class="math notranslate nohighlight">\(\in \{1, 5, 10, 15, 20, 25, 30, 35, 40, 44\}\)</span></p></li>
+</ul>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
     }
-  </script>
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
 
               
               
@@ -350,6 +422,24 @@ document.write(`
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="dataset.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Dataset Information</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="training.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Training</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               

@@ -1,61 +1,38 @@
-# ChaosBench - A benchmark for long-term forecasting of chaotic systems
-ChaosBench is a benchmark project to improve long-term forecasting of chaotic systems, in particular subseasonal-to-seasonal (S2S) weather. Current features include:
-
-## 1. Benchmark and Dataset
-
-- __Input:__ ERA5 Reanalysis (1979-2022)
-    
-- __Target:__ The following table indicates the 48 variables (channels) that are available for Physics-based models. Note that the __Input__ ERA5 observations contains __ALL__ fields, including the unchecked boxes:
-        
-    Parameters/Levels (hPa) | 1000 | 925 | 850 | 700 | 500 | 300 | 200 | 100 | 50 | 10
-    :---------------------- | :----| :---| :---| :---| :---| :---| :---| :---| :--| :-|
-    Geopotential height, z ($gpm$) | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; |  
-    Specific humidity, q ($kg kg^{-1}$) | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &nbsp; | &nbsp; | &nbsp; |  
-    Temperature, t ($K$) | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; |  
-    U component of wind, u ($ms^{-1}$) | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; |  
-    V component of wind, v ($ms^{-1}$) | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; | &check; |  
-    Vertical velocity, w ($Pas^{-1}$) | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &check; | &nbsp; | &nbsp; | &nbsp; | &nbsp; | &nbsp; |  
-    
-- __Baselines:__
-    - Physics-based models:
-        - [x] UKMO: UK Meteorological Office
-        - [x] NCEP: National Centers for Environmental Prediction
-        - [x] CMA: China Meteorological Administration
-        - [x] ECMWF: European Centre for Medium-Range Weather Forecasts
-    - Data-driven models:
-        - [x] Lagged-Autoencoder
-        - [x] Fourier Neural Operator (FNO)
-        - [x] ResNet
-        - [x] UNet
-        - [x] ViT/ClimaX
-        - [x] PanguWeather
-        - [x] Fourcastnetv2
-        
-## 2. Metrics
-We divide our metrics into 2 classes: (1) ML-based, which cover evaluation used in conventional computer vision and forecasting tasks, (2) Physics-based, which are aimed to construct a more physically-faithful and explainable data-driven forecast.
-
-- __Vision-based:__
-    - [x] RMSE
-    - [x] Bias
-    - [x] Anomaly Correlation Coefficient (ACC)
-    - [x] Multiscale Structural Similarity Index (MS-SSIM)
-- __Physics-based:__
-    - [x] Spectral Divergence (SpecDiv)
-    - [x] Spectral Residual (SpecRes)
+# ChaosBench: A Multi-Channel, Physics-Based Benchmark for Subseasonal-to-Seasonal Climate Prediction
 
 
-## 3. Tasks
-We presented two task, where the model still takes as inputs the __FULL__ 60 variables, but the benchmarking is done on either __ALL__ or a __SUBSET__ of target variable(s).
+ChaosBench is a benchmark project to improve long-term forecasting of chaotic systems, in particular subseasonal-to-seasonal (S2S) climate, using ML approaches.
 
-- __Task 1: Full Dynamics Prediction.__
-It is aimed at __ALL__ target channels simultaneously. This task is generally harder to perform but is useful to build a model that emulates the entire weather conditions.
+Homepage 🔗: https://leap-stc.github.io/ChaosBench
 
-- __Task 2: Sparse Dynamics Prediction.__
-It is aimed at a __SUBSET__ of target channel(s). This task is useful to build long-term forecasting model for specific variables, such as near-surface temperature (t-1000) or near-surface humidity (q-1000). 
+Paper 📚: https://arxiv.org/
 
-## 4. Getting Started
-You can learn more about how to use our benchmark product through the following Jupyter notebooks under the `notebooks` directory. It covers topics ranging from:
-- `01*_dataset_exploration`
-- `02*_modeling`
-- `03*_training`
-- `04*_evaluation`
+Dataset 🤗: https://huggingface.co/datasets/juannat7/ChaosBench 
+
+
+## Features
+
+![Overview of ChaosBench](docs/scheme/chaosbench_scheme.jpg)
+
+1️⃣ __Extended Observations__. Spanning over 45 years (1979 - 2023) of ERA5 reanalysis
+
+2️⃣ __Diverse Baselines__. Wide selection of physics-based forecasts from leading national agencies in Europe, the UK, America, and Asia
+
+3️⃣ __Differentiable Physics Metrics__. Introduces two differentiable physics-based metrics to minimize the decay of power spectra at long forecasting horizon (blurriness)
+
+4️⃣ __Large-Scale Benchmarking__. Systematic evaluation for state-of-the-art ML-based weather models like PanguWeather, FourcastNetV2, ViT/ClimaX, and Graphcast
+
+
+## Getting Started
+- [Quickstart](https://leap-stc.github.io/ChaosBench/quickstart.html)
+- [Dataset Overview](https://leap-stc.github.io/ChaosBench/dataset.html)
+- [Task Overview](https://leap-stc.github.io/ChaosBench/task.html)
+
+
+## Build Your Own Model
+- [Training](https://leap-stc.github.io/ChaosBench/training.html)
+- [Evaluation](https://leap-stc.github.io/ChaosBench/evaluation.html)
+
+## Benchmarking
+- [Baseline Models](https://leap-stc.github.io/ChaosBench/baseline.html)
+- [Leaderboard](https://leap-stc.github.io/ChaosBench/leaderboard.html)

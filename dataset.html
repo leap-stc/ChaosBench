@@ -7,7 +7,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Search - ChaosBench</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Dataset Information &#8212; ChaosBench</title>
   
   
   
@@ -60,12 +62,13 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'search';</script>
-  <script src="_static/searchtools.js"></script>
-  <script src="_static/language_data.js"></script>
-  <script src="searchindex.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dataset';</script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Task Overview" href="task.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -101,7 +104,7 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
-      action="#"
+      action="search.html"
       method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search"
@@ -126,8 +129,6 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="bd-container__inner bd-page-width">
       
       
-      
-        
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -165,9 +166,9 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Dataset Information</a></li>
 <li class="toctree-l1"><a class="reference internal" href="task.html">Task Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="training.html">Training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
@@ -244,7 +245,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2Fsearch.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2Fdataset.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -256,6 +257,54 @@ const thebe_selector_output = ".output, .cell_output"
   </span>
 <span class="btn__text-container">Open issue</span>
 </a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/dataset.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
 </li>
       
   </ul>
@@ -306,42 +355,146 @@ document.write(`
 </div>
               
               
-  <div class="bd-search-container">
-    <h1>Search</h1>
-    <noscript>
-      <div class="admonition error">
-        <p class="admonition-title">Error</p>
-        <p>Please activate JavaScript to enable the search functionality.</p>
-      </div>
-    </noscript>
-    
-<form class="bd-search d-flex align-items-center"
-      action="#"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search this book..."
-         aria-label="Search this book..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    <div id="search-results"></div>
-  </div>
-  <script>
-    // Activate the search field on page load
-    let searchInput = document.querySelector("form.bd-search input");
-    if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-        console.log("[PST]: Set focus on search field.");
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Dataset Information</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="dataset-information">
+<h1>Dataset Information<a class="headerlink" href="#dataset-information" title="Permalink to this heading">#</a></h1>
+<blockquote>
+<div><p><strong>NOTE</strong>: Hands-on exploration of the ChaosBench dataset in <code class="docutils literal notranslate"><span class="pre">notebooks/01a_s2s_data_exploration.ipynb</span></code></p>
+</div></blockquote>
+<ol class="arabic">
+<li><p><strong>Input:</strong> ERA5 Reanalysis (1979-2023)</p></li>
+<li><p><strong>Target:</strong> The following table indicates the 48 variables (channels) that are available for Physics-based models. Note that the <strong>Input</strong> ERA5 observations contains <strong>ALL</strong> fields, including the unchecked boxes:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Parameters/Levels (hPa)</p></th>
+<th class="head text-left"><p>1000</p></th>
+<th class="head text-left"><p>925</p></th>
+<th class="head text-left"><p>850</p></th>
+<th class="head text-left"><p>700</p></th>
+<th class="head text-left"><p>500</p></th>
+<th class="head text-left"><p>300</p></th>
+<th class="head text-left"><p>200</p></th>
+<th class="head text-left"><p>100</p></th>
+<th class="head text-left"><p>50</p></th>
+<th class="head text-left"><p>10</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Geopotential height, z (<span class="math notranslate nohighlight">\(gpm\)</span>)</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Specific humidity, q (<span class="math notranslate nohighlight">\(kg kg^{-1}\)</span>)</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Temperature, t (<span class="math notranslate nohighlight">\(K\)</span>)</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>U component of wind, u (<span class="math notranslate nohighlight">\(ms^{-1}\)</span>)</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>V component of wind, v (<span class="math notranslate nohighlight">\(ms^{-1}\)</span>)</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Vertical velocity, w (<span class="math notranslate nohighlight">\(Pas^{-1}\)</span>)</p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
     }
-  </script>
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
 
               
               
@@ -350,6 +503,24 @@ document.write(`
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="quickstart.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Quickstart</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="task.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Task Overview</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
