@@ -40,7 +40,7 @@ jobs:
         if: inputs.is_preview != 'true'
         uses: actions/download-artifact@v3
         with:
-          name: ${{ inputs.artifact_name }}
+          path: ${{ inputs.artifact_name }}
 
       # For the preview, the official download-artifact action doesn't work
       # because the artifact is created by a different workflow
