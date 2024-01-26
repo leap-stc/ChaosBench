@@ -4,4 +4,10 @@
 format: jb-book
 root: README
 chapters:
-- file: markdown
+- file: quickstart
+- file: dataset
+- file: task
+- file: training
+- file: evaluation
+- file: baseline
+- file: leaderboard

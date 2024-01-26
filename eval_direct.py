@@ -50,11 +50,16 @@ def main(args):
     Evaluation script given .yaml config and trained model checkpoint (for direct scheme)
     
     Example usage:
-        (Data-driven models)       1) `python eval_direct.py --model_name unet_s2s --eval_years 2022 --task_num 1`
-        (External predictions)     2) `python eval_direct.py --model_name climax --eval_years 2022 --task_num 1`
+    (Data-driven models)       
+    1) `python eval_direct.py --model_name unet_s2s --eval_years 2023 --version_nums 0 4 5 6 7 8 9 10 11 12 --task_num 1`
+    2) `python eval_direct.py --model_name unet_s2s --eval_years 2023 --version_nums 2 13 14 15 16 17 18 19 20 21 --task_num 1`
+    
+    (External predictions)     
+    3) `python eval_direct.py --model_name climax --eval_years 2023 --task_num 1`
     
     """
     assert args.task_num in [1, 2]
+    print(args.version_nums)
     
     print(f'Evaluating ERA5 observations against {args.model_name}...')
     
@@ -82,12 +87,12 @@ def main(args):
         data_args = hyperparams['data_args']
         
         ## Initialize model given hyperparameters
-        version_nums = [0,4,5,6,7,8,9,10,11,12] if args.task_num == 1 else [2,13,14,15,16,17,18,19,20,21]
-        assert len(version_nums) == len(DELTA_T)
+        assert len(args.version_nums) == len(DELTA_T)
         
         ## Load each model from checkpoint
         baselines = list()
-        for version_num in version_nums:
+        for version_num in args.version_nums:
+            print(version_num)
             ckpt_filepath = log_dir / f'lightning_logs/version_{version_num}/checkpoints/'
             ckpt_filepath = list(ckpt_filepath.glob('*.ckpt'))[0]
             baseline = model.S2SBenchmarkModel(model_args=model_args, data_args=data_args)
@@ -310,6 +315,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', help='Name of the model either specified in your config file or external')
     parser.add_argument('--eval_years', nargs='+', help='Provide the evaluation years')
+    parser.add_argument('--version_nums', nargs='+', help='Provide the version numbers')
     parser.add_argument('--task_num', type=int, default=1, help='Task number, one of [1,2]')
     
     args = parser.parse_args()

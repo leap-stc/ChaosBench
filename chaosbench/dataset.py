@@ -18,7 +18,6 @@ class S2SObsDataset(Dataset):
         years <List[int]>: list of years to load and process,
         n_step <int>     : number of contiguous timesteps included in the data (default: 1)
         lead_time <int>  : delta_t ahead in time, useful for direct prediction (default: 1)
-    
     """
     
     def __init__(
@@ -87,14 +86,13 @@ class S2SEvalDataset(Dataset):
     
     Params:
         s2s_name str: center name where evaluation is going to be performed
-    
+        years <List[int]>: list of years to load and process
     """
     
     def __init__(
         self, 
         s2s_name: str,
-        years: List[int],
-        is_val: bool = False
+        years: List[int]
     ) -> None:
         
         assert s2s_name in list(config.S2S_CENTERS.keys())

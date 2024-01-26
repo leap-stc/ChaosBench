@@ -4,7 +4,10 @@ import numpy as np
 from datetime import datetime
 from chaosbench import config
 
-def convert_time(timestamp, time_format='%Y-%m-%d'):
+def convert_time(
+    timestamp, 
+    time_format='%Y-%m-%d'
+):
     "Convert native datetimens object to specific format"
     
     timestamp_s = timestamp / 1e9  # Convert nanoseconds to seconds
@@ -14,7 +17,14 @@ def convert_time(timestamp, time_format='%Y-%m-%d'):
     
     return day
 
-def denormalize(x, param, level, dataset_name, is_diff=False):
+def denormalize(
+    x, 
+    param, 
+    level, 
+    dataset_name, 
+    is_diff=False
+):
+    
     "Denormalize x given param/level and dataset name"
     
     # For some use-cases (eg. climatology, persistence forecasts), we use ERA5 as the benchmark climatology
@@ -31,7 +41,7 @@ def denormalize(x, param, level, dataset_name, is_diff=False):
     param_idx, level_idx = config.PARAMS.index(param), config.PRESSURE_LEVELS.index(level)
     mean, sigma = normalization_mean[param_idx, level_idx], normalization_sigma[param_idx, level_idx]
     
-    # Check if its a difference denormalization (eg. no +mean since it'll cancel out)
+    # Check if its a difference denormalization (eg. no +mean since it will cancel out)
     if is_diff:
         x = x * np.nanmean(sigma)
         

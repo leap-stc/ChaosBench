@@ -30,10 +30,10 @@ def main(args):
     Evaluation script given .yaml config and trained model checkpoint (for iterative scheme)
     
     Example usage:
-        (Climatology)              0) `python eval_iter.py --model_name climatology --eval_years 2022`
-        (Persistence)              1) `python eval_iter.py --model_name persistence --eval_years 2022`
-        (Physical models)          2) `python eval_iter.py --model_name ecmwf --eval_years 2022`
-        (Data-driven models)       3) `python eval_iter.py --model_name unet_s2s --eval_years 2022 --version_num 0`
+        (Climatology)              0) `python eval_iter.py --model_name climatology --eval_years 2023`
+        (Persistence)              1) `python eval_iter.py --model_name persistence --eval_years 2023`
+        (Physical models)          2) `python eval_iter.py --model_name ecmwf --eval_years 2023`
+        (Data-driven models)       3) `python eval_iter.py --model_name unet_s2s --eval_years 2023 --version_num 0`
     
     """
     print(f'Evaluating ERA5 observations against {args.model_name}...')

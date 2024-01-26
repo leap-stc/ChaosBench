@@ -56,6 +56,11 @@ class S2SBenchmarkModel(pl.LightningModule):
         elif 'segformer' in self.model_args['model_name']:
             self.model = vit.Segformer(input_size = self.model_args['input_size'])
             
+        
+        ##################################
+        # INITIALIZE YOUR OWN MODEL HERE #
+        ##################################
+        
         self.loss = self.init_loss_fn()
             
     def init_loss_fn(self):
