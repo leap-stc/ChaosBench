@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Markdown Files &#8212; ChaosBench</title>
+    <title>ChaosBench - A benchmark for long-term forecasting of chaotic systems &#8212; ChaosBench</title>
   
   
   
@@ -62,10 +62,12 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'markdown';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'README';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="ChaosBench - A benchmark for long-term forecasting of chaotic systems" href="README.html" />
+    <link rel="next" title="Markdown Files" href="markdown.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -127,6 +129,8 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
+        
+      
       <div class="bd-sidebar-primary bd-sidebar">
         
 
@@ -143,7 +147,7 @@ const thebe_selector_output = ".output, .cell_output"
 
   
 
-<a class="navbar-brand logo" href="README.html">
+<a class="navbar-brand logo" href="#">
   
   
   
@@ -157,14 +161,14 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
-            <li class="toctree-l1">
-                <a class="reference internal" href="README.html">
+            <li class="toctree-l1 current active">
+                <a class="reference internal" href="#">
                     ChaosBench - A benchmark for long-term forecasting of chaotic systems
                 </a>
             </li>
         </ul>
-        <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Markdown Files</a></li>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="markdown.html">Markdown Files</a></li>
 </ul>
 
     </div>
@@ -236,7 +240,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2Fmarkdown.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2FREADME.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -266,7 +270,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="_sources/markdown.md" target="_blank"
+      <li><a href="_sources/README.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -350,7 +354,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Markdown Files</h1>
+    <h1>ChaosBench - A benchmark for long-term forecasting of chaotic systems</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -360,7 +364,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learn-more">Learn more</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmark-and-dataset">1. Benchmark and Dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">2. Metrics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tasks">3. Tasks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">4. Getting Started</a></li>
 </ul>
             </nav>
         </div>
@@ -372,17 +379,172 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="markdown-files">
-<h1>Markdown Files<a class="headerlink" href="#markdown-files" title="Permalink to this heading">#</a></h1>
-<p>Whether you write your book’s content in Jupyter Notebooks (<code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>) or
-in regular markdown files (<code class="docutils literal notranslate"><span class="pre">.md</span></code>), you’ll write in the same flavor of markdown
-called <strong>MyST Markdown</strong>.
-This is a simple file to help you get started and show off some syntax.</p>
-<section id="learn-more">
-<h2>Learn more<a class="headerlink" href="#learn-more" title="Permalink to this heading">#</a></h2>
-<p>This is just a simple starter to get you started.
-You can learn a lot more at <a class="reference external" href="https://jupyterbook.org">jupyterbook.org</a>.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="chaosbench-a-benchmark-for-long-term-forecasting-of-chaotic-systems">
+<h1>ChaosBench - A benchmark for long-term forecasting of chaotic systems<a class="headerlink" href="#chaosbench-a-benchmark-for-long-term-forecasting-of-chaotic-systems" title="Permalink to this heading">#</a></h1>
+<p>ChaosBench is a benchmark project to improve long-term forecasting of chaotic systems, in particular subseasonal-to-seasonal (S2S) weather. Current features include:</p>
+<section id="benchmark-and-dataset">
+<h2>1. Benchmark and Dataset<a class="headerlink" href="#benchmark-and-dataset" title="Permalink to this heading">#</a></h2>
+<ul>
+<li><p><strong>Input:</strong> ERA5 Reanalysis (1979-2022)</p></li>
+<li><p><strong>Target:</strong> The following table indicates the 48 variables (channels) that are available for Physics-based models. Note that the <strong>Input</strong> ERA5 observations contains <strong>ALL</strong> fields, including the unchecked boxes:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Parameters/Levels (hPa)</p></th>
+<th class="head text-left"><p>1000</p></th>
+<th class="head text-left"><p>925</p></th>
+<th class="head text-left"><p>850</p></th>
+<th class="head text-left"><p>700</p></th>
+<th class="head text-left"><p>500</p></th>
+<th class="head text-left"><p>300</p></th>
+<th class="head text-left"><p>200</p></th>
+<th class="head text-left"><p>100</p></th>
+<th class="head text-left"><p>50</p></th>
+<th class="head text-left"><p>10</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Geopotential height, z (<span class="math notranslate nohighlight">\(gpm\)</span>)</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Specific humidity, q (<span class="math notranslate nohighlight">\(kg kg^{-1}\)</span>)</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Temperature, t (<span class="math notranslate nohighlight">\(K\)</span>)</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>U component of wind, u (<span class="math notranslate nohighlight">\(ms^{-1}\)</span>)</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>V component of wind, v (<span class="math notranslate nohighlight">\(ms^{-1}\)</span>)</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p>✓</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Vertical velocity, w (<span class="math notranslate nohighlight">\(Pas^{-1}\)</span>)</p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p>✓</p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+<td class="text-left"><p> </p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p><strong>Baselines:</strong></p>
+<ul class="simple">
+<li><p>Physics-based models:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> UKMO: UK Meteorological Office</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> NCEP: National Centers for Environmental Prediction</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> CMA: China Meteorological Administration</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> ECMWF: European Centre for Medium-Range Weather Forecasts</p></li>
+</ul>
+</li>
+<li><p>Data-driven models:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Lagged-Autoencoder</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Fourier Neural Operator (FNO)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> ResNet</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> UNet</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> ViT/ClimaX</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> PanguWeather</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Fourcastnetv2</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 </section>
+<section id="metrics">
+<h2>2. Metrics<a class="headerlink" href="#metrics" title="Permalink to this heading">#</a></h2>
+<p>We divide our metrics into 2 classes: (1) ML-based, which cover evaluation used in conventional computer vision and forecasting tasks, (2) Physics-based, which are aimed to construct a more physically-faithful and explainable data-driven forecast.</p>
+<ul class="simple">
+<li><p><strong>Vision-based:</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> RMSE</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Bias</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Anomaly Correlation Coefficient (ACC)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Multiscale Structural Similarity Index (MS-SSIM)</p></li>
+</ul>
+</li>
+<li><p><strong>Physics-based:</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Spectral Divergence (SpecDiv)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Spectral Residual (SpecRes)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tasks">
+<h2>3. Tasks<a class="headerlink" href="#tasks" title="Permalink to this heading">#</a></h2>
+<p>We presented two task, where the model still takes as inputs the <strong>FULL</strong> 60 variables, but the benchmarking is done on either <strong>ALL</strong> or a <strong>SUBSET</strong> of target variable(s).</p>
+<ul class="simple">
+<li><p><strong>Task 1: Full Dynamics Prediction.</strong>
+It is aimed at <strong>ALL</strong> target channels simultaneously. This task is generally harder to perform but is useful to build a model that emulates the entire weather conditions.</p></li>
+<li><p><strong>Task 2: Sparse Dynamics Prediction.</strong>
+It is aimed at a <strong>SUBSET</strong> of target channel(s). This task is useful to build long-term forecasting model for specific variables, such as near-surface temperature (t-1000) or near-surface humidity (q-1000).</p></li>
+</ul>
+</section>
+<section id="getting-started">
+<h2>4. Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h2>
+<p>You can learn more about how to use our benchmark product through the following Jupyter notebooks under the <code class="docutils literal notranslate"><span class="pre">notebooks</span></code> directory. It covers topics ranging from:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">01*_dataset_exploration</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">02*_modeling</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">03*_training</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">04*_evaluation</span></code></p></li>
+</ul>
+</section>
+<div class="toctree-wrapper compound">
+</div>
 </section>
 
     <script type="text/x-thebe-config">
@@ -415,14 +577,14 @@ You can learn a lot more at <a class="reference external" href="https://jupyterb
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="README.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
+    <a class="right-next"
+       href="markdown.html"
+       title="next page">
       <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">ChaosBench - A benchmark for long-term forecasting of chaotic systems</p>
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Markdown Files</p>
       </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -440,7 +602,10 @@ You can learn a lot more at <a class="reference external" href="https://jupyterb
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learn-more">Learn more</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmark-and-dataset">1. Benchmark and Dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">2. Metrics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tasks">3. Tasks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">4. Getting Started</a></li>
 </ul>
   </nav></div>
 
