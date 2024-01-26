@@ -16,7 +16,7 @@ on:
       is_preview:
         description: 'Are we deploying a preview?'
         required: false
-        default: 'true'
+        default: 'false'
         type: string
       cname:
         description: 'Custom domain name'
