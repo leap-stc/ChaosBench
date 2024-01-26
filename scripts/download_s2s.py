@@ -55,7 +55,7 @@ def main(args):
     # NOTE: for ECMWF/CMA (from 2020 onward), it is not a continuous timeseries, but rather, the product is available every 3/4 days
     if (args.s2s_name == 'ecmwf') or (args.s2s_name == 'cma'):
         all_ecmwf_dates = ["2016-01-04"] # the start date for ECMWF
-        end_date = "2022-12-31" # the end date
+        end_date = "2023-12-31" # the end date
         all_ecmwf_dates = _increment_days(all_ecmwf_dates, end_date)
 
         all_cma_dates = ["2019-12-02"] # the start date for CMA (previous dates are mostly dense)
@@ -82,26 +82,25 @@ def main(args):
                 is_exception = True
                 
                 # Construct date string: ECMWF is slightly different from the rest, with 3/4-days interval...
-                if args.s2s_name == 'ecmwf':
+                
+                if (args.s2s_name == 'ecmwf') and (f'{year}-{month}' in config.ECMWF_EXCEPTIONS):
+                    date_str = config.ECMWF_EXCEPTIONS[f'{year}-{month}']
                     
+                elif (args.s2s_name == 'ecmwf') and (any(f'{year}-{month}' in curr_date for curr_date in all_ecmwf_dates)):
                     curr_mmyy_dates = [curr_mmyy_date for curr_mmyy_date in all_ecmwf_dates if f'{year}-{month}' in curr_mmyy_date]
                     date_str = "/".join(curr_mmyy_dates)
                 
                 elif (args.s2s_name == 'ukmo') and (f'{year}-{month}' in config.UKMO_EXCEPTIONS):
-                    
                     date_str = config.UKMO_EXCEPTIONS[f'{year}-{month}']
                 
                 elif (args.s2s_name == 'cma') and (f'{year}-{month}' in config.CMA_EXCEPTIONS):
-                    
                     date_str = config.CMA_EXCEPTIONS[f'{year}-{month}']
 
                 elif (args.s2s_name == 'cma') and (any(f'{year}-{month}' in curr_date for curr_date in all_cma_dates)):
-
                     curr_mmyy_dates = [curr_mmyy_date for curr_mmyy_date in all_cma_dates if f'{year}-{month}' in curr_mmyy_date]
                     date_str = "/".join(curr_mmyy_dates)
 
                 else:
-
                     date_str = f"{year}-{month}-01/to/{year}-{month}-{num_days}"
                     is_exception = False
 

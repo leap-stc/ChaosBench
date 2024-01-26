@@ -1,0 +1,5 @@
+name: chaosbench-docs-env
+channels: 
+  - conda-forge
+dependencies: 
+- jupyter-book
