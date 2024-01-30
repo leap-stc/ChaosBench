@@ -4,6 +4,7 @@
 format: jb-book
 root: README
 chapters:
+- file: motivation
 - file: quickstart
 - file: dataset
 - file: task
