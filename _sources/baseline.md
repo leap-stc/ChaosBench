@@ -23,7 +23,7 @@ We differentiate between physics-based and data-driven models. The former is suc
     - [x] GraphCast
 
 ## Model Checkpoints
-Checkpoints for data-driven models are accessible from [here](https://huggingface.co/datasets/juannat7/ChaosBench/tree/main/logs)
+Checkpoints for data-driven models are accessible from [here](https://huggingface.co/datasets/LEAP/ChaosBench/tree/main/logs)
 
 - Data-driven models are indicated by the `_s2s` suffix (e.g., `unet_s2s`). 
 

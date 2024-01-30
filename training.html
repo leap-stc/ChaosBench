@@ -168,6 +168,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
 <li class="toctree-l1"><a class="reference internal" href="task.html">Task Overview</a></li>
+
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="baseline.html">Baseline Models</a></li>
@@ -344,7 +345,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -360,6 +363,17 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1">Step 1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2">Step 2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3">Step 3</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4">Step 4</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -375,18 +389,29 @@ document.write(`
 <div><p><strong>NOTE</strong>: Hands-on modeling and training workflow in <code class="docutils literal notranslate"><span class="pre">notebooks/02a_s2s_modeling.ipynb</span></code> and <code class="docutils literal notranslate"><span class="pre">notebooks/03a_s2s_train.ipynb</span></code></p>
 </div></blockquote>
 <p>We will outline how one can implement their own data-driven models. Several examples, including ED, FNO, ResNet, and UNet have been provided.</p>
-<p><strong>Step 1</strong>: Define your model class in <code class="docutils literal notranslate"><span class="pre">chaosbench/models/&lt;YOUR_MODEL&gt;.py</span></code>. At present, we only support models built with <code class="docutils literal notranslate"><span class="pre">PyTorch</span></code></p>
-<p><strong>Step 2</strong>: Initialize your model in <code class="docutils literal notranslate"><span class="pre">chaosbench/models/model.py</span></code> under <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method in <code class="docutils literal notranslate"><span class="pre">S2SBenchmarkModel</span></code> class</p>
-<p><strong>Step 3</strong>: Write a configuration file in <code class="docutils literal notranslate"><span class="pre">chaosbench/configs/&lt;YOUR_MODEL&gt;_s2s.yaml</span></code>. We recommend reading the details on the definition of <a class="reference external" href="https://leap-stc.github.io/ChaosBench/baseline.html">hyperparameters</a> and the different [task]((<a class="reference external" href="https://leap-stc.github.io/ChaosBench/task.html">https://leap-stc.github.io/ChaosBench/task.html</a>) before training. Also change the <code class="docutils literal notranslate"><span class="pre">model_name:</span> <span class="pre">&lt;YOUR_MODEL&gt;_s2s</span></code> to ensure  correct pathing</p>
+<section id="step-1">
+<h2>Step 1<a class="headerlink" href="#step-1" title="Permalink to this heading">#</a></h2>
+<p>Define your model class in <code class="docutils literal notranslate"><span class="pre">chaosbench/models/&lt;YOUR_MODEL&gt;.py</span></code></p>
+</section>
+<section id="step-2">
+<h2>Step 2<a class="headerlink" href="#step-2" title="Permalink to this heading">#</a></h2>
+<p>Initialize your model in <code class="docutils literal notranslate"><span class="pre">chaosbench/models/model.py</span></code> under <code class="docutils literal notranslate"><span class="pre">S2SBenchmarkModel.__init__</span></code></p>
+</section>
+<section id="step-3">
+<h2>Step 3<a class="headerlink" href="#step-3" title="Permalink to this heading">#</a></h2>
+<p>Write a configuration file in <code class="docutils literal notranslate"><span class="pre">chaosbench/configs/&lt;YOUR_MODEL&gt;_s2s.yaml</span></code>. Details on the definition of <a class="reference external" href="https://leap-stc.github.io/ChaosBench/baseline.html">hyperparameters</a> and the different <a class="reference external" href="https://leap-stc.github.io/ChaosBench/task.html">task</a>. Also change the <code class="docutils literal notranslate"><span class="pre">model_name:</span> <span class="pre">&lt;YOUR_MODEL&gt;_s2s</span></code> to ensure  correct pathing</p>
 <ul class="simple">
 <li><p>Task 1️⃣ (autoregressive): <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">False</span> <span class="pre">;</span> <span class="pre">n_step:</span> <span class="pre">&lt;N_STEP&gt;</span></code></p></li>
 <li><p>Task 1️⃣ (direct): <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">False</span> <span class="pre">;</span> <span class="pre">n_step:</span> <span class="pre">1</span> <span class="pre">;</span> <span class="pre">lead_time:</span> <span class="pre">&lt;LEAD_TIME&gt;</span></code></p></li>
 <li><p>Task 2️⃣ (autoregressive): <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">True</span> <span class="pre">;</span> <span class="pre">n_step:</span> <span class="pre">&lt;N_STEP&gt;</span></code></p></li>
 <li><p>Task 2️⃣ (direct): <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">True</span> <span class="pre">;</span> <span class="pre">n_step:</span> <span class="pre">1</span> <span class="pre">;</span> <span class="pre">lead_time:</span> <span class="pre">&lt;LEAD_TIME&gt;</span></code></p></li>
 </ul>
-<p><strong>Step 4</strong>: Train by running <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">train.py</span> <span class="pre">--config_filepath</span> <span class="pre">chaosbench/configs/&lt;YOUR_MODEL&gt;_s2s.yaml</span></code></p>
-<p><strong>Step 5</strong>: Done!</p>
-<p><strong>NOTE</strong>: Remember to replace <code class="docutils literal notranslate"><span class="pre">&lt;YOUR_MODEL&gt;</span></code> with your own model name, e.g., <code class="docutils literal notranslate"><span class="pre">unet</span></code>. Checkpoints and logs would be automatically generated in <code class="docutils literal notranslate"><span class="pre">logs/&lt;YOUR_MODEL&gt;_s2s/</span></code>.</p>
+</section>
+<section id="step-4">
+<h2>Step 4<a class="headerlink" href="#step-4" title="Permalink to this heading">#</a></h2>
+<p>Train by running <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">train.py</span> <span class="pre">--config_filepath</span> <span class="pre">chaosbench/configs/&lt;YOUR_MODEL&gt;_s2s.yaml</span></code></p>
+<p>Remember to replace <code class="docutils literal notranslate"><span class="pre">&lt;YOUR_MODEL&gt;</span></code> with your own model name, e.g., <code class="docutils literal notranslate"><span class="pre">unet</span></code>. Checkpoints and logs would be automatically generated in <code class="docutils literal notranslate"><span class="pre">logs/&lt;YOUR_MODEL&gt;_s2s/</span></code>.</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -444,7 +469,23 @@ document.write(`
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"></div>
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1">Step 1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2">Step 2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3">Step 3</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4">Step 4</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

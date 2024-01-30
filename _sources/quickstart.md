@@ -8,11 +8,11 @@ cd ChaosBench
 mkdir data
 ```
 
-**Step 3**: Navigate to `chaosbench/config.py` and change the field `DATA_DIR = /<YOUR_WORKING_DIR>/ChaosBench/data` (_Provide absolute path_)
+**Step 3**: Navigate to `chaosbench/config.py` and change the field `DATA_DIR = ChaosBench/data`
 
 **Step 4**: Initialize the space by running
 ```
-cd /<YOUR_WORKING_DIR>/ChaosBench/data/
+cd ChaosBench/data/
 wget https://huggingface.co/datasets/juannat7/ChaosBench/blob/main/process.sh
 chmod +x process.sh
 ```

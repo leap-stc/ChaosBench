@@ -170,6 +170,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Task Overview</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="training.html">Training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="baseline.html">Baseline Models</a></li>
@@ -346,7 +347,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -362,6 +365,16 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Task Overview</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#training-strategies">Training Strategies</a></li>
+</ul>
+
+            </nav>
         </div>
     </div>
 </div>
@@ -385,6 +398,9 @@ It is aimed at a <strong>SUBSET</strong> of target channel(s). This task is usef
 <li><p>Task 1️⃣: <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">False</span></code></p></li>
 <li><p>Task 2️⃣: <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">True</span></code>. By default, it is going to optimize on {t-850, z-500, q-700}. To change this, modify the <code class="docutils literal notranslate"><span class="pre">HEADLINE_VARS</span></code> field in <code class="docutils literal notranslate"><span class="pre">chaosbench/config.py</span></code></p></li>
 </ul>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="training-strategies">
+<h1>Training Strategies<a class="headerlink" href="#training-strategies" title="Permalink to this heading">#</a></h1>
 <p>In addition, we also provide flags to train the model either <strong>autoregressively</strong> or <strong>directly</strong>.</p>
 <ul class="simple">
 <li><p>Autoregressive: Using current output as the next model input. The number of iterative steps is defined in the <code class="docutils literal notranslate"><span class="pre">n_step:</span> <span class="pre">&lt;N_STEP&gt;</span></code> field. For our baselines, we set <code class="docutils literal notranslate"><span class="pre">N_STEP</span> <span class="pre">=</span> <span class="pre">5</span></code>.</p></li>
@@ -447,7 +463,22 @@ It is aimed at a <strong>SUBSET</strong> of target channel(s). This task is usef
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"></div>
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Task Overview</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#training-strategies">Training Strategies</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
               
             
           </div>

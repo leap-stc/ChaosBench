@@ -169,6 +169,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
 <li class="toctree-l1"><a class="reference internal" href="task.html">Task Overview</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="training.html">Training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="baseline.html">Baseline Models</a></li>
@@ -372,6 +373,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-your-own-model">Build Your Own Model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarking">Benchmarking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">Motivation</a></li>
 </ul>
             </nav>
         </div>
@@ -388,10 +390,10 @@ document.write(`
 <p>ChaosBench is a benchmark project to improve long-term forecasting of chaotic systems, in particular subseasonal-to-seasonal (S2S) climate, using ML approaches.</p>
 <p>Homepage 🔗: <a class="reference external" href="https://leap-stc.github.io/ChaosBench">https://leap-stc.github.io/ChaosBench</a></p>
 <p>Paper 📚: <a class="reference external" href="https://arxiv.org/">https://arxiv.org/</a></p>
-<p>Dataset 🤗: <a class="reference external" href="https://huggingface.co/datasets/juannat7/ChaosBench">https://huggingface.co/datasets/juannat7/ChaosBench</a></p>
+<p>Dataset 🤗: <a class="reference external" href="https://huggingface.co/datasets/LEAP/ChaosBench">https://huggingface.co/datasets/LEAP/ChaosBench</a></p>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h2>
-<p><img alt="Overview of ChaosBench" src="docs/scheme/chaosbench_scheme.jpg" /></p>
+<p><img alt="Overview of ChaosBench" src="_images/chaosbench_scheme.jpg" /></p>
 <p>1️⃣ <strong>Extended Observations</strong>. Spanning over 45 years (1979 - 2023) of ERA5 reanalysis</p>
 <p>2️⃣ <strong>Diverse Baselines</strong>. Wide selection of physics-based forecasts from leading national agencies in Europe, the UK, America, and Asia</p>
 <p>3️⃣ <strong>Differentiable Physics Metrics</strong>. Introduces two differentiable physics-based metrics to minimize the decay of power spectra at long forecasting horizon (blurriness)</p>
@@ -418,6 +420,13 @@ document.write(`
 <li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/baseline.html">Baseline Models</a></p></li>
 <li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/leaderboard.html">Leaderboard</a></p></li>
 </ul>
+</section>
+<section id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this heading">#</a></h2>
+<p>1️⃣ <strong>Collapse to Climatology</strong>. Performing comparable or worse than climatology renders these state-of-the-art-models operationally unusable
+<img alt="Collapse" src="_images/all_rmse_sota.png" /></p>
+<p>2️⃣ <strong>Blurring Artifact</strong>. Averaged-out forecasts is of little use when one attempts to predict extreme events requiring high-fidelity on the S2S scale (e.g., droughts, hurricanes)
+<img alt="Blurring" src="_images/preds_climax_q700_direct_Task1.png" /></p>
 </section>
 <div class="toctree-wrapper compound">
 </div>
@@ -482,6 +491,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-your-own-model">Build Your Own Model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarking">Benchmarking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">Motivation</a></li>
 </ul>
   </nav></div>
 

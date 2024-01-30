@@ -22,7 +22,7 @@ __For example__, in our `unet_s2s` baseline model, we can run:
 
 
 ## Accessing Baseline Scores
-You can access the complete scores (in `.csv` format) for data-driven, physics-based models, climatology, and persistence [here](https://huggingface.co/datasets/juannat7/ChaosBench/tree/main/logs). Below is a snippet from `logs/climatology/eval/rmse_climatology.csv`, where each row represents `<METRIC>`, such as `RMSE`, at each future timestep.
+You can access the complete scores (in `.csv` format) for data-driven, physics-based models, climatology, and persistence [here](https://huggingface.co/datasets/LEAP/ChaosBench/tree/main/logs). Below is a snippet from `logs/climatology/eval/rmse_climatology.csv`, where each row represents `<METRIC>`, such as `RMSE`, at each future timestep.
 
 | z-10     | z-50     | z-100    | z-200    | z-300    | ... | w-1000   |
 |----------|----------|----------|----------|----------|-----|----------|

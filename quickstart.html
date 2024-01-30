@@ -168,6 +168,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
 <li class="toctree-l1"><a class="reference internal" href="task.html">Task Overview</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="training.html">Training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="baseline.html">Baseline Models</a></li>
@@ -377,9 +378,9 @@ document.write(`
 <span class="n">mkdir</span> <span class="n">data</span>
 </pre></div>
 </div>
-<p><strong>Step 3</strong>: Navigate to <code class="docutils literal notranslate"><span class="pre">chaosbench/config.py</span></code> and change the field <code class="docutils literal notranslate"><span class="pre">DATA_DIR</span> <span class="pre">=</span> <span class="pre">/&lt;YOUR_WORKING_DIR&gt;/ChaosBench/data</span></code> (<em>Provide absolute path</em>)</p>
+<p><strong>Step 3</strong>: Navigate to <code class="docutils literal notranslate"><span class="pre">chaosbench/config.py</span></code> and change the field <code class="docutils literal notranslate"><span class="pre">DATA_DIR</span> <span class="pre">=</span> <span class="pre">ChaosBench/data</span></code></p>
 <p><strong>Step 4</strong>: Initialize the space by running</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/&lt;</span><span class="n">YOUR_WORKING_DIR</span><span class="o">&gt;/</span><span class="n">ChaosBench</span><span class="o">/</span><span class="n">data</span><span class="o">/</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">ChaosBench</span><span class="o">/</span><span class="n">data</span><span class="o">/</span>
 <span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">huggingface</span><span class="o">.</span><span class="n">co</span><span class="o">/</span><span class="n">datasets</span><span class="o">/</span><span class="n">juannat7</span><span class="o">/</span><span class="n">ChaosBench</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">process</span><span class="o">.</span><span class="n">sh</span>
 <span class="n">chmod</span> <span class="o">+</span><span class="n">x</span> <span class="n">process</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>

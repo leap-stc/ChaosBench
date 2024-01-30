@@ -14,6 +14,7 @@ __NOTE__: Before training your own model [instructions here](https://leap-stc.gi
 
 - Task 2️⃣: `only_headline: True`. By default, it is going to optimize on {t-850, z-500, q-700}. To change this, modify the `HEADLINE_VARS` field in `chaosbench/config.py` 
 
+# Training Strategies
 In addition, we also provide flags to train the model either __autoregressively__ or __directly__. 
 
 - Autoregressive: Using current output as the next model input. The number of iterative steps is defined in the `n_step: <N_STEP>` field. For our baselines, we set `N_STEP = 5`.
