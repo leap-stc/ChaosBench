@@ -22,6 +22,7 @@ Dataset 🤗: https://huggingface.co/datasets/LEAP/ChaosBench
 4️⃣ __Large-Scale Benchmarking__. Systematic evaluation for state-of-the-art ML-based weather models like PanguWeather, FourcastNetV2, ViT/ClimaX, and Graphcast
 
 ## Getting Started
+- [Motivation](https://leap-stc.github.io/ChaosBench/motivation.html)
 - [Quickstart](https://leap-stc.github.io/ChaosBench/quickstart.html)
 - [Dataset Overview](https://leap-stc.github.io/ChaosBench/dataset.html)
 - [Task Overview](https://leap-stc.github.io/ChaosBench/task.html)
@@ -34,11 +35,3 @@ Dataset 🤗: https://huggingface.co/datasets/LEAP/ChaosBench
 ## Benchmarking
 - [Baseline Models](https://leap-stc.github.io/ChaosBench/baseline.html)
 - [Leaderboard](https://leap-stc.github.io/ChaosBench/leaderboard.html)
-
-
-## Motivation
-1️⃣ __Collapse to Climatology__. Performing comparable or worse than climatology renders these state-of-the-art-models operationally unusable
-![Collapse](docs/all_rmse_sota.png)
-
-2️⃣ __Blurring Artifact__. Averaged-out forecasts is of little use when one attempts to predict extreme events requiring high-fidelity on the S2S scale (e.g., droughts, hurricanes)
-![Blurring](docs/preds_climax_q700_direct_Task1.png)

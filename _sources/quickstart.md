@@ -13,7 +13,7 @@ mkdir data
 **Step 4**: Initialize the space by running
 ```
 cd ChaosBench/data/
-wget https://huggingface.co/datasets/juannat7/ChaosBench/blob/main/process.sh
+wget https://huggingface.co/datasets/LEAP/ChaosBench/blob/main/process.sh
 chmod +x process.sh
 ```
 **Step 5**: Download the data 
