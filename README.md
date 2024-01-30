@@ -7,8 +7,7 @@ Homepage 🔗: https://leap-stc.github.io/ChaosBench
 
 Paper 📚: https://arxiv.org/
 
-Dataset 🤗: https://huggingface.co/datasets/juannat7/ChaosBench 
-
+Dataset 🤗: https://huggingface.co/datasets/LEAP/ChaosBench
 
 ## Features
 
@@ -21,7 +20,6 @@ Dataset 🤗: https://huggingface.co/datasets/juannat7/ChaosBench
 3️⃣ __Differentiable Physics Metrics__. Introduces two differentiable physics-based metrics to minimize the decay of power spectra at long forecasting horizon (blurriness)
 
 4️⃣ __Large-Scale Benchmarking__. Systematic evaluation for state-of-the-art ML-based weather models like PanguWeather, FourcastNetV2, ViT/ClimaX, and Graphcast
-
 
 ## Getting Started
 - [Quickstart](https://leap-stc.github.io/ChaosBench/quickstart.html)
@@ -36,3 +34,11 @@ Dataset 🤗: https://huggingface.co/datasets/juannat7/ChaosBench
 ## Benchmarking
 - [Baseline Models](https://leap-stc.github.io/ChaosBench/baseline.html)
 - [Leaderboard](https://leap-stc.github.io/ChaosBench/leaderboard.html)
+
+
+## Motivation
+1️⃣ __Collapse to Climatology__. Performing comparable or worse than climatology renders these state-of-the-art-models operationally unusable
+![Collapse](docs/all_rmse_sota.png)
+
+2️⃣ __Blurring Artifact__. Averaged-out forecasts is of little use when one attempts to predict extreme events requiring high-fidelity on the S2S scale (e.g., droughts, hurricanes)
+![Blurring](docs/preds_climax_q700_direct_Task1.png)
