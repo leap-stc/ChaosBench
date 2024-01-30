@@ -1,10 +1,6 @@
 # Baseline Models
 We differentiate between physics-based and data-driven models. The former is succintly illustrated as in the figure below. 
 
-<div style="text-align: center;">
-    <img src="../docs/scheme/chaosbench_scheme-physics-model.jpg" style="width:300px;"/>
-</div>
-
 ## Model Definition
 - __Physics-Based Models__:
     - [x] UKMO: UK Meteorological Office
