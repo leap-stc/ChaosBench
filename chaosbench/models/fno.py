@@ -45,7 +45,7 @@ class SpectralConv2d_fast(nn.Module):
 
 
 class FNO2d(nn.Module):
-    def __init__(self, input_size=60, modes1=4, modes2=4, width=128, initial_step=1):
+    def __init__(self, input_size=60, modes1=4, modes2=4, width=[64, 128, 256, 512, 1024], initial_step=1):
         super(FNO2d, self).__init__()
 
         """

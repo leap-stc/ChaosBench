@@ -168,13 +168,13 @@ class Segformer(nn.Module):
     def __init__(
         self,
         *,
-        dims = (64, 128, 256, 512),
+        dims = (64, 128, 320, 512),
         heads = (1, 2, 4, 8),
         ff_expansion = (8, 8, 4, 4),
         reduction_ratio = (8, 4, 2, 1),
         num_layers = 2,
         input_size = 60,
-        decoder_dim = 256
+        decoder_dim = 768
     ):
         super().__init__()
         dims, heads, ff_expansion, reduction_ratio, num_layers = map(partial(cast_tuple, depth = 4), (dims, heads, ff_expansion, reduction_ratio, num_layers))

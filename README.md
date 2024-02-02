@@ -5,7 +5,7 @@ ChaosBench is a benchmark project to improve long-term forecasting of chaotic sy
 
 Homepage 🔗: https://leap-stc.github.io/ChaosBench
 
-Paper 📚: https://arxiv.org/
+Paper 📚: https://arxiv.org/abs/2402.00712
 
 Dataset 🤗: https://huggingface.co/datasets/LEAP/ChaosBench
 
