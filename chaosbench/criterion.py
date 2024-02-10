@@ -457,7 +457,7 @@ class SpectralDiv(nn.Module):
             targets_Sk = targets_Sk / torch.nansum(targets_Sk, dim=(-2, -1), keepdim=True)
 
         # Compute spectral Sk divergence
-        div = torch.nanmean(torch.clamp(-torch.log(predictions_Sk / targets_Sk), min=1e-9))
+        div = torch.nansum(predictions_Sk * torch.clamp(torch.log(predictions_Sk / targets_Sk), min=1e-9))
         return div
     
 

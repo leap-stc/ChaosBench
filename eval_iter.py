@@ -8,6 +8,7 @@ from collections import defaultdict as dd
 import gc
 from pathlib import Path
 from tqdm import tqdm
+import re
 import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import DataLoader, TensorDataset
@@ -30,10 +31,10 @@ def main(args):
     Evaluation script given .yaml config and trained model checkpoint (for iterative scheme)
     
     Example usage:
-        (Climatology)              0) `python eval_iter.py --model_name climatology --eval_years 2023`
-        (Persistence)              1) `python eval_iter.py --model_name persistence --eval_years 2023`
-        (Physical models)          2) `python eval_iter.py --model_name ecmwf --eval_years 2023`
-        (Data-driven models)       3) `python eval_iter.py --model_name unet_s2s --eval_years 2023 --version_num 0`
+        (Climatology)              0) `python eval_iter.py --model_name climatology --eval_years 2022`
+        (Persistence)              1) `python eval_iter.py --model_name persistence --eval_years 2022`
+        (Physical models)          2) `python eval_iter.py --model_name ecmwf --eval_years 2022`
+        (Data-driven models)       3) `python eval_iter.py --model_name unet_s2s --eval_years 2022 --version_num 0`
     
     """
     print(f'Evaluating ERA5 observations against {args.model_name}...')
@@ -51,20 +52,40 @@ def main(args):
     ## Case 0: Climatology
     if args.model_name == 'climatology':
         IS_CLIMATOLOGY = True
-        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
-        input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
-        output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
-        climatology_filepath = Path(config.DATA_DIR) / 's2s' / 'climatology' / 'climatology_era5_spatial.zarr'
-        climatology = xr.open_dataset(climatology_filepath, engine='zarr')
-        climatology = climatology['mean'].values[np.newaxis, :, :, :, :] # (B, P, L, H, W)
+        input_filepath = Path(config.DATA_DIR) / 's2s' / 'climatology' / 'climatology_era5_spatial.zarr'
+        input_dataset = xr.open_dataset(input_filepath, engine='zarr')
+        input_dataset = input_dataset['mean'].values
+        
+        # Retrieve all output files
+        output_filepath = Path(config.DATA_DIR) / 's2s' / 'era5'
+        output_files = list()
+        for year in args.eval_years:
+            pattern = rf'.*{year}\d{{4}}\.zarr$'
+            output_files.extend(
+                [f for f in list(output_filepath.glob(f'*{year}*.zarr')) if re.match(pattern, str(f.name))]
+            )
+        output_files.sort()
+        
+        # Load all output data
+        output_dataset = list()
+        for file_path in output_files:
+            ds = xr.open_dataset(file_path, engine='zarr')
+            output_dataset.append(
+                ds[config.PARAMS].to_array().values
+            )
+
+        input_dataset = torch.tensor(input_dataset).to(config.device)
+        output_dataset = torch.tensor(output_dataset).to(config.device)
+        
     
     ## Case 1: Persistence
     elif args.model_name == 'persistence':
         IS_PERSISTENCE = True
+        
         input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
+        
         output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
@@ -73,6 +94,7 @@ def main(args):
     elif args.model_name in list(config.S2S_CENTERS.keys()):
         input_dataset = dataset.S2SEvalDataset(s2s_name=args.model_name, years=args.eval_years)
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
+        
         output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
@@ -117,109 +139,54 @@ def main(args):
     ####### Evaluation main script #######
     ######################################
     
+    
     ## All metric placeholders
     all_rmse, all_bias, all_acc, all_ssim, all_sdiv, all_sres = list(), list(), list(), list(), list(), list()
-
-    for input_batch, output_batch in tqdm(zip(input_dataloader, output_dataloader), total=len(input_dataloader)):
+    
+    if IS_CLIMATOLOGY:
         
-        _, preds_x, preds_y = input_batch
-        _, truth_x, truth_y = output_batch
-        
-        assert preds_y.size(1) == truth_y.size(1)
-        
-        curr_x = preds_x.to(config.device) # Initialize current x
-
         ## Step metric placeholders
         step_rmse, step_bias, step_acc, step_ssim, step_sdiv, step_sres = dict(), dict(), dict(), dict(), dict(), dict()
-
-        for step_idx in range(truth_y.size(1)):
-
-            with torch.no_grad():
-                curr_y = truth_y[:, step_idx].to(config.device)
+    
+        ## Extract metric for each param/level
+        for param_idx, param in enumerate(config.PARAMS):
+            for level_idx, level in enumerate(config.PRESSURE_LEVELS):
                 
-                ############## Getting predictions ##############
-                if IS_AI_MODEL:
-                    preds = baseline(curr_x)
+                ## Handling predictions
+                unique_preds = input_dataset[:len(output_dataset), param_idx, level_idx]
                 
-                elif IS_PERSISTENCE:
-                    preds = preds_x.to(config.device)
-                    
-                elif IS_CLIMATOLOGY:
-                    preds = torch.tensor(climatology).to(config.device)
+                ## Handling labels
+                unique_labels = output_dataset[:, param_idx, level_idx]
                 
-                else:
-                    preds = preds_y[:, step_idx].to(config.device)
-                #################################################
+                ## Ensuring the right data types
+                unique_preds = unique_preds.double()
+                unique_labels = unique_labels.double()
+
+                ################################## Criterion 1: RMSE #####################################
+                error = RMSE(unique_preds, unique_labels).cpu().numpy()
+
+                ################################## Criterion 2: Bias #####################################
+                bias = Bias(unique_preds, unique_labels).cpu().numpy()
+
+                ################################## Criterion 3: ACC ######################################
+                acc = ACC(unique_preds, unique_labels, param, level).cpu().numpy()
+
+                ################################## Criterion 4: SSIM ######################################
+                ssim = SSIM(unique_preds, unique_labels).cpu().numpy()
+
+                ################################ Criterion 5: SpecDiv #####################################
+                sdiv = SpecDiv(unique_preds, unique_labels).cpu().numpy()
+
+                ################################ Criterion 6: SpecRes #####################################
+                sres = SpecRes(unique_preds, unique_labels).cpu().numpy()
+
+                step_rmse[f'{param}-{level}'] = [error] * (config.N_STEPS - 1)
+                step_bias[f'{param}-{level}'] = [bias] * (config.N_STEPS - 1)
+                step_acc[f'{param}-{level}'] = [acc] * (config.N_STEPS - 1)
+                step_ssim[f'{param}-{level}'] = [ssim] * (config.N_STEPS - 1)
+                step_sdiv[f'{param}-{level}'] = [sdiv] * (config.N_STEPS - 1)
+                step_sres[f'{param}-{level}'] = [sres] * (config.N_STEPS - 1)
                 
-
-                ## Extract metric for each param/level
-                for param_idx, param in enumerate(config.PARAMS):
-                    for level_idx, level in enumerate(config.PRESSURE_LEVELS):
-
-                        ## Handling predictions
-                        if IS_CLIMATOLOGY:
-                            unique_preds = preds[:, param_idx, level_idx, :, :]
-                            unique_preds = unique_preds.repeat(BATCH_SIZE, 1, 1)
-                            
-                        else:
-                            preds[:, param_idx, level_idx] = utils.denormalize(
-                                preds[:, param_idx, level_idx], param, level, args.model_name
-                            )
-                            unique_preds = preds[:, param_idx, level_idx]
-                        
-                        ## Handling labels
-                        curr_y[:, param_idx, level_idx] = utils.denormalize(
-                            curr_y[:, param_idx, level_idx], param, level, 'era5'
-                        )
-                        unique_labels = curr_y[:, param_idx, level_idx]
-
-                        ################################## Criterion 1: RMSE #####################################
-                        error = RMSE(unique_preds, unique_labels).cpu().numpy()
-
-                        ################################## Criterion 2: Bias #####################################
-                        bias = Bias(unique_preds, unique_labels).cpu().numpy()
-                        
-                        ################################## Criterion 3: ACC ######################################
-                        acc = ACC(unique_preds, unique_labels, param, level).cpu().numpy()
-                        
-                        ################################## Criterion 4: SSIM ######################################
-                        ssim = SSIM(unique_preds, unique_labels).cpu().numpy()
-                        
-                        ################################ Criterion 5: SpecDiv #####################################
-                        sdiv = SpecDiv(unique_preds, unique_labels).cpu().numpy()
-                        
-                        ################################ Criterion 6: SpecRes #####################################
-                        sres = SpecRes(unique_preds, unique_labels).cpu().numpy()
-
-
-                        try:
-                            step_rmse[f'{param}-{level}'].extend([error])
-                            step_bias[f'{param}-{level}'].extend([bias])
-                            step_acc[f'{param}-{level}'].extend([acc])
-                            step_ssim[f'{param}-{level}'].extend([ssim])
-                            step_sdiv[f'{param}-{level}'].extend([sdiv])
-                            step_sres[f'{param}-{level}'].extend([sres])
-
-                        except:
-                            step_rmse[f'{param}-{level}'] = [error]
-                            step_bias[f'{param}-{level}'] = [bias]
-                            step_acc[f'{param}-{level}'] = [acc]
-                            step_ssim[f'{param}-{level}'] = [ssim]
-                            step_sdiv[f'{param}-{level}'] = [sdiv]
-                            step_sres[f'{param}-{level}'] = [sres]
-
-                ## Make next-step input as the current prediction (used for AI models)
-                curr_x = preds
-
-            ## (1) Cleaning up to release memory at each time_step
-            curr_y, preds = curr_y.cpu().detach(), preds.cpu().detach()
-            del curr_y, preds
-                    
-        ## (2) Cleaning up to release memory at each batch
-        preds_x, preds_y = preds_x.cpu().detach(), preds_y.cpu().detach()
-        truth_x, truth_y = truth_x.cpu().detach(), truth_y.cpu().detach()
-        del preds_x, preds_y, truth_x, truth_y
-        gc.collect()
         
         all_rmse.append(step_rmse)
         all_bias.append(step_bias)
@@ -227,6 +194,114 @@ def main(args):
         all_ssim.append(step_ssim)
         all_sdiv.append(step_sdiv)
         all_sres.append(step_sres)
+                        
+    
+    else:
+        for input_batch, output_batch in tqdm(zip(input_dataloader, output_dataloader), total=len(input_dataloader)):
+
+            _, preds_x, preds_y = input_batch
+            _, truth_x, truth_y = output_batch
+
+            assert preds_y.size(1) == truth_y.size(1)
+
+            curr_x = preds_x.to(config.device) # Initialize current x
+            truth_x = truth_x.to(config.device) # Initialize truth x
+
+            ## Step metric placeholders
+            step_rmse, step_bias, step_acc, step_ssim, step_sdiv, step_sres = dict(), dict(), dict(), dict(), dict(), dict()
+
+            for step_idx in range(truth_y.size(1)):
+
+                with torch.no_grad():
+                    curr_y = truth_y[:, step_idx].to(config.device)
+
+                    ############## Getting predictions ##############
+                    if IS_AI_MODEL:
+                        preds = baseline(curr_x)
+
+                    elif IS_PERSISTENCE:
+                        preds = preds_x.to(config.device)
+
+                    else:
+                        preds = preds_y[:, step_idx].to(config.device)
+                    #################################################
+
+
+                    ## Extract metric for each param/level
+                    for param_idx, param in enumerate(config.PARAMS):
+                        for level_idx, level in enumerate(config.PRESSURE_LEVELS):
+
+                            ## Handling predictions
+                            preds[:, param_idx, level_idx] = utils.denormalize(
+                                preds[:, param_idx, level_idx], param, level, args.model_name
+                            )
+                            unique_preds = preds[:, param_idx, level_idx]
+                            
+                            
+                            ## Handling labels
+                            curr_y[:, param_idx, level_idx] = utils.denormalize(
+                                curr_y[:, param_idx, level_idx], param, level, 'era5'
+                            )
+                            unique_labels = curr_y[:, param_idx, level_idx]
+
+                            ## Ensuring the right data types
+                            unique_preds = unique_preds.double()
+                            unique_labels = unique_labels.double()
+
+                            ################################## Criterion 1: RMSE #####################################
+                            error = RMSE(unique_preds, unique_labels).cpu().numpy()
+
+                            ################################## Criterion 2: Bias #####################################
+                            bias = Bias(unique_preds, unique_labels).cpu().numpy()
+
+                            ################################## Criterion 3: ACC ######################################
+                            acc = ACC(unique_preds, unique_labels, param, level).cpu().numpy()
+
+                            ################################## Criterion 4: SSIM ######################################
+                            ssim = SSIM(unique_preds, unique_labels).cpu().numpy()
+
+                            ################################ Criterion 5: SpecDiv #####################################
+                            sdiv = SpecDiv(unique_preds, unique_labels).cpu().numpy()
+
+                            ################################ Criterion 6: SpecRes #####################################
+                            sres = SpecRes(unique_preds, unique_labels).cpu().numpy()
+
+
+                            try:
+                                step_rmse[f'{param}-{level}'].extend([error])
+                                step_bias[f'{param}-{level}'].extend([bias])
+                                step_acc[f'{param}-{level}'].extend([acc])
+                                step_ssim[f'{param}-{level}'].extend([ssim])
+                                step_sdiv[f'{param}-{level}'].extend([sdiv])
+                                step_sres[f'{param}-{level}'].extend([sres])
+
+                            except:
+                                step_rmse[f'{param}-{level}'] = [error]
+                                step_bias[f'{param}-{level}'] = [bias]
+                                step_acc[f'{param}-{level}'] = [acc]
+                                step_ssim[f'{param}-{level}'] = [ssim]
+                                step_sdiv[f'{param}-{level}'] = [sdiv]
+                                step_sres[f'{param}-{level}'] = [sres]
+
+                    ## Make next-step input as the current prediction (used for AI models)
+                    curr_x = preds
+
+                ## (1) Cleaning up to release memory at each time_step
+                curr_y, preds = curr_y.cpu().detach(), preds.cpu().detach()
+                del curr_y, preds
+
+            ## (2) Cleaning up to release memory at each batch
+            preds_x, preds_y = preds_x.cpu().detach(), preds_y.cpu().detach()
+            truth_x, truth_y = truth_x.cpu().detach(), truth_y.cpu().detach()
+            del preds_x, preds_y, truth_x, truth_y
+            gc.collect()
+
+            all_rmse.append(step_rmse)
+            all_bias.append(step_bias)
+            all_acc.append(step_acc)
+            all_ssim.append(step_ssim)
+            all_sdiv.append(step_sdiv)
+            all_sres.append(step_sres)
     
     ## Combine metrics across batch
     merged_rmse, merged_bias, merged_acc, \

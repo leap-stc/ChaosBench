@@ -51,15 +51,14 @@ def main(args):
     
     Example usage:
     (Data-driven models)       
-    1) `python eval_direct.py --model_name unet_s2s --eval_years 2023 --version_nums 0 4 5 6 7 8 9 10 11 12 --task_num 1`
-    2) `python eval_direct.py --model_name unet_s2s --eval_years 2023 --version_nums 2 13 14 15 16 17 18 19 20 21 --task_num 1`
+    1) `python eval_direct.py --model_name unet_s2s --eval_years 2022 --version_nums 0 4 5 6 7 8 9 10 11 12 --task_num 1`
+    2) `python eval_direct.py --model_name unet_s2s --eval_years 2022 --version_nums 2 13 14 15 16 17 18 19 20 21 --task_num 2`
     
     (External predictions)     
-    3) `python eval_direct.py --model_name climax --eval_years 2023 --task_num 1`
+    3) `python eval_direct.py --model_name climax --eval_years 2022 --task_num 1`
     
     """
     assert args.task_num in [1, 2]
-    print(args.version_nums)
     
     print(f'Evaluating ERA5 observations against {args.model_name}...')
     
@@ -92,7 +91,6 @@ def main(args):
         ## Load each model from checkpoint
         baselines = list()
         for version_num in args.version_nums:
-            print(version_num)
             ckpt_filepath = log_dir / f'lightning_logs/version_{version_num}/checkpoints/'
             ckpt_filepath = list(ckpt_filepath.glob('*.ckpt'))[0]
             baseline = model.S2SBenchmarkModel(model_args=model_args, data_args=data_args)
@@ -198,7 +196,6 @@ def main(args):
                                 unique_preds = np.full((BATCH_SIZE, 121, 240), np.nan)
                                 
                             unique_preds = torch.tensor(unique_preds).to(config.device)
-                            unique_preds = unique_preds.double()
                         
                         ## Handling labels
                         curr_y[:, param_idx, level_idx] = utils.denormalize(
@@ -207,8 +204,9 @@ def main(args):
                         
                         unique_labels = curr_y[:, param_idx, level_idx]
                         
-                        if IS_PREDICTION:
-                            unique_labels = unique_labels.double()
+                        ## Ensuring the right data types
+                        unique_preds = unique_preds.double()
+                        unique_labels = unique_labels.double()
 
                         ################################## Criterion 1: RMSE #####################################
                         error = RMSE(unique_preds, unique_labels).cpu().numpy()
@@ -244,6 +242,9 @@ def main(args):
                             step_ssim[f'{param}-{level}'] = [ssim]
                             step_sdiv[f'{param}-{level}'] = [sdiv]
                             step_sres[f'{param}-{level}'] = [sres]
+                            
+                        if param == 't' and level == 850:
+                            print(error)
         
         all_rmse.append(step_rmse)
         all_bias.append(step_bias)
