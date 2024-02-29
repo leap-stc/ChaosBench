@@ -1,0 +1,17 @@
+cdsapi==0.6.1
+cfgrib==0.9.10.4
+ecmwf_api_client==1.6.3
+einops==0.7.0
+lightning==2.0.9
+matplotlib==3.7.2
+numpy==1.25.2
+pandas==2.0.3
+PyYAML==6.0
+PyYAML==6.0.1
+scipy==1.12.0
+seaborn==0.13.2
+timm==0.9.7
+torch==2.0.1
+torchist==0.2.1
+tqdm==4.66.1
+xarray==2023.8.0
