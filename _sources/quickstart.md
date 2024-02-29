@@ -1,6 +1,9 @@
 # Quickstart
 
-**Step 1**: Clone the [ChaosBench](https://github.com/leap-stc/ChaosBench) Github repository
+**Step 1**: Clone the [ChaosBench](https://github.com/leap-stc/ChaosBench) Github repository and install requirements
+```
+pip install -r requirements.txt
+```
 
 **Step 2**: Create local directory to store your data, e.g., 
 ```
@@ -13,7 +16,7 @@ mkdir data
 **Step 4**: Initialize the space by running
 ```
 cd ChaosBench/data/
-wget https://huggingface.co/datasets/LEAP/ChaosBench/blob/main/process.sh
+wget https://huggingface.co/datasets/LEAP/ChaosBench/resolve/main/process.sh
 chmod +x process.sh
 ```
 **Step 5**: Download the data 

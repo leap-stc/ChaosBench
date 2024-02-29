@@ -1,8 +1,8 @@
 # Training
 
-> __NOTE__: Hands-on modeling and training workflow in `notebooks/02a_s2s_modeling.ipynb` and `notebooks/03a_s2s_train.ipynb`
+> __NOTE__: Hands-on modeling and training workflow can be found in `notebooks/02a_s2s_modeling.ipynb` and `notebooks/03a_s2s_train.ipynb`
 
-We will outline how one can implement their own data-driven models. Several examples, including ED, FNO, ResNet, and UNet have been provided. 
+We will outline how one can implement their own data-driven models. Several examples, including ED, FNO, ResNet, and UNet have been provided in the main repository. 
 
 ### Step 1
 Define your model class in `chaosbench/models/<YOUR_MODEL>.py`
@@ -24,4 +24,5 @@ Write a configuration file in `chaosbench/configs/<YOUR_MODEL>_s2s.yaml`. Detail
 Train by running `python train.py --config_filepath chaosbench/configs/<YOUR_MODEL>_s2s.yaml`  
 
 
+### Note
 Remember to replace `<YOUR_MODEL>` with your own model name, e.g., `unet`. Checkpoints and logs would be automatically generated in `logs/<YOUR_MODEL>_s2s/`.
