@@ -1,7 +1,9 @@
 from pathlib import Path
 
+################## CHANGE THIS TO YOUR OWN ##################
 ABS_PATH = Path(__file__).resolve().parent.parent
 DATA_DIR = ABS_PATH / 'data' 
+#############################################################
 
 VARIABLE_LIST = ['geopotential', 'specific_humidity', 'temperature', 'u_component_of_wind', 'v_component_of_wind', 'vertical_velocity']
 PARAMS = ['z', 'q', 't', 'u', 'v', 'w']

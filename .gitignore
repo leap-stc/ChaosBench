@@ -5,7 +5,6 @@ __pycache__/
 *.out
 scripts/train.sh
 logs/
-chaosbench/config.py
 
 eval_sota*
 env/
