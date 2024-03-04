@@ -29,10 +29,10 @@ def denormalize(
     
     # For some use-cases (eg. climatology, persistence forecasts), we use ERA5 as the benchmark climatology
     try:
-        normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / f'climatology_{dataset_name}.zarr'
+        normalization_file = Path(config.DATA_DIR) / 'climatology' / f'climatology_{dataset_name}.zarr'
         normalization = xr.open_dataset(normalization_file, engine='zarr')
     except:
-        normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / f'climatology_era5.zarr'
+        normalization_file = Path(config.DATA_DIR) / 'climatology' / f'climatology_era5.zarr'
         normalization = xr.open_dataset(normalization_file, engine='zarr')
         
     normalization_mean = normalization['mean'].values

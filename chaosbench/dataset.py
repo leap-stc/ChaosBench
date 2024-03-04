@@ -27,8 +27,8 @@ class S2SObsDataset(Dataset):
         lead_time: int = 1
     ) -> None:
         
-        self.data_dir = Path(config.DATA_DIR) / 's2s' / 'era5'
-        self.normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / 'climatology_era5.zarr'
+        self.data_dir = Path(config.DATA_DIR) / 'era5'
+        self.normalization_file = Path(config.DATA_DIR) / 'climatology' / 'climatology_era5.zarr'
         self.n_step = n_step
         self.lead_time = lead_time
         
@@ -98,8 +98,8 @@ class S2SEvalDataset(Dataset):
         assert s2s_name in list(config.S2S_CENTERS.keys())
         
         self.s2s_name = s2s_name
-        self.data_dir = Path(config.DATA_DIR) / 's2s' / self.s2s_name
-        self.normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / f'climatology_{self.s2s_name}.zarr'
+        self.data_dir = Path(config.DATA_DIR) / self.s2s_name
+        self.normalization_file = Path(config.DATA_DIR) / 'climatology' / f'climatology_{self.s2s_name}.zarr'
         
         # Check if years specified are within valid bounds
         self.years = years

@@ -53,12 +53,12 @@ def main(args):
     if args.model_name == 'climatology':
         IS_CLIMATOLOGY = True
         
-        input_filepath = Path(config.DATA_DIR) / 's2s' / 'climatology' / 'climatology_era5_spatial.zarr'
+        input_filepath = Path(config.DATA_DIR) / 'climatology' / 'climatology_era5_spatial.zarr'
         input_dataset = xr.open_dataset(input_filepath, engine='zarr')
         input_dataset = input_dataset['mean'].values
         
         # Retrieve all output files
-        output_filepath = Path(config.DATA_DIR) / 's2s' / 'era5'
+        output_filepath = Path(config.DATA_DIR) / 'era5'
         output_files = list()
         for year in args.eval_years:
             pattern = rf'.*{year}\d{{4}}\.zarr$'

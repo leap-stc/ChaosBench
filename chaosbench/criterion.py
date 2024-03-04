@@ -165,7 +165,7 @@ class ACC(nn.Module):
         self.weights = get_adjusting_weights() if lat_adjusted else None
         
         # Retrieve climatology
-        self.normalization_file = Path(config.DATA_DIR) / 's2s' / 'climatology' / 'climatology_era5.zarr'
+        self.normalization_file = Path(config.DATA_DIR) / 'climatology' / 'climatology_era5.zarr'
         self.normalization = xr.open_dataset(self.normalization_file, engine='zarr')
         self.normalization_mean = self.normalization['mean'].values
         

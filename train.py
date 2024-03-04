@@ -16,7 +16,7 @@ def main(args):
     """
     Training script given .yaml config
     Example usage:
-        1) `python train.py --config_filepath chaosbench/configs/mlp_s2s.yaml`
+        1) `python train.py --config_filepath chaosbench/configs/fno_s2s.yaml`
     """
     
     # Retrieve hyperparameters

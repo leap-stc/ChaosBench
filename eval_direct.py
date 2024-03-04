@@ -243,6 +243,9 @@ def main(args):
                             step_sdiv[f'{param}-{level}'] = [sdiv]
                             step_sres[f'{param}-{level}'] = [sres]
                             
+                        if param == 't' and level == 850:
+                            print(error)
+                            
         
         all_rmse.append(step_rmse)
         all_bias.append(step_bias)
