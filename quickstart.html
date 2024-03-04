@@ -379,23 +379,19 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">#</a></h1>
-<p><strong>Step 1</strong>: Clone the <a class="reference external" href="https://github.com/leap-stc/ChaosBench">ChaosBench</a> Github repository and install requirements</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
-</pre></div>
-</div>
-<p><strong>Step 2</strong>: Create local directory to store your data, e.g.,</p>
+<p><strong>Step 1</strong>: Clone the <a class="reference external" href="https://github.com/leap-stc/ChaosBench">ChaosBench</a> Github repository</p>
+<p><strong>Step 2</strong>: Install package dependencies</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">ChaosBench</span>
-<span class="n">mkdir</span> <span class="n">data</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
-<p><strong>Step 3</strong>: Navigate to <code class="docutils literal notranslate"><span class="pre">chaosbench/config.py</span></code> and change the field <code class="docutils literal notranslate"><span class="pre">DATA_DIR</span> <span class="pre">=</span> <span class="pre">ChaosBench/data</span></code></p>
-<p><strong>Step 4</strong>: Initialize the space by running</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">ChaosBench</span><span class="o">/</span><span class="n">data</span><span class="o">/</span>
+<p><strong>Step 3</strong>: Initialize the data space by running</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">data</span><span class="o">/</span>
 <span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">huggingface</span><span class="o">.</span><span class="n">co</span><span class="o">/</span><span class="n">datasets</span><span class="o">/</span><span class="n">LEAP</span><span class="o">/</span><span class="n">ChaosBench</span><span class="o">/</span><span class="n">resolve</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">process</span><span class="o">.</span><span class="n">sh</span>
 <span class="n">chmod</span> <span class="o">+</span><span class="n">x</span> <span class="n">process</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>
 </div>
-<p><strong>Step 5</strong>: Download the data</p>
+<p><strong>Step 4</strong>: Download the data</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># NOTE: you can also run each line one at a time to retrieve individual dataset</span>
 
 <span class="o">./</span><span class="n">process</span><span class="o">.</span><span class="n">sh</span> <span class="n">era5</span>            <span class="c1"># Required: For input ERA5 data</span>
