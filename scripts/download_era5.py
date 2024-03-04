@@ -15,7 +15,7 @@ def main():
     c = cdsapi.Client()
     
     # Set output directory
-    output_dir = Path(config.DATA_DIR) / 's2s' / 'era5'
+    output_dir = Path(config.DATA_DIR) / 'era5'
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # Download the corresponding data based on year/month

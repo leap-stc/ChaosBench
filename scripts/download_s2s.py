@@ -49,7 +49,7 @@ def main(args):
     server = ECMWFDataServer()
     
     # Set output directory
-    output_dir = Path(config.DATA_DIR) / 's2s' / args.s2s_name
+    output_dir = Path(config.DATA_DIR) / args.s2s_name
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # NOTE: for ECMWF/CMA (from 2020 onward), it is not a continuous timeseries, but rather, the product is available every 3/4 days

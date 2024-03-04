@@ -1,4 +1,8 @@
-DATA_DIR = '/burg/glab/projects/ChaosBench'
+from pathlib import Path
+
+ABS_PATH = Path(__file__).resolve().parent.parent
+DATA_DIR = ABS_PATH / 'data' 
+
 VARIABLE_LIST = ['geopotential', 'specific_humidity', 'temperature', 'u_component_of_wind', 'v_component_of_wind', 'vertical_velocity']
 PARAMS = ['z', 'q', 't', 'u', 'v', 'w']
 PRESSURE_LEVELS = ['10', '50', '100','200', '300', '500','700', '850', '925','1000']

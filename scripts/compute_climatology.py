@@ -18,10 +18,10 @@ def main(args):
     Usage example: `python compute_climatology.py --dataset_name era5 --is_spatial False`
     """
     
-    data_dir = Path(config.DATA_DIR) / 's2s' / args.dataset_name
+    data_dir = Path(config.DATA_DIR) / args.dataset_name
     
     # Set output directory
-    output_dir = Path(config.DATA_DIR) / 's2s' / 'climatology'
+    output_dir = Path(config.DATA_DIR) / 'climatology'
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # If is_spatial flag is True, use a more complex way of computing climatology: sliding window
