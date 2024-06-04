@@ -15,3 +15,5 @@ data_args:
     val_years: [2016, 2017, 2018, 2019, 2020, 2021]
     n_step: 1
     lead_time: 1
+    land_vars: []
+    ocean_vars: []

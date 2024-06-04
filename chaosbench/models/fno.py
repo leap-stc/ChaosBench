@@ -93,10 +93,18 @@ class FNO2d(nn.Module):
         )
         
     def forward(self, x):
-        B, P, L, H, W = x.shape
+        IS_MERGED = False # To handle legacy code where the inputs are separated by pressure level
         
-        x = x.permute((0, 3, 4, 1, 2)) # to shape (B, H, W, P, L)
+        try:
+            B, P, L, H, W = x.shape
+            x = x.permute((0, 3, 4, 1, 2)) # to shape (B, H, W, P, L)
+            
+        except:
+            B, P, H, W = x.shape
+            x = x.permute((0, 2, 3, 1)) # to shape (B, H, W, P)
+            IS_MERGED = True
         
+
         x = self.fc0((x.view(B, H, W, -1))) # to shape (B, H, W, P*L)
         x = x.permute(0, 3, 1, 2) # to shape (B, width, H, W)
         
@@ -127,6 +135,6 @@ class FNO2d(nn.Module):
         x = x[..., :-self.padding, :-self.padding] # Unpad the tensor
         x = self.decoder(x)
         x = x.permute((0, 3, 1, 2)) # to shape (B, P*L, H, W)
-        x = x.reshape((B, P, L, H, W))
+        x = x.reshape((B, P, H, W)) if IS_MERGED else x.reshape((B, P, L, H, W))
         
         return x

@@ -56,7 +56,14 @@ class UNet(nn.Module):
         self.out_conv = nn.Conv2d(64, output_size, 1)
 
     def forward(self, x):
-        B, P, L, H, W = x.shape
+        IS_MERGED = False # To handle legacy code where the inputs are separated by pressure level
+        
+        try:
+            B, P, L, H, W = x.shape
+            
+        except:
+            B, P, H, W = x.shape
+            IS_MERGED = True
         
         # Contracting path
         enc1 = self.enc1(x.view(B, -1, H, W))
@@ -84,7 +91,7 @@ class UNet(nn.Module):
         dec1 = self.dec1(torch.cat([up1, enc1], dim=1))
         
         out = self.out_conv(dec1)
-        out = out.reshape((B, P, L, H, W))
+        out = out.reshape((B, P, H, W)) if IS_MERGED else out.reshape((B, P, L, H, W))
         
         return out
     
@@ -114,7 +121,14 @@ class ResNet(nn.Module):
 
 
     def forward(self, x):
-        B, P, L, H, W = x.shape
+        IS_MERGED = False # To handle legacy code where the inputs are separated by pressure level
+        
+        try:
+            B, P, L, H, W = x.shape
+            
+        except:
+            B, P, H, W = x.shape
+            IS_MERGED = True
         
         # Contracting path
         enc = self.enc(x.view(B, -1, H, W))
@@ -131,6 +145,6 @@ class ResNet(nn.Module):
         up1 = F.interpolate(up1, size=(H, W), mode='bilinear', align_corners=True)
         
         out = self.out_conv(up1)
-        out = out.reshape((B, P, L, H, W))
+        out = out.reshape((B, P, H, W)) if IS_MERGED else out.reshape((B, P, L, H, W))
         
         return out

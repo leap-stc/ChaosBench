@@ -109,14 +109,21 @@ class EncoderDecoder(torch.nn.Module):
         
 
     def forward(self, x):
-        B, P, L, H, W = x.shape
+        IS_MERGED = False # To handle legacy code where the inputs are separated by pressure level
+        
+        try:
+            B, P, L, H, W = x.shape
+            
+        except:
+            B, P, H, W = x.shape
+            IS_MERGED = True
         
         # encoder
         x = self.encoder(x.view(B, -1, H, W))
         
         # decoder
         out = self.decoder(x)
-        out = out.reshape((B, P, L, H, W))
+        out = out.reshape((B, P, H, W)) if IS_MERGED else out.reshape((B, P, L, H, W))
         
         return out
     
@@ -214,7 +221,14 @@ class VAE(torch.nn.Module):
         
 
     def forward(self, x):
-        B, P, L, H, W = x.shape
+        IS_MERGED = False # To handle legacy code where the inputs are separated by pressure level
+        
+        try:
+            B, P, L, H, W = x.shape
+            
+        except:
+            B, P, H, W = x.shape
+            IS_MERGED = True
         
         # encoder
         x = self.encoder(x.view(B, -1, H, W))
@@ -227,6 +241,6 @@ class VAE(torch.nn.Module):
         # decoder
         x = self.fc_dec(z)
         out = self.decoder(x.view(B, 1024, 7, 15))
-        out = out.reshape((B, P, L, H, W))
+        out = out.reshape((B, P, H, W)) if IS_MERGED else out.reshape((B, P, L, H, W))
         
         return out, mu, logvar

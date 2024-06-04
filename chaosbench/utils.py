@@ -1,3 +1,4 @@
+import torch
 import xarray as xr
 from pathlib import Path
 import numpy as np
@@ -20,7 +21,6 @@ def convert_time(
 def denormalize(
     x, 
     param, 
-    level, 
     dataset_name, 
     is_diff=False
 ):
@@ -34,12 +34,10 @@ def denormalize(
     except:
         normalization_file = Path(config.DATA_DIR) / 'climatology' / f'climatology_era5.zarr'
         normalization = xr.open_dataset(normalization_file, engine='zarr')
-        
-    normalization_mean = normalization['mean'].values
-    normalization_sigma = normalization['sigma'].values
     
-    param_idx, level_idx = config.PARAMS.index(param), config.PRESSURE_LEVELS.index(level)
-    mean, sigma = normalization_mean[param_idx, level_idx], normalization_sigma[param_idx, level_idx]
+    # Get their mean and sigma values
+    mean = normalization['mean'].sel(param=param).values
+    sigma = normalization['sigma'].sel(param=param).values
     
     # Check if its a difference denormalization (eg. no +mean since it will cancel out)
     if is_diff:
@@ -50,3 +48,48 @@ def denormalize(
     
     return x
     
+def get_param_level_idx(param, level):
+    """Given param and level, get flattended index especially for atmospheric dataset"""
+    return config.PARAMS.index(param) * len(config.PRESSURE_LEVELS) + config.PRESSURE_LEVELS.index(level)
+
+def flat_to_level(data):
+    """Given flattened (param-level) to (param, level) dataset"""
+    n_dims = len(data.shape)
+    
+    if n_dims == 3:
+        P, H, W = data.shape
+        return data.reshape(len(config.PARAMS), len(config.PRESSURE_LEVELS), H, W)
+    
+    elif n_dims == 4:
+        B, P, H, W = data.shape
+        return data.reshape(B, len(config.PARAMS), len(config.PRESSURE_LEVELS), H, W)
+    
+    elif n_dims == 5:
+        B, S, P, H, W = data.shape
+        return data.reshape(B, S, len(config.PARAMS), len(config.PRESSURE_LEVELS), H, W)
+    
+    else:
+        B, S, N, P, H, W = data.shape
+        return data.reshape(B, S, N, len(config.PARAMS), len(config.PRESSURE_LEVELS), H, W)
+    
+    
+def get_doys_from_timestep(timestamps, lead_time=1):
+    """
+    Get climatology data given timestamps and lead_time
+    
+    Param:
+        timestamps   : list of datetime[ns] object
+        lead_time    : offset to apply to climatology doy (default: 1; i.e., target is 1-day ahead)
+    """
+    all_doys = list()
+    
+    for timestamp in timestamps:
+        doy = datetime.utcfromtimestamp(timestamp.item() / 1e9).timetuple().tm_yday
+        doys = torch.arange(doy, doy+config.N_STEPS-lead_time)
+        doys = doys + lead_time
+        all_doys.append(doys)
+    
+    return torch.stack(all_doys)
+
+def get_param_level_list():
+    return [f"{var}-{level}" for var in config.PARAMS for level in config.PRESSURE_LEVELS]

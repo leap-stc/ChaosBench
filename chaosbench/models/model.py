@@ -24,37 +24,42 @@ class S2SBenchmarkModel(pl.LightningModule):
         self.data_args = data_args
         
         # Initialize model
+        land_vars = self.data_args.get('land_vars', [])
+        ocean_vars = self.data_args.get('ocean_vars', [])
+        input_size = self.model_args['input_size'] + len(land_vars) + len(ocean_vars)
+        output_size = self.model_args['input_size'] + len(land_vars) + len(ocean_vars)
+        
         if 'mlp' in self.model_args['model_name']:
-            self.model = mlp.MLP(input_size = self.model_args['input_size'],
+            self.model = mlp.MLP(input_size = input_size,
                                  hidden_sizes = self.model_args['hidden_sizes'], 
-                                 output_size = self.model_args['output_size'])
+                                 output_size = output_size)
             
         elif 'unet' in self.model_args['model_name']:
-            self.model = cnn.UNet(input_size = self.model_args['input_size'],
-                                   output_size = self.model_args['output_size'])
+            self.model = cnn.UNet(input_size = input_size,
+                                   output_size = output_size)
             
         elif 'resnet' in self.model_args['model_name']:
-            self.model = cnn.ResNet(input_size = self.model_args['input_size'],
-                                   output_size = self.model_args['output_size'])
+            self.model = cnn.ResNet(input_size = input_size,
+                                   output_size = output_size)
             
         elif 'vae' in self.model_args['model_name']:
-            self.model = ae.VAE(input_size = self.model_args['input_size'],
-                                 output_size = self.model_args['output_size'],
+            self.model = ae.VAE(input_size = input_size,
+                                 output_size = output_size,
                                  latent_size = self.model_args['latent_size'])
             
         elif 'ed' in self.model_args['model_name']:
-            self.model = ae.EncoderDecoder(input_size = self.model_args['input_size'],
-                                           output_size = self.model_args['output_size'])
+            self.model = ae.EncoderDecoder(input_size = input_size,
+                                           output_size = output_size)
             
         elif 'fno' in self.model_args['model_name']:
-            self.model = fno.FNO2d(input_size = self.model_args['input_size'],
+            self.model = fno.FNO2d(input_size = input_size,
                                    modes1 = self.model_args['modes1'], 
                                    modes2 = self.model_args['modes2'], 
                                    width = self.model_args['width'], 
                                    initial_step = self.model_args['initial_step'])
             
         elif 'segformer' in self.model_args['model_name']:
-            self.model = vit.Segformer(input_size = self.model_args['input_size'])
+            self.model = vit.Segformer(input_size = input_size)
             
         
         ##################################
@@ -94,7 +99,7 @@ class S2SBenchmarkModel(pl.LightningModule):
             
             # Otherwise, for all variables
             else:
-                loss += self.loss(preds, y[:, step_idx])
+                loss += self.loss(preds[:, :self.model_args['output_size']], y[:, step_idx, :self.model_args['output_size']])
             
             x = preds
             
@@ -128,7 +133,7 @@ class S2SBenchmarkModel(pl.LightningModule):
                 
             # Otherwise, for all variables
             else:
-                loss += self.loss(preds, y[:, step_idx])
+                loss += self.loss(preds[:, :self.model_args['output_size']], y[:, step_idx, :self.model_args['output_size']])
             
             x = preds
             
@@ -151,10 +156,16 @@ class S2SBenchmarkModel(pl.LightningModule):
     def setup(self, stage=None):
         self.train_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'], 
                                                    n_step=self.data_args['n_step'],
-                                                   lead_time=self.data_args['lead_time'])
+                                                   lead_time=self.data_args['lead_time'],
+                                                   land_vars=self.data_args['land_vars'],
+                                                   ocean_vars=self.data_args['ocean_vars']
+                                                  )
         self.val_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'], 
                                                  n_step=self.data_args['n_step'],
-                                                 lead_time=self.data_args['lead_time'])
+                                                 lead_time=self.data_args['lead_time'],
+                                                 land_vars=self.data_args['land_vars'],
+                                                 ocean_vars=self.data_args['ocean_vars']
+                                                )
         
 
     def train_dataloader(self):

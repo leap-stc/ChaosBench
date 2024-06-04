@@ -26,10 +26,13 @@ warnings.filterwarnings('ignore')
 from chaosbench import dataset, config, utils, criterion
 from chaosbench.models import model
 
+
 def main(args):
     """
     Evaluation script given .yaml config and trained model checkpoint (for iterative scheme)
-    
+    You can also provide a list from lra5 and oras5 if you want some or all of their parameters evaluated
+        e.g., python eval_iter.py --model_name <model_name> --eval_years <eval_years> --lra5 [...] --oras5 [...]
+
     Example usage:
         (Climatology)              0) `python eval_iter.py --model_name climatology --eval_years 2022`
         (Persistence)              1) `python eval_iter.py --model_name persistence --eval_years 2022`
@@ -37,71 +40,87 @@ def main(args):
         (Data-driven models)       3) `python eval_iter.py --model_name unet_s2s --eval_years 2022 --version_num 0`
     
     """
-    print(f'Evaluating ERA5 observations against {args.model_name}...')
+    print(f'Evaluating reanlysis against {args.model_name}...')
     
     #########################################
     ####### Evaluation initialization #######
     #########################################
     
-    IS_AI_MODEL, IS_PERSISTENCE, IS_CLIMATOLOGY = False, False, False
+    IS_CLIMATOLOGY, IS_PERSISTENCE, IS_AI_MODEL = False, False, False
     BATCH_SIZE = 32
     
     ## Prepare directory to load model
     log_dir = Path('logs') / args.model_name
-    
+    ALL_PARAM_LIST = {'era5': utils.get_param_level_list(), 'lra5': config.LRA5_PARAMS, 'oras5': config.ORAS5_PARAMS}
+
     ## Case 0: Climatology
     if args.model_name == 'climatology':
         IS_CLIMATOLOGY = True
+        PARAM_LIST = {'era5': utils.get_param_level_list(), 'lra5': config.LRA5_PARAMS, 'oras5': config.ORAS5_PARAMS}
         
-        input_filepath = Path(config.DATA_DIR) / 'climatology' / 'climatology_era5_spatial.zarr'
-        input_dataset = xr.open_dataset(input_filepath, engine='zarr')
-        input_dataset = input_dataset['mean'].values
-        
+        input_filepath = {
+                'era5': Path(config.DATA_DIR) / 'climatology' / 'climatology_era5_spatial.zarr',
+                'lra5': Path(config.DATA_DIR) / 'climatology' / 'climatology_lra5_spatial.zarr',
+                'oras5': Path(config.DATA_DIR) / 'climatology' / 'climatology_oras5_spatial.zarr',
+        }
+
+        input_dataset = {
+                'era5': xr.open_dataset(input_filepath['era5'], engine='zarr')['mean'].values,
+                'lra5': xr.open_dataset(input_filepath['lra5'], engine='zarr')['mean'].values,
+                'oras5': xr.open_dataset(input_filepath['oras5'], engine='zarr')['mean'].values,
+        }
+ 
         # Retrieve all output files
-        output_filepath = Path(config.DATA_DIR) / 'era5'
-        output_files = list()
-        for year in args.eval_years:
-            pattern = rf'.*{year}\d{{4}}\.zarr$'
-            output_files.extend(
-                [f for f in list(output_filepath.glob(f'*{year}*.zarr')) if re.match(pattern, str(f.name))]
-            )
-        output_files.sort()
+        output_files = {'era5': [], 'lra5': [], 'oras5': []}
+        for param_class, _ in output_files.items():
+            output_filepath = Path(config.DATA_DIR) / param_class
+            
+            for year in args.eval_years:
+                output_files[param_class].extend(
+                    [f for f in list(output_filepath.glob(f'*{year}*.zarr')) if re.match(rf'.*{year}\d{{4}}\.zarr$', str(f.name))]
+                )
+            
+            output_files[param_class].sort()
         
         # Load all output data
-        output_dataset = list()
-        for file_path in output_files:
-            ds = xr.open_dataset(file_path, engine='zarr')
-            output_dataset.append(
-                ds[config.PARAMS].to_array().values
-            )
-
-        input_dataset = torch.tensor(input_dataset).to(config.device)
-        output_dataset = torch.tensor(output_dataset).to(config.device)
-        
-    
+        output_dataset = {'era5': [], 'lra5': [], 'oras5': []}
+        for param_class, _ in output_dataset.items():
+            for file_path in output_files[param_class]:
+                ds = xr.open_dataset(file_path, engine='zarr')
+                
+                if param_class == 'era5':
+                    output_dataset[param_class].append(ds[config.PARAMS].to_array().values.reshape(-1, 121, 240))
+                else:
+                    output_dataset[param_class].append(ds[ALL_PARAM_LIST[param_class]].to_array().values)
+             
     ## Case 1: Persistence
     elif args.model_name == 'persistence':
         IS_PERSISTENCE = True
+        PARAM_LIST = {'era5': utils.get_param_level_list(), 'lra5': config.LRA5_PARAMS, 'oras5': config.ORAS5_PARAMS}
         
-        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
+        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
+        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
     
     ## Case 2: Physical models, one of [ecmwf, cma, ukmo, ncep]
     elif args.model_name in list(config.S2S_CENTERS.keys()):
-        input_dataset = dataset.S2SEvalDataset(s2s_name=args.model_name, years=args.eval_years)
+        IS_NWPS = True
+        PARAM_LIST = {'era5': utils.get_param_level_list(), 'lra5': args.lra5, 'oras5': args.oras5}
+
+        input_dataset = dataset.S2SEvalDataset(s2s_name=args.model_name, years=args.eval_years, is_normalized=False)
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
+        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
     ## Case 3: Data-driven models
     else:
         IS_AI_MODEL = True
-        
+        PARAM_LIST = {'era5': utils.get_param_level_list(), 'lra5': args.lra5, 'oras5': args.oras5}
+
         ## Retrieve hyperparameters
         config_filepath = Path(f'chaosbench/configs/{args.model_name}.yaml')
         with open(config_filepath, 'r') as config_f:
@@ -118,21 +137,25 @@ def main(args):
         ckpt_filepath = list(ckpt_filepath.glob('*.ckpt'))[0]
         baseline = baseline.load_from_checkpoint(ckpt_filepath)
         
+        land_vars = baseline.hparams.get('data_args', {}).get('land_vars', [])
+        ocean_vars = baseline.hparams.get('data_args', {}).get('ocean_vars', [])
+
         ## Prepare input/output dataset
-        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
+        input_dataset = dataset.S2SObsDataset(args.eval_years, config.N_STEPS-1, 1, land_vars, ocean_vars)
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
+
+        output_dataset = dataset.S2SObsDataset(args.eval_years, config.N_STEPS-1, 1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
     
-    ##### Initialize criteria #####
+    ####################### Initialize criteria ###################
     RMSE = criterion.RMSE()
     Bias = criterion.Bias()
     ACC = criterion.ACC()
     SSIM = criterion.MS_SSIM()
     SpecDiv = criterion.SpectralDiv(percentile=0.9, is_train=False)
     SpecRes = criterion.SpectralRes(percentile=0.9, is_train=False)
-    ###############################
+    ###############################################################
     
     
     ######################################
@@ -149,19 +172,22 @@ def main(args):
         step_rmse, step_bias, step_acc, step_ssim, step_sdiv, step_sres = dict(), dict(), dict(), dict(), dict(), dict()
     
         ## Extract metric for each param/level
-        for param_idx, param in enumerate(config.PARAMS):
-            for level_idx, level in enumerate(config.PRESSURE_LEVELS):
-                
+        for i, (param_class, params) in enumerate(ALL_PARAM_LIST.items()):
+
+            input_dataset[param_class] = torch.tensor(input_dataset[param_class])
+            output_dataset[param_class] = torch.tensor(output_dataset[param_class])
+
+            for j, param in enumerate(params):
+
+                ### Some param/level pairs are not available
+                param_exist = param in PARAM_LIST[param_class]
+
                 ## Handling predictions
-                unique_preds = input_dataset[:len(output_dataset), param_idx, level_idx]
+                unique_preds = input_dataset[param_class][:output_dataset[param_class].shape[0], j].double()
                 
                 ## Handling labels
-                unique_labels = output_dataset[:, param_idx, level_idx]
+                unique_labels = output_dataset[param_class][:, j].double()
                 
-                ## Ensuring the right data types
-                unique_preds = unique_preds.double()
-                unique_labels = unique_labels.double()
-
                 ################################## Criterion 1: RMSE #####################################
                 error = RMSE(unique_preds, unique_labels).cpu().numpy()
 
@@ -169,7 +195,7 @@ def main(args):
                 bias = Bias(unique_preds, unique_labels).cpu().numpy()
 
                 ################################## Criterion 3: ACC ######################################
-                acc = ACC(unique_preds, unique_labels, param, level).cpu().numpy()
+                acc = ACC(unique_preds, unique_labels, param, param_class).cpu().numpy()
 
                 ################################## Criterion 4: SSIM ######################################
                 ssim = SSIM(unique_preds, unique_labels).cpu().numpy()
@@ -180,14 +206,13 @@ def main(args):
                 ################################ Criterion 6: SpecRes #####################################
                 sres = SpecRes(unique_preds, unique_labels).cpu().numpy()
 
-                step_rmse[f'{param}-{level}'] = [error] * (config.N_STEPS - 1)
-                step_bias[f'{param}-{level}'] = [bias] * (config.N_STEPS - 1)
-                step_acc[f'{param}-{level}'] = [acc] * (config.N_STEPS - 1)
-                step_ssim[f'{param}-{level}'] = [ssim] * (config.N_STEPS - 1)
-                step_sdiv[f'{param}-{level}'] = [sdiv] * (config.N_STEPS - 1)
-                step_sres[f'{param}-{level}'] = [sres] * (config.N_STEPS - 1)
-                
-        
+                step_rmse[param] = [error] * (config.N_STEPS - 1)
+                step_bias[param] = [bias] * (config.N_STEPS - 1)
+                step_acc[param] = [acc] * (config.N_STEPS - 1)
+                step_ssim[param] = [ssim] * (config.N_STEPS - 1)
+                step_sdiv[param] = [sdiv] * (config.N_STEPS - 1)
+                step_sres[param] = [sres] * (config.N_STEPS - 1)
+                 
         all_rmse.append(step_rmse)
         all_bias.append(step_bias)
         all_acc.append(step_acc)
@@ -197,56 +222,56 @@ def main(args):
                         
     
     else:
+        
         for input_batch, output_batch in tqdm(zip(input_dataloader, output_dataloader), total=len(input_dataloader)):
 
             _, preds_x, preds_y = input_batch
             _, truth_x, truth_y = output_batch
-
-            assert preds_y.size(1) == truth_y.size(1)
-
-            curr_x = preds_x.to(config.device) # Initialize current x
-            truth_x = truth_x.to(config.device) # Initialize truth x
-
+           
             ## Step metric placeholders
             step_rmse, step_bias, step_acc, step_ssim, step_sdiv, step_sres = dict(), dict(), dict(), dict(), dict(), dict()
 
             for step_idx in range(truth_y.size(1)):
+                all_param_idx, param_idx = 0, 0
+
+                ############## Getting current-step target ##############
+                targs = truth_y[:, step_idx]
+                #########################################################
 
                 with torch.no_grad():
-                    curr_y = truth_y[:, step_idx].to(config.device)
 
-                    ############## Getting predictions ##############
+                    ############# Getting current-step preds #############
                     if IS_AI_MODEL:
-                        preds = baseline(curr_x)
+                        preds = baseline(preds_x.to(config.device))
 
                     elif IS_PERSISTENCE:
-                        preds = preds_x.to(config.device)
+                        preds = preds_x
 
                     else:
-                        preds = preds_y[:, step_idx].to(config.device)
-                    #################################################
+                        preds = preds_y[:, step_idx]
+                    #####################################################
 
 
-                    ## Extract metric for each param/level
-                    for param_idx, param in enumerate(config.PARAMS):
-                        for level_idx, level in enumerate(config.PRESSURE_LEVELS):
+                    ## Compute metric for each parameter
+                    for i, (param_class, params) in enumerate(ALL_PARAM_LIST.items()):
+                        for j, param in enumerate(params):
+                            
+                            ### Some param/level pairs are not available 
+                            param_exist = param in PARAM_LIST[param_class]
 
                             ## Handling predictions
-                            preds[:, param_idx, level_idx] = utils.denormalize(
-                                preds[:, param_idx, level_idx], param, level, args.model_name
-                            )
-                            unique_preds = preds[:, param_idx, level_idx]
-                            
+                            if IS_AI_MODEL:
+                                unique_preds = preds[:, param_idx] if param_exist else torch.full((BATCH_SIZE, 121, 240), torch.nan)
+                                unique_preds = utils.denormalize(unique_preds, param, param_class)
+                                unique_preds = unique_preds.double().to(config.device)
+
+                            else:
+                                unique_preds = preds[:, param_idx] if param_exist else torch.full((BATCH_SIZE, 121,240), torch.nan)
+                                unique_preds = unique_preds.double().to(config.device)
                             
                             ## Handling labels
-                            curr_y[:, param_idx, level_idx] = utils.denormalize(
-                                curr_y[:, param_idx, level_idx], param, level, 'era5'
-                            )
-                            unique_labels = curr_y[:, param_idx, level_idx]
-
-                            ## Ensuring the right data types
-                            unique_preds = unique_preds.double()
-                            unique_labels = unique_labels.double()
+                            unique_labels = targs[:, all_param_idx]
+                            unique_labels = unique_labels.double().to(config.device)
 
                             ################################## Criterion 1: RMSE #####################################
                             error = RMSE(unique_preds, unique_labels).cpu().numpy()
@@ -255,7 +280,7 @@ def main(args):
                             bias = Bias(unique_preds, unique_labels).cpu().numpy()
 
                             ################################## Criterion 3: ACC ######################################
-                            acc = ACC(unique_preds, unique_labels, param, level).cpu().numpy()
+                            acc = ACC(unique_preds, unique_labels, param, param_class).cpu().numpy()
 
                             ################################## Criterion 4: SSIM ######################################
                             ssim = SSIM(unique_preds, unique_labels).cpu().numpy()
@@ -268,27 +293,30 @@ def main(args):
 
 
                             try:
-                                step_rmse[f'{param}-{level}'].extend([error])
-                                step_bias[f'{param}-{level}'].extend([bias])
-                                step_acc[f'{param}-{level}'].extend([acc])
-                                step_ssim[f'{param}-{level}'].extend([ssim])
-                                step_sdiv[f'{param}-{level}'].extend([sdiv])
-                                step_sres[f'{param}-{level}'].extend([sres])
+                                step_rmse[param].extend([error])
+                                step_bias[param].extend([bias])
+                                step_acc[param].extend([acc])
+                                step_ssim[param].extend([ssim])
+                                step_sdiv[param].extend([sdiv])
+                                step_sres[param].extend([sres])
 
                             except:
-                                step_rmse[f'{param}-{level}'] = [error]
-                                step_bias[f'{param}-{level}'] = [bias]
-                                step_acc[f'{param}-{level}'] = [acc]
-                                step_ssim[f'{param}-{level}'] = [ssim]
-                                step_sdiv[f'{param}-{level}'] = [sdiv]
-                                step_sres[f'{param}-{level}'] = [sres]
+                                step_rmse[param] = [error]
+                                step_bias[param] = [bias]
+                                step_acc[param] = [acc]
+                                step_ssim[param] = [ssim]
+                                step_sdiv[param] = [sdiv]
+                                step_sres[param] = [sres]
+
+                            all_param_idx += 1
+                            param_idx = param_idx + 1 if param_exist else param_idx
 
                     ## Make next-step input as the current prediction (used for AI models)
-                    curr_x = preds
+                    preds_x = preds
 
                 ## (1) Cleaning up to release memory at each time_step
-                curr_y, preds = curr_y.cpu().detach(), preds.cpu().detach()
-                del curr_y, preds
+                targs, preds = targs.cpu().detach(), preds.cpu().detach()
+                del targs, preds
 
             ## (2) Cleaning up to release memory at each batch
             preds_x, preds_y = preds_x.cpu().detach(), preds_y.cpu().detach()
@@ -363,6 +391,8 @@ if __name__ == "__main__":
     parser.add_argument('--model_name', help='Name of the model specified in your config file, including one of [ecmwf, cma, ukmo, ncep, persistence]')
     parser.add_argument('--eval_years', nargs='+', help='Provide the evaluation years')
     parser.add_argument('--version_num', default=0, help='Version number of the model')
-    
+    parser.add_argument('--lra5', nargs='+', type=str, default=[], help='List of LRA5 variables to be evaluated')
+    parser.add_argument('--oras5', nargs='+', type=str, default=[], help='List of ORAS5 variables to be evaluated')
+
     args = parser.parse_args()
     main(args)

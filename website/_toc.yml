@@ -7,8 +7,10 @@ chapters:
 - file: motivation
 - file: quickstart
 - file: dataset
-- file: task
 - file: training
+    sections:
+    - file: task
 - file: evaluation
+    sections:
+    - file: metrics
 - file: baseline
-- file: leaderboard

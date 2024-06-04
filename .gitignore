@@ -5,6 +5,7 @@ __pycache__/
 *.out
 scripts/train.sh
 logs/
+*.sh
 
 eval_sota*
 env/

@@ -214,10 +214,18 @@ class Segformer(nn.Module):
         )
 
     def forward(self, x):
-        B, P, L, H, W = x.shape
+        IS_MERGED = False # To handle legacy code where the inputs are separated by pressure level
+        
+        try:
+            B, P, L, H, W = x.shape
+            x = F.interpolate(x.view(B, -1, H, W), size=(128, 256), mode='bilinear', align_corners=False)
+        
+        except:
+            B, P, H, W = x.shape
+            x = F.interpolate(x, size=(128, 256), mode='bilinear', align_corners=False)
+            IS_MERGED = True
         
         # MIT layer
-        x = F.interpolate(x.view(B, -1, H, W), size=(128, 256), mode='bilinear', align_corners=False)
         layer_outputs = self.mit(x, return_layer_outputs = True)
         
         # Fusion layer
@@ -225,6 +233,6 @@ class Segformer(nn.Module):
         fused = torch.cat(fused, dim=1)
         fused = self.to_segmentation(fused)
         fused = F.interpolate(fused, size=(H, W), mode='bilinear', align_corners=False)
-        fused = fused.reshape((B, P, L, H, W))
+        fused = fused.reshape((B, P, H, W)) if IS_MERGED else fused.reshape((B, P, L, H, W))
         
         return fused

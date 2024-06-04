@@ -22,13 +22,18 @@ class MLP(nn.Module):
         self.model = nn.Sequential(*layers)
         
     def forward(self, x):
-        B, P, L, H, W = x.shape
-        
-        x = x.permute((0, 3, 4, 1, 2)) # to shape (B, H, W, P, L)
-        
-        x = self.model(x.view(B, H, W, -1)) # to shape (B, H, W, P*L)
-        
-        x = x.permute((0, 3, 1, 2)) # to shape (B, P*L, H, W)
-        x = x.reshape((B, P, L, H, W))
-        
+        # To handle legacy code where the inputs are separated by pressure level
+        try:
+            B, P, L, H, W = x.shape
+            x = x.permute((0, 3, 4, 1, 2)) # to shape (B, H, W, P, L)
+            x = self.model(x.view(B, H, W, -1)) # to shape (B, H, W, P*L)
+            x = x.permute((0, 3, 1, 2)) # to shape (B, P*L, H, W)
+            x = x.reshape((B, P, L, H, W))
+            
+        except:
+            B, P, H, W = x.shape
+            x = x.permute((0, 2, 3, 1)) # to shape (B, H, W, P)
+            x = self.model(x) # to shape (B, H, W, P)
+            x = x.permute((0, 3, 1, 2)) # to shape (B, P, H, W)
+            
         return x

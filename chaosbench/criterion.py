@@ -1,10 +1,13 @@
 import torch
 import torch.nn as nn
+import torch.special as special
 import torchist
 import xarray as xr
+from xskillscore import crps_ensemble, crps_gaussian
 from pathlib import Path
 
-from chaosbench import config
+from chaosbench import config, utils
+
 
 def get_adjusting_weights():
     latitudes = torch.arange(90, -91.5, -1.5)
@@ -165,14 +168,22 @@ class ACC(nn.Module):
         self.weights = get_adjusting_weights() if lat_adjusted else None
         
         # Retrieve climatology
-        self.normalization_file = Path(config.DATA_DIR) / 'climatology' / 'climatology_era5.zarr'
-        self.normalization = xr.open_dataset(self.normalization_file, engine='zarr')
-        self.normalization_mean = self.normalization['mean'].values
+        self.normalization_file = {
+                'era5': Path(config.DATA_DIR) / 'climatology' / 'climatology_era5.zarr', 
+                'lra5': Path(config.DATA_DIR) / 'climatology' / 'climatology_lra5.zarr', 
+                'oras5': Path(config.DATA_DIR) / 'climatology' / 'climatology_oras5.zarr'
+        }
         
-    def forward(self, predictions, targets, param, level):
+        self.normalization_mean = {
+                'era5': xr.open_dataset(self.normalization_file['era5'], engine='zarr')['mean'],
+                'lra5': xr.open_dataset(self.normalization_file['lra5'], engine='zarr')['mean'],
+                'oras5': xr.open_dataset(self.normalization_file['oras5'], engine='zarr')['mean'],
+        }
+        
+    def forward(self, predictions, targets, param, source):
         
         # Retrieve mean climatology
-        climatology = self.normalization_mean[config.PARAMS.index(param), config.PRESSURE_LEVELS.index(level)]
+        climatology = torch.tensor(self.normalization_mean[source].sel(param=param).values).to(config.device)
         
         # Compute only valid values
         valid_mask = ~torch.isnan(predictions) & ~torch.isnan(targets)
@@ -540,3 +551,154 @@ class SpectralRes(nn.Module):
         # Compute spectral Sk residual
         res = torch.sqrt(torch.nanmean(torch.square(predictions_Sk - targets_Sk)))
         return res
+    
+
+class CRPS(nn.Module):
+    """Compute Continuous Ranked Probability Score (CRPS)
+    """
+    
+    def __init__(self,
+                 lat_adjusted=True):
+        
+        super(CRPS, self).__init__()
+        
+        self.lat_adjusted = lat_adjusted
+        self.weights = get_adjusting_weights() if lat_adjusted else None
+        
+    def forward(self, predictions, targets):
+        crps = []
+        opts = dict(device=predictions.device, dtype=predictions.dtype)
+        
+        if self.lat_adjusted:
+            predictions = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * predictions 
+            targets = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * targets
+            
+        B, N, H, W = predictions.shape
+        coords_pred = {"member": range(N), "lat": range(H), "lon": range(W)}
+        coords_targ = {"lat": range(H), "lon": range(W)}
+        
+        # predictions = predictions.reshape((N, B, H, W))
+        
+        # predictions = predictions.sort(dim=0).values
+        # diff = predictions[1:] - predictions[:-1]
+        # weight = torch.arange(1, N, **opts) * torch.arange(N - 1, 0, -1, **opts)
+        # weight = weight.reshape(weight.shape + (1,) * (diff.dim() - 1))
+        
+        # crps = torch.nanmean(torch.abs(predictions - targets), dim=0) - torch.nansum(diff * weight, dim=0) / N**2
+        # crps = torch.nanmean(crps)
+        
+        for b in range(B):
+            
+            pred_xr = xr.DataArray(predictions[b].detach().cpu().numpy(), dims=["member", "lat", "lon"],  coords=coords_pred)
+            targ_xr = xr.DataArray(targets[b].detach().cpu().numpy(), dims=["lat", "lon"], coords=coords_targ)
+            
+            # Compute CRPS for the current batch
+            crps.append(crps_ensemble(targ_xr, pred_xr).mean().item())
+            
+        crps = torch.nanmean(torch.tensor(crps, **opts))
+
+        return crps
+    
+class CRPSS(nn.Module):
+    """Compute Continuous Ranked Probability Score (CRPS) Score
+    """
+    
+    def __init__(self,
+                 lat_adjusted=True):
+        
+        super(CRPSS, self).__init__()
+        
+        self.lat_adjusted = lat_adjusted
+        self.weights = get_adjusting_weights() if lat_adjusted else None
+        self.crps = CRPS(lat_adjusted=False) # latitude adjustment done only once...
+        self.mae = MAE(lat_adjusted=False) # latitude adjustment done only once...
+        self.normalization_file = {
+                'era5': Path(config.DATA_DIR) / 'climatology' / 'climatology_era5_spatial.zarr',
+                'lra5': Path(config.DATA_DIR) / 'climatology' / 'climatology_lra5_spatial.zarr',
+                'oras5': Path(config.DATA_DIR) / 'climatology' / 'climatology_oras5_spatial.zarr'
+        }
+        self.normalization = {
+                'era5': xr.open_dataset(self.normalization_file['era5'], engine='zarr'),
+                'lra5': xr.open_dataset(self.normalization_file['lra5'], engine='zarr'),
+                'oras5': xr.open_dataset(self.normalization_file['oras5'], engine='zarr'),
+        }
+
+    def forward(self, predictions, targets, doys, param, source):
+        
+        opts = dict(device=predictions.device, dtype=predictions.dtype)
+        
+        # Get climatology
+        clima_mean = self.normalization[source]['mean'].sel(doy=doys, param=param).values
+        clima_sigma = self.normalization[source]['sigma'].sel(doy=doys, param=param).values
+ 
+        if self.lat_adjusted:
+            predictions = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * predictions 
+            targets = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * targets
+            clima_mean = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * clima_mean
+            clima_sigma = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * clima_sigma
+        
+        B, N, H, W = predictions.shape
+        coords_pred = {"member": range(N), "lat": range(H), "lon": range(W)}
+        coords_targ = {"lat": range(H), "lon": range(W)}
+
+        # Compute reference CRPS
+        crps_ref = []
+        for b in range(B):
+            targ_xr = xr.DataArray(targets[b].detach().cpu().numpy(), dims=["lat", "lon"], coords=coords_targ)
+            clima_m_xr = xr.DataArray(clima_mean[b].detach().cpu().numpy(), dims=["lat", "lon"], coords=coords_targ)
+            clima_s_xr = xr.DataArray(clima_sigma[b].detach().cpu().numpy(), dims=["lat", "lon"], coords=coords_targ)
+            crps_ref.append(crps_gaussian(targ_xr, clima_m_xr, clima_s_xr).mean().item())
+
+        crps_ref = torch.nanmean(torch.tensor(crps_ref, **opts))
+        
+        # Compute forecast CRPS
+        crps_for = self.crps(predictions, targets)
+        
+        # Compute CRPS Score
+        crpss = 1 - crps_for / crps_ref
+
+        return crpss
+
+
+class Spread(nn.Module):
+    """Compute Spread along the ensemble dimension
+    """
+    
+    def __init__(self,
+                 lat_adjusted=True):
+        
+        super(Spread, self).__init__()
+        
+        self.lat_adjusted = lat_adjusted
+        self.weights = get_adjusting_weights() if lat_adjusted else None
+        
+    def forward(self, predictions, targets):
+        
+        if self.lat_adjusted:
+            predictions = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * predictions 
+            
+        spread = torch.nanmean(torch.std(predictions, dim=1))
+    
+        return spread
+    
+
+class SSR(nn.Module):
+    """Compute spread/skill ratio
+    """
+    
+    def __init__(self,
+                 lat_adjusted=True):
+        
+        super(SSR, self).__init__()
+        
+        self.lat_adjusted = lat_adjusted
+        self.weights = get_adjusting_weights() if lat_adjusted else None
+        
+    def forward(self, predictions, targets):
+        
+        skill = RMSE(lat_adjusted=self.lat_adjusted)
+        spread = Spread(lat_adjusted=self.lat_adjusted)
+        
+        ssr = spread(predictions, targets) / skill(predictions.mean(axis=1), targets)
+    
+        return ssr

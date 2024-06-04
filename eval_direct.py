@@ -48,7 +48,9 @@ def interpolate(values, indices):
 def main(args):
     """
     Evaluation script given .yaml config and trained model checkpoint (for direct scheme)
-    
+    You can also provide a list from lra5 and oras5 if you want some or all of their parameters predicted, 
+        e.g., python eval_direct.py --model_name <model_name> --eval_years <eval_years> --version_nums [...] --task_num <task_num> --lra5 [...] --oras5 [...]
+
     Example usage:
     (Data-driven models)       
     1) `python eval_direct.py --model_name unet_s2s --eval_years 2022 --version_nums 0 4 5 6 7 8 9 10 11 12 --task_num 1`
@@ -60,7 +62,7 @@ def main(args):
     """
     assert args.task_num in [1, 2]
     
-    print(f'Evaluating ERA5 observations against {args.model_name}...')
+    print(f'Evaluating reanlysis against {args.model_name}...')
     
     #########################################
     ####### Evaluation initialization #######
@@ -72,19 +74,21 @@ def main(args):
     
     ## Prepare directory to load model
     log_dir = Path('logs') / args.model_name
+    ALL_PARAM_LIST = {'era5': utils.get_param_level_list(), 'lra5': config.LRA5_PARAMS, 'oras5': config.ORAS5_PARAMS}
     
     ## Case 1: Data-driven model
     if 's2s' in args.model_name:
         IS_AI_MODEL = True
+        PARAM_LIST = {'era5': utils.get_param_level_list(), 'lra5': args.lra5, 'oras5': args.oras5}
         
         ## Retrieve hyperparameters
         config_filepath = Path(f'chaosbench/configs/{args.model_name}.yaml')
         with open(config_filepath, 'r') as config_f:
             hyperparams = yaml.load(config_f, Loader=yaml.FullLoader)
-
+        
         model_args = hyperparams['model_args']
         data_args = hyperparams['data_args']
-        
+
         ## Initialize model given hyperparameters
         assert len(args.version_nums) == len(DELTA_T)
         
@@ -98,18 +102,23 @@ def main(args):
             baselines.append(copy.deepcopy(baseline))
         
         ## Prepare input/output dataset
-        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
+        lra5_vars, oras5_vars = baseline.hparams.get('land_vars', []), baseline.hparams.get('ocean_vars', [])
+        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=lra5_vars, ocean_vars=oras5_vars)
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
+
+        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
     
     ## Case 2: External prediction (e.g., ClimaX)
     else:
-        IS_PREDICTION = True
-        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
+        IS_EXTERNAL = True
+        PARAM_LIST = {'era5': config.CLIMAX_VARS if args.task_num == 1 else config.HEADLINE_VARS, 'lra5': args.lra5, 'oras5': args.oras5}
+        
+        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1)
+
+        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
         ## List external prediction
@@ -126,16 +135,15 @@ def main(args):
                 all_preds.append(data)
                 
         all_preds = np.array(all_preds)
-        
-    
-    ##### Initialize criteria #####
+
+    ##################### Initialize criteria ######################
     RMSE = criterion.RMSE()
     Bias = criterion.Bias()
     ACC = criterion.ACC()
     SSIM = criterion.MS_SSIM()
     SpecDiv = criterion.SpectralDiv(percentile=0.9, is_train=False)
     SpecRes = criterion.SpectralRes(percentile=0.9, is_train=False)
-    ###############################
+    ###############################################################
     
     
     ######################################
@@ -152,62 +160,49 @@ def main(args):
         _, truth_x, truth_y = output_batch
         
         assert preds_y.size(1) == truth_y.size(1)
+        N_STEPS = truth_y.size(1)
         
-        curr_x = preds_x.to(config.device) # Initialize current x
-
         ## Step metric placeholders
         step_rmse, step_bias, step_acc, step_ssim, step_sdiv, step_sres = dict(), dict(), dict(), dict(), dict(), dict()
 
         for step_idx, delta in enumerate(DELTA_T):
+            all_param_idx, param_idx = 0, 0
 
-            with torch.no_grad():
-                curr_y = truth_y[:, delta-1].to(config.device)
+            with torch.no_grad(): 
                 
-                
-                ############## Getting predictions ##############
+                ############## Getting current-step preds/targs ##############
                 if IS_AI_MODEL:
-                    preds = baselines[step_idx](curr_x)
+                    preds = baselines[step_idx](preds_x.to(config.device))
+                    targs = truth_y[:, delta-1]
                 
                 else:
                     preds = all_preds[step_idx]
-                #################################################
+                    targs = truth_y[:, delta-1]
+                ##############################################################
                 
                 
                 ## Extract metric for each param/level
-                for param_idx, param in enumerate(config.PARAMS):
-                    for level_idx, level in enumerate(config.PRESSURE_LEVELS):
+                for i, (param_class, params) in enumerate(ALL_PARAM_LIST.items()):
+                    for j, param in enumerate(params):
+                        
+                        ### Some param/level pairs are not available 
+                        param_exist = param in PARAM_LIST[param_class]
 
                         ## Handling predictions
-                        if IS_AI_MODEL:
-                            preds[:, param_idx, level_idx] = utils.denormalize(
-                                preds[:, param_idx, level_idx], param, level, args.model_name
-                            )
-                            
-                            unique_preds = preds[:, param_idx, level_idx]
+                        if IS_AI_MODEL: 
+                            unique_preds = preds[:, param_idx] if param_exist else torch.full((BATCH_SIZE, 121, 240), torch.nan)
+                            unique_preds = utils.denormalize(unique_preds, param, param_class)
+                            unique_preds = unique_preds.double().to(config.device)
                         
                         else:
-                            ### Some param/level pairs are not available 
-                            param_exist = f'{param}_{level}' in list(preds.keys())
-                            if param_exist:
-                                unique_preds = preds[f'{param}_{level}']
-                                unique_preds = unique_preds[int(batch_idx * BATCH_SIZE) : int((batch_idx + 1) * BATCH_SIZE), :, :]
-                            
-                            else:
-                                unique_preds = np.full((BATCH_SIZE, 121, 240), np.nan)
-                                
-                            unique_preds = torch.tensor(unique_preds).to(config.device)
+                            param_name, start_idx, end_idx = param.replace('-', '_'), int(batch_idx * BATCH_SIZE), int((batch_idx + 1) * BATCH_SIZE)
+                            unique_preds = torch.tensor(preds[param_name])[start_idx:end_idx] if param_exist else torch.full((BATCH_SIZE, 121, 240), torch.nan)
+                            unique_preds = unique_preds.double().to(config.device)
                         
                         ## Handling labels
-                        curr_y[:, param_idx, level_idx] = utils.denormalize(
-                            curr_y[:, param_idx, level_idx], param, level, 'era5'
-                        )
+                        unique_labels = targs[:, all_param_idx]
+                        unique_labels = unique_labels.double().to(config.device)
                         
-                        unique_labels = curr_y[:, param_idx, level_idx]
-                        
-                        ## Ensuring the right data types
-                        unique_preds = unique_preds.double()
-                        unique_labels = unique_labels.double()
-
                         ################################## Criterion 1: RMSE #####################################
                         error = RMSE(unique_preds, unique_labels).cpu().numpy()
 
@@ -215,7 +210,7 @@ def main(args):
                         bias = Bias(unique_preds, unique_labels).cpu().numpy()
                         
                         ################################## Criterion 3: ACC ######################################
-                        acc = ACC(unique_preds, unique_labels, param, level).cpu().numpy()
+                        acc = ACC(unique_preds, unique_labels, param, param_class).cpu().numpy()
                         
                         ################################## Criterion 4: SSIM ######################################
                         ssim = SSIM(unique_preds, unique_labels).cpu().numpy()
@@ -228,24 +223,24 @@ def main(args):
 
 
                         try:
-                            step_rmse[f'{param}-{level}'].extend([error])
-                            step_bias[f'{param}-{level}'].extend([bias])
-                            step_acc[f'{param}-{level}'].extend([acc])
-                            step_ssim[f'{param}-{level}'].extend([ssim])
-                            step_sdiv[f'{param}-{level}'].extend([sdiv])
-                            step_sres[f'{param}-{level}'].extend([sres])
+                            step_rmse[param].extend([error])
+                            step_bias[param].extend([bias])
+                            step_acc[param].extend([acc])
+                            step_ssim[param].extend([ssim])
+                            step_sdiv[param].extend([sdiv])
+                            step_sres[param].extend([sres])
 
                         except:
-                            step_rmse[f'{param}-{level}'] = [error]
-                            step_bias[f'{param}-{level}'] = [bias]
-                            step_acc[f'{param}-{level}'] = [acc]
-                            step_ssim[f'{param}-{level}'] = [ssim]
-                            step_sdiv[f'{param}-{level}'] = [sdiv]
-                            step_sres[f'{param}-{level}'] = [sres]
-                            
-                        if param == 't' and level == 850:
-                            print(error)
-                            
+                            step_rmse[param] = [error]
+                            step_bias[param] = [bias]
+                            step_acc[param] = [acc]
+                            step_ssim[param] = [ssim]
+                            step_sdiv[param] = [sdiv]
+                            step_sres[param] = [sres]
+
+                        all_param_idx += 1
+                        param_idx = param_idx + 1 if param_exist else param_idx
+
         
         all_rmse.append(step_rmse)
         all_bias.append(step_bias)
@@ -319,6 +314,8 @@ if __name__ == "__main__":
     parser.add_argument('--eval_years', nargs='+', help='Provide the evaluation years')
     parser.add_argument('--version_nums', nargs='+', help='Provide the version numbers')
     parser.add_argument('--task_num', type=int, default=1, help='Task number, one of [1,2]')
-    
+    parser.add_argument('--lra5', nargs='+', type=str, default=[], help='List of LRA5 variables to be evaluated')
+    parser.add_argument('--oras5', nargs='+', type=str, default=[], help='List of ORAS5 variables to be evaluated')
+
     args = parser.parse_args()
     main(args)
