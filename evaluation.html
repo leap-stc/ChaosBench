@@ -14,19 +14,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=384b581d" />
@@ -37,12 +37,12 @@
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="_static/documentation_options.js?v=9eb32ce0"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
@@ -60,8 +60,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'evaluation';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Baseline Models" href="baseline.html" />
-    <link rel="prev" title="Training" href="training.html" />
+    <link rel="next" title="Metrics" href="metrics.html" />
+    <link rel="prev" title="Task Overview" href="task.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -71,27 +71,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -113,8 +109,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -174,12 +175,15 @@
 <li class="toctree-l1"><a class="reference internal" href="motivation.html">Motivation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="task.html">Task Overview</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="training.html">Training</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Evaluation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="training.html">Training</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="task.html">Task Overview</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Evaluation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">Metrics</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="baseline.html">Baseline Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="leaderboard.html">Leaderboard</a></li>
 </ul>
 
     </div>
@@ -195,7 +199,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -204,7 +208,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -389,29 +393,51 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="evaluation">
 <h1>Evaluation<a class="headerlink" href="#evaluation" title="Link to this heading">#</a></h1>
-<p>After training your model, you can simply perform evaluation by running:</p>
+<p>Once training is done, we can perform evaluation depending on the use case. We recommend using GPUs for evaluation.</p>
 <ol class="arabic simple">
-<li><p><strong>Autoregressive</strong></p></li>
+<li><p><strong>Autoregressive</strong> if we have an autoregressive model, we can simply run:</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">eval_iter</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">model_name</span> <span class="o">&lt;</span><span class="n">YOUR_MODEL</span><span class="o">&gt;</span><span class="n">_s2s</span> <span class="o">--</span><span class="n">eval_years</span> <span class="mi">2023</span> <span class="o">--</span><span class="n">version_num</span> <span class="o">&lt;</span><span class="n">VERSION_NUM</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Evaluating autoregressive model, e.g., 
+# --model_name &#39;unet_s2s&#39;
+# --eval_years 2022
+# --version_num 0       ## Checkpoint versions autogenerated in logs/
+# --lra5 &#39;t2m&#39; &#39;tp&#39;     ## Additional LRA5 vars to be evaluated
+# --oras5 &#39;sosstsst&#39;    ## Additional ORAS5 vars to be evaluated
+
+$ python eval_iter.py --model_name &lt;str&gt; --eval_years &lt;int&gt; --version_num &lt;int&gt; --lra5 [...] --oras5 [...]
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
-<li><p><strong>Direct</strong></p></li>
+<li><p><strong>Direct</strong> if we have a collection of models trained specifically for unique <code class="docutils literal notranslate"><span class="pre">lead_time</span></code>, we can run:</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">eval_direct</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">model_name</span> <span class="o">&lt;</span><span class="n">YOUR_MODEL</span><span class="o">&gt;</span><span class="n">_s2s</span> <span class="o">--</span><span class="n">eval_years</span> <span class="mi">2023</span> <span class="o">--</span><span class="n">version_nums</span> <span class="o">&lt;</span><span class="n">VERSION_NUM</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">task_num</span> <span class="o">&lt;</span><span class="n">TASK_NUM</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Evaluating direct model with the default sequence of
+# lead_time = [1, 5, 10, 15, 20, 25, 30, 35, 40, 44] e.g., 
+# --model_name &#39;unet_s2s&#39;
+# --eval_years 2022
+# --version_nums 0 4 5 6 7 8 9 10 11 12 
+# --lra5 &#39;t2m&#39; &#39;tp&#39;     ## Additional LRA5 vars to be evaluated
+# --oras5 &#39;sosstsst&#39;    ## Additional ORAS5 vars to be evaluated
+
+$ python eval_direct.py --model_name &lt;str&gt; --eval_years &lt;int&gt; --version_nums [...] --lra5 [...] --oras5 [...]
 </pre></div>
 </div>
-<p>Where <code class="docutils literal notranslate"><span class="pre">&lt;VERSION_NUM(S)&gt;</span></code> corresponds to the version(s) that <code class="docutils literal notranslate"><span class="pre">pytorch_lightning</span></code> generated during training.</p>
-<p><strong>For example</strong>, in our <code class="docutils literal notranslate"><span class="pre">unet_s2s</span></code> baseline model, we can run:</p>
-<ul class="simple">
-<li><p>Autoregressive: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">eval_iter.py</span> <span class="pre">--model_name</span> <span class="pre">unet_s2s</span> <span class="pre">--eval_years</span> <span class="pre">2023</span> <span class="pre">--version_num</span> <span class="pre">0</span></code></p></li>
-<li><p>Direct: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">eval_direct.py</span> <span class="pre">--model_name</span> <span class="pre">unet_s2s</span> <span class="pre">--eval_years</span> <span class="pre">2023</span> <span class="pre">--version_nums</span> <span class="pre">0</span> <span class="pre">4</span> <span class="pre">5</span> <span class="pre">6</span> <span class="pre">7</span> <span class="pre">8</span> <span class="pre">9</span> <span class="pre">10</span> <span class="pre">11</span> <span class="pre">12</span> <span class="pre">--task_num</span> <span class="pre">1</span></code></p></li>
-</ul>
+<ol class="arabic simple" start="3">
+<li><p><strong>Ensemble</strong> if we have e.g., probabilistic model that generates ensemble forecasts and are supposed to be evaluated with additional probabilistic metrics, we can run:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Evaluating ensembles with additional probabilistic metrics e.g., 
+# --model_name &#39;vae_s2s&#39;
+# --eval_years 2022
+# --version_num 0
+# --lra5 &#39;t2m&#39; &#39;tp&#39;     ## Additional LRA5 vars to be evaluated
+# --oras5 &#39;sosstsst&#39;    ## Additional ORAS5 vars to be evaluated
+
+$ python eval_ensemble.py --model_name &lt;str&gt; --eval_years &lt;int&gt; --version_num &lt;int&gt; --lra5 [...] --oras5 [...]
+</pre></div>
+</div>
 <section id="accessing-baseline-scores">
 <h2>Accessing Baseline Scores<a class="headerlink" href="#accessing-baseline-scores" title="Link to this heading">#</a></h2>
-<p>You can access the complete scores (in <code class="docutils literal notranslate"><span class="pre">.csv</span></code> format) for data-driven, physics-based models, climatology, and persistence <a class="reference external" href="https://huggingface.co/datasets/LEAP/ChaosBench/tree/main/logs">here</a>. Below is a snippet from <code class="docutils literal notranslate"><span class="pre">logs/climatology/eval/rmse_climatology.csv</span></code>, where each row represents <code class="docutils literal notranslate"><span class="pre">&lt;METRIC&gt;</span></code>, such as <code class="docutils literal notranslate"><span class="pre">RMSE</span></code>, at each future timestep.</p>
-<table class="table">
+<p>You can access the complete scores (in <code class="docutils literal notranslate"><span class="pre">.csv</span></code> format) for climatology, persistence, physics-based (control + perturbed), and data-driven models <a class="reference external" href="https://huggingface.co/datasets/LEAP/ChaosBench/tree/main/logs">here</a>. Below is a snippet from <code class="docutils literal notranslate"><span class="pre">logs/climatology/eval/rmse_climatology.csv</span></code>, where each row represents e.g., <code class="docutils literal notranslate"><span class="pre">&lt;METRIC&gt;</span> <span class="pre">==</span> <span class="pre">RMSE</span></code>, at each future timestep.</p>
+<div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>z-10</p></th>
 <th class="head"><p>z-50</p></th>
@@ -457,7 +483,10 @@ document.write(`
 </tr>
 </tbody>
 </table>
+</div>
 </section>
+<div class="toctree-wrapper compound">
+</div>
 </section>
 
     <script type="text/x-thebe-config">
@@ -487,24 +516,24 @@ document.write(`
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="training.html"
+       href="task.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Training</p>
+        <p class="prev-next-title">Task Overview</p>
       </div>
     </a>
     <a class="right-next"
-       href="baseline.html"
+       href="metrics.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Baseline Models</p>
+        <p class="prev-next-title">Metrics</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -573,8 +602,8 @@ By The ChaosBench Maintainers
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

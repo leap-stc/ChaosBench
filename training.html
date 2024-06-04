@@ -14,19 +14,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=384b581d" />
@@ -37,12 +37,12 @@
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="_static/documentation_options.js?v=9eb32ce0"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
@@ -60,8 +60,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'training';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Evaluation" href="evaluation.html" />
-    <link rel="prev" title="Task Overview" href="task.html" />
+    <link rel="next" title="Task Overview" href="task.html" />
+    <link rel="prev" title="Dataset Information" href="dataset.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -71,27 +71,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -113,8 +109,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -174,12 +175,15 @@
 <li class="toctree-l1"><a class="reference internal" href="motivation.html">Motivation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="task.html">Task Overview</a></li>
-
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Training</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Training</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="task.html">Task Overview</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="evaluation.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">Metrics</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="baseline.html">Baseline Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="leaderboard.html">Leaderboard</a></li>
 </ul>
 
     </div>
@@ -195,7 +199,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -204,7 +208,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -378,8 +382,6 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1">Step 1</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2">Step 2</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3">Step 3</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4">Step 4</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#note">Note</a></li>
 </ul>
             </nav>
         </div>
@@ -396,33 +398,54 @@ document.write(`
 <blockquote>
 <div><p><strong>NOTE</strong>: Hands-on modeling and training workflow can be found in <code class="docutils literal notranslate"><span class="pre">notebooks/02a_s2s_modeling.ipynb</span></code> and <code class="docutils literal notranslate"><span class="pre">notebooks/03a_s2s_train.ipynb</span></code></p>
 </div></blockquote>
-<p>We will outline how one can implement their own data-driven models. Several examples, including ED, FNO, ResNet, and UNet have been provided in the main repository.</p>
+<p>We will outline how one can implement their own data-driven models. Several examples, including ED, ResNet, UNet, and FNO have been provided in the main repository.</p>
 <section id="step-1">
 <h2>Step 1<a class="headerlink" href="#step-1" title="Link to this heading">#</a></h2>
-<p>Define your model class in <code class="docutils literal notranslate"><span class="pre">chaosbench/models/&lt;YOUR_MODEL&gt;.py</span></code></p>
+<p>Define your model class.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># An example can be found for e.g. &lt;YOUR_MODEL&gt; == fno
+
+$ touch chaosbench/models/&lt;YOUR_MODEL&gt;.py
+</pre></div>
+</div>
 </section>
 <section id="step-2">
 <h2>Step 2<a class="headerlink" href="#step-2" title="Link to this heading">#</a></h2>
-<p>Initialize your model in <code class="docutils literal notranslate"><span class="pre">chaosbench/models/model.py</span></code> under <code class="docutils literal notranslate"><span class="pre">S2SBenchmarkModel.__init__</span></code></p>
+<p>Import and initialize your model in the main <code class="docutils literal notranslate"><span class="pre">chaosbench/models/model.py</span></code> file, given the pseudocode below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Examples for lagged_ae, fno, resnet, unet are provided</span>
+
+<span class="kn">import</span> <span class="nn">lightning.pytorch</span> <span class="k">as</span> <span class="nn">pl</span>
+<span class="kn">from</span> <span class="nn">chaosbench.models</span> <span class="kn">import</span> <span class="n">YOUR_MODEL</span>
+
+<span class="k">class</span> <span class="nc">S2SBenchmarkModel</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">LightningModule</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="o">...</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">S2SBenchmarkModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        
+        <span class="c1"># Initialize your model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">YOUR_MODEL</span><span class="o">.</span><span class="n">BEST_MODEL</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+        <span class="c1"># The rest of model construction logic</span>
+      
+</pre></div>
+</div>
 </section>
 <section id="step-3">
 <h2>Step 3<a class="headerlink" href="#step-3" title="Link to this heading">#</a></h2>
-<p>Write a configuration file in <code class="docutils literal notranslate"><span class="pre">chaosbench/configs/&lt;YOUR_MODEL&gt;_s2s.yaml</span></code>. Details on the definition of <a class="reference external" href="https://leap-stc.github.io/ChaosBench/baseline.html">hyperparameters</a> and the different <a class="reference external" href="https://leap-stc.github.io/ChaosBench/task.html">task</a>. Also change the <code class="docutils literal notranslate"><span class="pre">model_name:</span> <span class="pre">&lt;YOUR_MODEL&gt;_s2s</span></code> to ensure  correct pathing</p>
-<ul class="simple">
-<li><p>Task 1️⃣ (autoregressive): <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">False</span> <span class="pre">;</span> <span class="pre">n_step:</span> <span class="pre">&lt;N_STEP&gt;</span></code></p></li>
-<li><p>Task 1️⃣ (direct): <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">False</span> <span class="pre">;</span> <span class="pre">n_step:</span> <span class="pre">1</span> <span class="pre">;</span> <span class="pre">lead_time:</span> <span class="pre">&lt;LEAD_TIME&gt;</span></code></p></li>
-<li><p>Task 2️⃣ (autoregressive): <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">True</span> <span class="pre">;</span> <span class="pre">n_step:</span> <span class="pre">&lt;N_STEP&gt;</span></code></p></li>
-<li><p>Task 2️⃣ (direct): <code class="docutils literal notranslate"><span class="pre">only_headline:</span> <span class="pre">True</span> <span class="pre">;</span> <span class="pre">n_step:</span> <span class="pre">1</span> <span class="pre">;</span> <span class="pre">lead_time:</span> <span class="pre">&lt;LEAD_TIME&gt;</span></code></p></li>
-</ul>
+<p>Run the <code class="docutils literal notranslate"><span class="pre">train.py</span></code> script. We recommend using GPUs for training.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># The _s2s suffix identifies data-driven models
+
+$ python train.py --config_filepath chaosbench/configs/&lt;YOUR_MODEL&gt;_s2s.yaml
+</pre></div>
+</div>
+<blockquote>
+<div><p><strong>NOTE</strong>: Now you will notice that there is a \texttt{.yaml} file. We will define the definition of each field next, allowing for greater control over different training strategies.</p>
+</div></blockquote>
 </section>
-<section id="step-4">
-<h2>Step 4<a class="headerlink" href="#step-4" title="Link to this heading">#</a></h2>
-<p>Train by running <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">train.py</span> <span class="pre">--config_filepath</span> <span class="pre">chaosbench/configs/&lt;YOUR_MODEL&gt;_s2s.yaml</span></code></p>
-</section>
-<section id="note">
-<h2>Note<a class="headerlink" href="#note" title="Link to this heading">#</a></h2>
-<p>Remember to replace <code class="docutils literal notranslate"><span class="pre">&lt;YOUR_MODEL&gt;</span></code> with your own model name, e.g., <code class="docutils literal notranslate"><span class="pre">unet</span></code>. Checkpoints and logs would be automatically generated in <code class="docutils literal notranslate"><span class="pre">logs/&lt;YOUR_MODEL&gt;_s2s/</span></code>.</p>
-</section>
+<div class="toctree-wrapper compound">
+</div>
 </section>
 
     <script type="text/x-thebe-config">
@@ -452,24 +475,24 @@ document.write(`
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="task.html"
+       href="dataset.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Task Overview</p>
+        <p class="prev-next-title">Dataset Information</p>
       </div>
     </a>
     <a class="right-next"
-       href="evaluation.html"
+       href="task.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Evaluation</p>
+        <p class="prev-next-title">Task Overview</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -492,8 +515,6 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1">Step 1</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2">Step 2</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3">Step 3</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4">Step 4</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#note">Note</a></li>
 </ul>
   </nav></div>
 
@@ -542,8 +563,8 @@ By The ChaosBench Maintainers
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

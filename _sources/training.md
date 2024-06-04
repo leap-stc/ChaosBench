@@ -2,27 +2,49 @@
 
 > __NOTE__: Hands-on modeling and training workflow can be found in `notebooks/02a_s2s_modeling.ipynb` and `notebooks/03a_s2s_train.ipynb`
 
-We will outline how one can implement their own data-driven models. Several examples, including ED, FNO, ResNet, and UNet have been provided in the main repository. 
+We will outline how one can implement their own data-driven models. Several examples, including ED, ResNet, UNet, and FNO have been provided in the main repository. 
 
-### Step 1
-Define your model class in `chaosbench/models/<YOUR_MODEL>.py`
+### Step 1 
+Define your model class.
+
+```
+# An example can be found for e.g. <YOUR_MODEL> == fno
+
+$ touch chaosbench/models/<YOUR_MODEL>.py
+```
 
 ### Step 2
-Initialize your model in `chaosbench/models/model.py` under `S2SBenchmarkModel.__init__`
+Import and initialize your model in the main `chaosbench/models/model.py` file, given the pseudocode below.
+
+```
+# Examples for lagged_ae, fno, resnet, unet are provided
+
+import lightning.pytorch as pl
+from chaosbench.models import YOUR_MODEL
+
+class S2SBenchmarkModel(pl.LightningModule):
+
+    def __init__(
+        self, 
+        ...
+    ):
+        super(S2SBenchmarkModel, self).__init__()
+        
+        # Initialize your model
+        self.model = YOUR_MODEL.BEST_MODEL(...)
+
+        # The rest of model construction logic
+      
+```
 
 ### Step 3
-Write a configuration file in `chaosbench/configs/<YOUR_MODEL>_s2s.yaml`. Details on the definition of [hyperparameters](https://leap-stc.github.io/ChaosBench/baseline.html) and the different [task](https://leap-stc.github.io/ChaosBench/task.html). Also change the `model_name: <YOUR_MODEL>_s2s` to ensure  correct pathing
 
-- Task 1️⃣ (autoregressive): `only_headline: False ; n_step: <N_STEP>`
-- Task 1️⃣ (direct): `only_headline: False ; n_step: 1 ; lead_time: <LEAD_TIME>`
+Run the `train.py` script. We recommend using GPUs for training.
 
-- Task 2️⃣ (autoregressive): `only_headline: True ; n_step: <N_STEP>`
-- Task 2️⃣ (direct): `only_headline: True ; n_step: 1 ; lead_time: <LEAD_TIME>`
+```
+# The _s2s suffix identifies data-driven models
 
-    
-### Step 4
-Train by running `python train.py --config_filepath chaosbench/configs/<YOUR_MODEL>_s2s.yaml`  
+$ python train.py --config_filepath chaosbench/configs/<YOUR_MODEL>_s2s.yaml
+```
 
-
-### Note
-Remember to replace `<YOUR_MODEL>` with your own model name, e.g., `unet`. Checkpoints and logs would be automatically generated in `logs/<YOUR_MODEL>_s2s/`.
+> __NOTE__: Now you will notice that there is a \texttt{.yaml} file. We will define the definition of each field next, allowing for greater control over different training strategies.

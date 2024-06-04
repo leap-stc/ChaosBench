@@ -14,19 +14,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=384b581d" />
@@ -37,12 +37,12 @@
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="_static/documentation_options.js?v=9eb32ce0"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
@@ -62,7 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'dataset';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Task Overview" href="task.html" />
+    <link rel="next" title="Training" href="training.html" />
     <link rel="prev" title="Quickstart" href="quickstart.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -73,27 +73,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -115,8 +111,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -176,12 +177,15 @@
 <li class="toctree-l1"><a class="reference internal" href="motivation.html">Motivation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Dataset Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="task.html">Task Overview</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="training.html">Training</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="training.html">Training</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="task.html">Task Overview</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="evaluation.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">Metrics</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="baseline.html">Baseline Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="leaderboard.html">Leaderboard</a></li>
 </ul>
 
     </div>
@@ -197,7 +201,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -206,7 +210,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -382,12 +386,11 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="dataset-information">
 <h1>Dataset Information<a class="headerlink" href="#dataset-information" title="Link to this heading">#</a></h1>
 <blockquote>
-<div><p><strong>NOTE</strong>: Hands-on exploration of the ChaosBench dataset in <code class="docutils literal notranslate"><span class="pre">notebooks/01a_s2s_data_exploration.ipynb</span></code></p>
+<div><p><strong>NOTE</strong>: Hands-on exploration of the ChaosBench dataset in <code class="docutils literal notranslate"><span class="pre">notebooks/01a_s2s_data_exploration.ipynb</span></code>. All data has daily and 1.5-degree resolution.</p>
 </div></blockquote>
 <ol class="arabic">
-<li><p><strong>Input:</strong> ERA5 Reanalysis (1979-2023)</p></li>
-<li><p><strong>Target:</strong> The following table indicates the 48 variables (channels) that are available for Physics-based models. Note that the <strong>Input</strong> ERA5 observations contains <strong>ALL</strong> fields, including the unchecked boxes:</p>
-<table class="table">
+<li><p><strong>ERA5 Reanalysis</strong> for Surface-Atmosphere (1979-2023). The following table indicates the 48 variables (channels) that are available for Physics-based models. Note that the <strong>Input</strong> ERA5 observations contains <strong>ALL</strong> fields, including the unchecked boxes:</p>
+<div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head text-left"><p>Parameters/Levels (hPa)</p></th>
 <th class="head text-left"><p>1000</p></th>
@@ -477,8 +480,291 @@ document.write(`
 </tr>
 </tbody>
 </table>
+</div>
 </li>
+<li><p><strong>LRA5 Reanalysis</strong> for Terrestrial (1979-2023)</p></li>
 </ol>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Acronyms</p></th>
+<th class="head"><p>Long Name</p></th>
+<th class="head"><p>Units</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>asn</p></td>
+<td><p>snow albedo</p></td>
+<td><p>(0 - 1)</p></td>
+</tr>
+<tr class="row-odd"><td><p>d2m</p></td>
+<td><p>2-meter dewpoint temperature</p></td>
+<td><p>K</p></td>
+</tr>
+<tr class="row-even"><td><p>e</p></td>
+<td><p>total evaporation</p></td>
+<td><p>m of water equivalent</p></td>
+</tr>
+<tr class="row-odd"><td><p>es</p></td>
+<td><p>snow evaporation</p></td>
+<td><p>m of water equivalent</p></td>
+</tr>
+<tr class="row-even"><td><p>evabs</p></td>
+<td><p>evaporation from bare soil</p></td>
+<td><p>m of water equivalent</p></td>
+</tr>
+<tr class="row-odd"><td><p>evaow</p></td>
+<td><p>evaporation from open water</p></td>
+<td><p>m of water equivalent</p></td>
+</tr>
+<tr class="row-even"><td><p>evatc</p></td>
+<td><p>evaporation from top of canopy</p></td>
+<td><p>m of water equivalent</p></td>
+</tr>
+<tr class="row-odd"><td><p>evavt</p></td>
+<td><p>evaporation from vegetation transpiration</p></td>
+<td><p>m of water equivalent</p></td>
+</tr>
+<tr class="row-even"><td><p>fal</p></td>
+<td><p>forecaste albedo</p></td>
+<td><p>(0 - 1)</p></td>
+</tr>
+<tr class="row-odd"><td><p>lai_hv</p></td>
+<td><p>leaf area index, high vegetation</p></td>
+<td><p><span class="math notranslate nohighlight">\(m^2 m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>lai_lv</p></td>
+<td><p>leaf area index, low vegetation</p></td>
+<td><p><span class="math notranslate nohighlight">\(m^2 m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>pev</p></td>
+<td><p>potential evaporation</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-even"><td><p>ro</p></td>
+<td><p>runoff</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-odd"><td><p>rsn</p></td>
+<td><p>snow density</p></td>
+<td><p><span class="math notranslate nohighlight">\(kg m^{-3}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>sd</p></td>
+<td><p>snow depth</p></td>
+<td><p>m of water equivalent</p></td>
+</tr>
+<tr class="row-odd"><td><p>sde</p></td>
+<td><p>snow depth water equivalent</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-even"><td><p>sf</p></td>
+<td><p>snowfall</p></td>
+<td><p>m of water equivalent</p></td>
+</tr>
+<tr class="row-odd"><td><p>skt</p></td>
+<td><p>skin temperature</p></td>
+<td><p>K</p></td>
+</tr>
+<tr class="row-even"><td><p>slhf</p></td>
+<td><p>surface latent heat flux</p></td>
+<td><p><span class="math notranslate nohighlight">\(J m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>smlt</p></td>
+<td><p>snowmelt</p></td>
+<td><p>m of water equivalent</p></td>
+</tr>
+<tr class="row-even"><td><p>snowc</p></td>
+<td><p>snowcover</p></td>
+<td><p>%</p></td>
+</tr>
+<tr class="row-odd"><td><p>sp</p></td>
+<td><p>surface pressure</p></td>
+<td><p>Pa</p></td>
+</tr>
+<tr class="row-even"><td><p>src</p></td>
+<td><p>skin reservoir content</p></td>
+<td><p>m of water equivalent</p></td>
+</tr>
+<tr class="row-odd"><td><p>sro</p></td>
+<td><p>surface runoff</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-even"><td><p>sshf</p></td>
+<td><p>surface sensible heat flux</p></td>
+<td><p><span class="math notranslate nohighlight">\(J m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>ssr</p></td>
+<td><p>net solar radiation</p></td>
+<td><p><span class="math notranslate nohighlight">\(J m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>ssrd</p></td>
+<td><p>download solar radiation</p></td>
+<td><p><span class="math notranslate nohighlight">\(J m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>ssro</p></td>
+<td><p>sub-surface runoff</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-even"><td><p>stl1</p></td>
+<td><p>soil temperature level 1</p></td>
+<td><p>K</p></td>
+</tr>
+<tr class="row-odd"><td><p>stl2</p></td>
+<td><p>soil temperature level 2</p></td>
+<td><p>K</p></td>
+</tr>
+<tr class="row-even"><td><p>stl3</p></td>
+<td><p>soil temperature level 3</p></td>
+<td><p>K</p></td>
+</tr>
+<tr class="row-odd"><td><p>stl4</p></td>
+<td><p>soil temperature level 4</p></td>
+<td><p>K</p></td>
+</tr>
+<tr class="row-even"><td><p>str</p></td>
+<td><p>net thermal radiation</p></td>
+<td><p><span class="math notranslate nohighlight">\(J m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>strd</p></td>
+<td><p>downward thermal radiation</p></td>
+<td><p><span class="math notranslate nohighlight">\(J m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>swvl1</p></td>
+<td><p>volumetric soil water layer 1</p></td>
+<td><p><span class="math notranslate nohighlight">\(m^3 m^{-3}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>swvl2</p></td>
+<td><p>volumetric soil water layer 2</p></td>
+<td><p><span class="math notranslate nohighlight">\(m^3 m^{-3}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>swvl3</p></td>
+<td><p>volumetric soil water layer 3</p></td>
+<td><p><span class="math notranslate nohighlight">\(m^3 m^{-3}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>swvl4</p></td>
+<td><p>volumetric soil water layer 4</p></td>
+<td><p><span class="math notranslate nohighlight">\(m^3 m^{-3}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>t2m</p></td>
+<td><p>2-meter temperature</p></td>
+<td><p>K</p></td>
+</tr>
+<tr class="row-odd"><td><p>tp</p></td>
+<td><p>total precipitation</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-even"><td><p>tsn</p></td>
+<td><p>temperature of snow layer</p></td>
+<td><p>K</p></td>
+</tr>
+<tr class="row-odd"><td><p>u10</p></td>
+<td><p>10-meter u-wind</p></td>
+<td><p><span class="math notranslate nohighlight">\(ms^{-1}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>v10</p></td>
+<td><p>10-meter v-wind</p></td>
+<td><p><span class="math notranslate nohighlight">\(ms^{-1}\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><strong>ORAS Reanalysis</strong> for Sea-Ice (1979-2023)</p></li>
+</ol>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Acronyms</p></th>
+<th class="head"><p>Long Name</p></th>
+<th class="head"><p>Units</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>iicethic</p></td>
+<td><p>sea ice thickness</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-odd"><td><p>iicevelu</p></td>
+<td><p>sea ice zonal velocity</p></td>
+<td><p><span class="math notranslate nohighlight">\(ms^{-1}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>iicevelv</p></td>
+<td><p>sea ice meridional velocity</p></td>
+<td><p><span class="math notranslate nohighlight">\(ms^{-1}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>ileadfra</p></td>
+<td><p>sea ice concentration</p></td>
+<td><p>(0-1)</p></td>
+</tr>
+<tr class="row-even"><td><p>so14chgt</p></td>
+<td><p>depth of 14<span class="math notranslate nohighlight">\(^\circ\)</span> isotherm</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-odd"><td><p>so17chgt</p></td>
+<td><p>depth of 17<span class="math notranslate nohighlight">\(^\circ\)</span> isotherm</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-even"><td><p>so20chgt</p></td>
+<td><p>depth of 20<span class="math notranslate nohighlight">\(^\circ\)</span> isotherm</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-odd"><td><p>so26chgt</p></td>
+<td><p>depth of 26<span class="math notranslate nohighlight">\(^\circ\)</span> isotherm</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-even"><td><p>so28chgt</p></td>
+<td><p>depth of 28<span class="math notranslate nohighlight">\(^\circ\)</span> isotherm</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-odd"><td><p>sohefldo</p></td>
+<td><p>net downward heat flux</p></td>
+<td><p><span class="math notranslate nohighlight">\(W m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>sohtc300</p></td>
+<td><p>heat content at upper 300m</p></td>
+<td><p><span class="math notranslate nohighlight">\(J m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>sohtc700</p></td>
+<td><p>heat content at upper 700m</p></td>
+<td><p><span class="math notranslate nohighlight">\(J m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>sohtcbtm</p></td>
+<td><p>heat content for total water column</p></td>
+<td><p><span class="math notranslate nohighlight">\(J m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>sometauy</p></td>
+<td><p>meridonial wind stress</p></td>
+<td><p><span class="math notranslate nohighlight">\(N m^{-2}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>somxl010</p></td>
+<td><p>mixed layer depth 0.01</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-odd"><td><p>somxl030</p></td>
+<td><p>mixed layer depth 0.03</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-even"><td><p>sosaline</p></td>
+<td><p>salinity</p></td>
+<td><p>Practical Salinity Units (PSU)</p></td>
+</tr>
+<tr class="row-odd"><td><p>sossheig</p></td>
+<td><p>sea surface height</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-even"><td><p>sosstsst</p></td>
+<td><p>sea surface temperature</p></td>
+<td><p><span class="math notranslate nohighlight">\(^\circ C\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>sowaflup</p></td>
+<td><p>net upward water flux</p></td>
+<td><p><span class="math notranslate nohighlight">\(kg/m^2/s\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>sozotaux</p></td>
+<td><p>zonal wind stress</p></td>
+<td><p><span class="math notranslate nohighlight">\(N m^{-2}\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 
     <script type="text/x-thebe-config">
@@ -508,7 +794,7 @@ document.write(`
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
@@ -521,11 +807,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="task.html"
+       href="training.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Task Overview</p>
+        <p class="prev-next-title">Training</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -535,8 +821,6 @@ document.write(`
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"></div>
               
             
           </div>
@@ -581,8 +865,8 @@ By The ChaosBench Maintainers
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

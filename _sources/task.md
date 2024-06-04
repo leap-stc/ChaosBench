@@ -1,21 +1,33 @@
 # Task Overview
 
-We presented __TWO__ task, where the model still takes as __inputs the FULL__ 60 variables, but the benchmarking __targets ALL or SUBSET__ of variable(s).
+The `.yaml` file always has two sections: model_args and data_args. They allow you to change and modify the training processes to follow the configurations provided in the original manuscript.
 
-1. __Task 1️⃣: Full Dynamics Prediction.__
-It is aimed at __ALL__ target channels simultaneously. This task is generally harder to perform but is useful to build a model that emulates the entire weather conditions.
-
-2. __Task 2️⃣: Sparse Dynamics Prediction.__
-It is aimed at a __SUBSET__ of target channel(s). This task is useful to build long-term forecasting model for specific variables, such as near-surface temperature (t-1000) or near-surface humidity (q-1000). 
-
-    - __NOTE:__ By default, it is going to optimize on {t-850, z-500, q-700}. To change this, modify the `HEADLINE_VARS` field in `chaosbench/config.py` 
+```
+model_args:
+    model_name: <str>       # Name of your model e.g., 'unet_s2s'
+    input_size: <int>       # Input size, default: 60 (ERA5)
+    output_size: <int>      # Output size, default: 60 (ERA5)
+    learning_rate: <float>  # Learning rate
+    num_workers: <int>      # Number of workers
+    epochs: <int>           # Number of epochs
+    t_max: <int>            # Learning rate scheduler
+    only_headline: <bool>   # Only optimized for config.HEADLINE_VARS
     
-# Training Strategies
-In addition, we also provide flexibility to train models in either __autoregressive__ or __direct__ manner.
+data_args:
+    batch_size: <int>       # Batch size
+    train_years: [...]      # Train years e.g., [1979, ...] 
+    val_years: [...]        # Val years e.g., [2016, ...]
+    n_step: <int, 1>        # Number of autoregressive training steps
+    lead_time: <int, 1>     # N-day ahead forecast (for direct scheme)
+    land_vars: [...]        # Extra LRA5 vars e.g., ['t2m', ...]
+    ocean_vars: [...]       # Extra ORAS5 vars e.g., ['sosstsst', ...]
+```
 
-1. __Strategy 1️⃣: Autoregressive.__ Using current output as the next model input.
+__Note__: 
+1. If `only_headline = True`, then the model is optimized only for a subset of variables defined in `config.HEADLINE_VARS` (default: False).
 
-2. __Strategy 2️⃣: Direct.__ Directly targeting specific time in the future. 
+2. If `n_step > 1`, the models will train over \( n \)-autoregressive steps (default: 1).
 
+3. If `lead_time > 1`, the models will be able to forecast \( n \)-days ahead. For example, in our direct forecasts, if `lead_time = 4`, our model will predict the states 4 days into the future (default: 1).
 
-The [next section](https://leap-stc.github.io/ChaosBench/training.html) is going to discuss how to initialize your model and perform training depending on the task and strategy you choose.
+4. If `land_vars` and/or `ocean_vars` are set with entries from the acronyms, these will be used as additional inputs and targets, on top of ERA5 variables (default: []).

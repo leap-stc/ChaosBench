@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Task Overview &#8212; ChaosBench</title>
+    <title>Metrics &#8212; ChaosBench</title>
   
   
   
@@ -57,11 +57,11 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'task';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'metrics';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Evaluation" href="evaluation.html" />
-    <link rel="prev" title="Training" href="training.html" />
+    <link rel="next" title="Baseline Models" href="baseline.html" />
+    <link rel="prev" title="Evaluation" href="evaluation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -175,12 +175,12 @@
 <li class="toctree-l1"><a class="reference internal" href="motivation.html">Motivation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="training.html">Training</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Task Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="training.html">Training</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="task.html">Task Overview</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="evaluation.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="metrics.html">Metrics</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="evaluation.html">Evaluation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Metrics</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="baseline.html">Baseline Models</a></li>
@@ -255,7 +255,7 @@
       
       
       
-      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2Ftask.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/leap-stc/ChaosBench/issues/new?title=Issue%20on%20page%20%2Fmetrics.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -285,7 +285,7 @@
       
       
       
-      <li><a href="_sources/task.md" target="_blank"
+      <li><a href="_sources/metrics.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -367,7 +367,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Task Overview</h1>
+    <h1>Metrics</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -381,35 +381,41 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="task-overview">
-<h1>Task Overview<a class="headerlink" href="#task-overview" title="Link to this heading">#</a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> file always has two sections: model_args and data_args. They allow you to change and modify the training processes to follow the configurations provided in the original manuscript.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model_args</span><span class="p">:</span>
-    <span class="n">model_name</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span>       <span class="c1"># Name of your model e.g., &#39;unet_s2s&#39;</span>
-    <span class="n">input_size</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span>       <span class="c1"># Input size, default: 60 (ERA5)</span>
-    <span class="n">output_size</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span>      <span class="c1"># Output size, default: 60 (ERA5)</span>
-    <span class="n">learning_rate</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;</span>  <span class="c1"># Learning rate</span>
-    <span class="n">num_workers</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span>      <span class="c1"># Number of workers</span>
-    <span class="n">epochs</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span>           <span class="c1"># Number of epochs</span>
-    <span class="n">t_max</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span>            <span class="c1"># Learning rate scheduler</span>
-    <span class="n">only_headline</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">bool</span><span class="o">&gt;</span>   <span class="c1"># Only optimized for config.HEADLINE_VARS</span>
-    
-<span class="n">data_args</span><span class="p">:</span>
-    <span class="n">batch_size</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span>       <span class="c1"># Batch size</span>
-    <span class="n">train_years</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>      <span class="c1"># Train years e.g., [1979, ...] </span>
-    <span class="n">val_years</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>        <span class="c1"># Val years e.g., [2016, ...]</span>
-    <span class="n">n_step</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span>        <span class="c1"># Number of autoregressive training steps</span>
-    <span class="n">lead_time</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span>     <span class="c1"># N-day ahead forecast (for direct scheme)</span>
-    <span class="n">land_vars</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>        <span class="c1"># Extra LRA5 vars e.g., [&#39;t2m&#39;, ...]</span>
-    <span class="n">ocean_vars</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>       <span class="c1"># Extra ORAS5 vars e.g., [&#39;sosstsst&#39;, ...]</span>
-</pre></div>
-</div>
-<p><strong>Note</strong>:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="metrics">
+<h1>Metrics<a class="headerlink" href="#metrics" title="Link to this heading">#</a></h1>
+<blockquote>
+<div><p><strong>Note</strong>: For all models logs, there will be a folder named <code class="docutils literal notranslate"><span class="pre">eval/</span></code>. This contains individual <code class="docutils literal notranslate"><span class="pre">.csv</span></code> files for each relevant metric (e.g., RMSE, SpecDiv).</p>
+</div></blockquote>
+<p>We divide our metrics into 3 classes: (1) Deterministic-based, which cover evaluation used in conventional deterministic forecasting tasks, (2) Physics-based, which are aimed to construct a more physically-faithful and explainable data-driven forecast, and (3) Probabilistic-based, which account for the skillfulness of ensemble forecasts.</p>
 <ol class="arabic simple">
-<li><p>If <code class="docutils literal notranslate"><span class="pre">only_headline</span> <span class="pre">=</span> <span class="pre">True</span></code>, then the model is optimized only for a subset of variables defined in <code class="docutils literal notranslate"><span class="pre">config.HEADLINE_VARS</span></code> (default: False).</p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">n_step</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>, the models will train over ( n )-autoregressive steps (default: 1).</p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">lead_time</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>, the models will be able to forecast ( n )-days ahead. For example, in our direct forecasts, if <code class="docutils literal notranslate"><span class="pre">lead_time</span> <span class="pre">=</span> <span class="pre">4</span></code>, our model will predict the states 4 days into the future (default: 1).</p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">land_vars</span></code> and/or <code class="docutils literal notranslate"><span class="pre">ocean_vars</span></code> are set with entries from the acronyms, these will be used as additional inputs and targets, on top of ERA5 variables (default: []).</p></li>
+<li><p><strong>Deterministic-based:</strong></p>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> RMSE</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Bias</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Anomaly Correlation Coefficient (ACC)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Multiscale Structural Similarity Index (MS-SSIM)</p></li>
+</ul>
+</li>
+<li><p><strong>Physics-based:</strong></p>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Spectral Divergence (SpecDiv)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Spectral Residual (SpecRes)</p></li>
+</ul>
+</li>
+<li><p><strong>Probabilistic-based:</strong></p>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> RMSE Ensemble</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Bias Ensemble</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> ACC Ensemble</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> MS-SSIM Ensemble</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> SpecDiv Ensemble</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> SpecRes Ensemble</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Continuous Ranked Probability Score (CRPS)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Continuous Ranked Probability Skill Score (CRPSS)</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Spread</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Spread/Skill Ratio</p></li>
+</ul>
+</li>
 </ol>
 </section>
 
@@ -444,20 +450,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="training.html"
+       href="evaluation.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Training</p>
+        <p class="prev-next-title">Evaluation</p>
       </div>
     </a>
     <a class="right-next"
-       href="evaluation.html"
+       href="baseline.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Evaluation</p>
+        <p class="prev-next-title">Baseline Models</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

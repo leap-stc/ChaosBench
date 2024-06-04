@@ -14,19 +14,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=384b581d" />
@@ -37,12 +37,12 @@
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="_static/documentation_options.js?v=9eb32ce0"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
@@ -62,8 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'baseline';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Leaderboard" href="leaderboard.html" />
-    <link rel="prev" title="Evaluation" href="evaluation.html" />
+    <link rel="prev" title="Metrics" href="metrics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -73,27 +72,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -115,8 +110,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -176,12 +176,15 @@
 <li class="toctree-l1"><a class="reference internal" href="motivation.html">Motivation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset Information</a></li>
-<li class="toctree-l1"><a class="reference internal" href="task.html">Task Overview</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="training.html">Training</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="training.html">Training</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="task.html">Task Overview</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="evaluation.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">Metrics</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Baseline Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="leaderboard.html">Leaderboard</a></li>
 </ul>
 
     </div>
@@ -197,7 +200,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -206,7 +209,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -396,7 +399,7 @@ document.write(`
 <section id="model-definition">
 <h2>Model Definition<a class="headerlink" href="#model-definition" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>Physics-Based Models</strong>:</p>
+<li><p><strong>Physics-Based Models (including control/perturbed forecasts)</strong>:</p>
 <ul class="contains-task-list">
 <li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> UKMO: UK Meteorological Office</p></li>
 <li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> NCEP: National Centers for Environmental Prediction</p></li>
@@ -412,34 +415,18 @@ document.write(`
 <li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> UNet</p></li>
 <li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> ViT/ClimaX</p></li>
 <li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> PanguWeather</p></li>
-<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Fourcastnetv2</p></li>
 <li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> GraphCast</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" checked="checked" disabled="disabled" type="checkbox"> Fourcastnetv2</p></li>
 </ul>
 </li>
 </ul>
 </section>
 <section id="model-checkpoints">
 <h2>Model Checkpoints<a class="headerlink" href="#model-checkpoints" title="Link to this heading">#</a></h2>
-<p>Checkpoints for data-driven models are accessible from <a class="reference external" href="https://huggingface.co/datasets/LEAP/ChaosBench/tree/main/logs">here</a></p>
+<p>Checkpoints for data-driven models are accessible from <a class="reference external" href="https://huggingface.co/datasets/LEAP/ChaosBench/tree/main/logs">here</a>.</p>
 <ul class="simple">
 <li><p>Data-driven models are indicated by the <code class="docutils literal notranslate"><span class="pre">_s2s</span></code> suffix (e.g., <code class="docutils literal notranslate"><span class="pre">unet_s2s</span></code>).</p></li>
-<li><p>The hyperparameter specifications are located in <code class="docutils literal notranslate"><span class="pre">version_xx/lightning_logs/hparams.yaml</span></code>. The hyperparameters encode the following:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">lead_time</span></code> (default: 1): arbitrary delta_t to finetune the model, for direct approach</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">n_step</span></code> (default: 1): number of autoregressive step, s, for autoregressive approach</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">only_headline</span></code>: if false, optimize for task 1; if true for task 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">batch_size</span></code>: the batch size used for training</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">train_years</span></code>: list of years used for training</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">val_years</span></code>: list of years used for validation</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epochs</span></code>: number of epoch</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">input_size</span></code>: number of input channel</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code>: update step at each iteration</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">model_name</span></code>: the name of the model used for consistency</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">num_workers</span></code>: number of workers used in dataloader</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">output_size</span></code>: number of output channel</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">t_max</span></code>: number of cosine learning rate scheduler cycle</p></li>
-</ul>
-</li>
+<li><p>The hyperparameter specifications are located in <code class="docutils literal notranslate"><span class="pre">version_xx/lightning_logs/hparams.yaml</span></code>.</p></li>
 </ul>
 <p><strong>NOTE</strong>: You will notice that for each data-driven model, there are 4 checkpoints.</p>
 <ol class="arabic simple">
@@ -450,8 +437,8 @@ document.write(`
 </ol>
 <p>Only for <code class="docutils literal notranslate"><span class="pre">unet_s2s</span></code> do we have many more checkpoints. This is to check for the effect of <code class="docutils literal notranslate"><span class="pre">direct</span></code> vs. <code class="docutils literal notranslate"><span class="pre">autoregressive</span></code> training approach described in the paper. In particular, the <code class="docutils literal notranslate"><span class="pre">direct</span></code> models have the following version numbers,</p>
 <ol class="arabic simple">
-<li><p>Version {0, 4, 5, 6, 7, 8, 9, 10, 11, 12} - Task 1</p></li>
-<li><p>Version {2, 13, 14, 15, 16, 17, 18, 19, 20, 21} - Task 2</p></li>
+<li><p>Version {0, 4, 5, 6, 7, 8, 9, 10, 11, 12} - Task 1 (Full optimization)</p></li>
+<li><p>Version {2, 13, 14, 15, 16, 17, 18, 19, 20, 21} - Task 2 (Sparse optimization)</p></li>
 </ol>
 <p>Each element in the array corresponds to checkpoints optimized for each <span class="math notranslate nohighlight">\(\Delta T \in \{1, 5, 10, 15, 20, 25, 30, 35, 40, 44\}\)</span>.</p>
 </section>
@@ -484,26 +471,17 @@ document.write(`
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="evaluation.html"
+       href="metrics.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Evaluation</p>
+        <p class="prev-next-title">Metrics</p>
       </div>
-    </a>
-    <a class="right-next"
-       href="leaderboard.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Leaderboard</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -571,8 +549,8 @@ By The ChaosBench Maintainers
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

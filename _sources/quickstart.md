@@ -1,28 +1,38 @@
 # Quickstart
 
-**Step 1**: Clone the [ChaosBench](https://github.com/leap-stc/ChaosBench) Github repository
+> **_NOTE:_**  If you find any problems, feel free to contact us or raise a GitHub issue. 
 
-**Step 2**: Install package dependencies
+**Step 0**: Clone the [ChaosBench](https://github.com/leap-stc/ChaosBench) Github repository
+
+**Step 1**: Install package dependencies
 ```
-cd ChaosBench
-pip install -r requirements.txt
+$ cd ChaosBench
+$ pip install -r requirements.txt
 ```
 
-**Step 3**: Initialize the data space by running
+**Step 2**: Initialize the data space by running
 ```
-cd data/
-wget https://huggingface.co/datasets/LEAP/ChaosBench/resolve/main/process.sh
-chmod +x process.sh
+$ cd data/
+$ wget https://huggingface.co/datasets/LEAP/ChaosBench/resolve/main/process.sh
+$ chmod +x process.sh
 ```
-**Step 4**: Download the data 
+**Step 3**: Download the data 
+```
+# Required for inputs and climatology (e.g., normalization)
+$ ./process.sh era5
+$ ./process.sh lra5
+$ ./process.sh oras5
+$ ./process.sh climatology
 
-```
-# NOTE: you can also run each line one at a time to retrieve individual dataset
+# Optional: control (deterministic) forecasts
+$ ./process.sh ukmo
+$ ./process.sh ncep
+$ ./process.sh cma
+$ ./process.sh ecmwf
 
-./process.sh era5            # Required: For input ERA5 data
-./process.sh climatology     # Required: For climatology
-./process.sh ukmo            # Optional: For simulation from UKMO
-./process.sh ncep            # Optional: For simulation from NCEP
-./process.sh cma             # Optional: For simulation from CMA
-./process.sh ecmwf           # Optional: For simulation from ECMWF
+# Optional: perturbed (ensemble) forecasts
+$ ./process.sh ukmo_ensemble
+$ ./process.sh ncep_ensemble
+$ ./process.sh cma_ensemble
+$ ./process.sh ecmwf_ensemble
 ```
