@@ -3,11 +3,11 @@
 
 ChaosBench is a benchmark project to improve long-term forecasting of chaotic systems, in particular subseasonal-to-seasonal (S2S) climate, using ML approaches.
 
-Homepage 🔗: https://leap-stc.github.io/ChaosBench
+🌐: https://leap-stc.github.io/ChaosBench
 
-Paper 📚: https://arxiv.org/abs/2402.00712
+📚: https://arxiv.org/abs/2402.00712
 
-Dataset 🤗: https://huggingface.co/datasets/LEAP/ChaosBench
+🤗: https://huggingface.co/datasets/LEAP/ChaosBench
 
 ## Features
 

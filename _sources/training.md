@@ -47,4 +47,4 @@ Run the `train.py` script. We recommend using GPUs for training.
 $ python train.py --config_filepath chaosbench/configs/<YOUR_MODEL>_s2s.yaml
 ```
 
-> __NOTE__: Now you will notice that there is a \texttt{.yaml} file. We will define the definition of each field next, allowing for greater control over different training strategies.
+> __NOTE__: Now you will notice that there is a `.yaml` file. We will define the definition of each field next, allowing for greater control over different training strategies.
