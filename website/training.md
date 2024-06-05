@@ -4,8 +4,7 @@
 
 We will outline how one can implement their own data-driven models. Several examples, including ED, ResNet, UNet, and FNO have been provided in the main repository. 
 
-### Step 1 
-Define your model class.
+**Step 1**: Define your model class.
 
 ```
 # An example can be found for e.g. <YOUR_MODEL> == fno
@@ -13,8 +12,7 @@ Define your model class.
 $ touch chaosbench/models/<YOUR_MODEL>.py
 ```
 
-### Step 2
-Import and initialize your model in the main `chaosbench/models/model.py` file, given the pseudocode below.
+**Step 2**: Import and initialize your model in the main `chaosbench/models/model.py` file, given the pseudocode below.
 
 ```
 # Examples for lagged_ae, fno, resnet, unet are provided
@@ -37,9 +35,7 @@ class S2SBenchmarkModel(pl.LightningModule):
       
 ```
 
-### Step 3
-
-Run the `train.py` script. We recommend using GPUs for training.
+**Step 3**: Run the `train.py` script. We recommend using GPUs for training.
 
 ```
 # The _s2s suffix identifies data-driven models
