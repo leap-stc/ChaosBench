@@ -356,9 +356,7 @@ document.write(`
   </button>
 `);
 </script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</label>
+
 </div></div>
       
     </div>
@@ -374,16 +372,6 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1">Step 1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2">Step 2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3">Step 3</a></li>
-</ul>
-            </nav>
         </div>
     </div>
 </div>
@@ -399,18 +387,13 @@ document.write(`
 <div><p><strong>NOTE</strong>: Hands-on modeling and training workflow can be found in <code class="docutils literal notranslate"><span class="pre">notebooks/02a_s2s_modeling.ipynb</span></code> and <code class="docutils literal notranslate"><span class="pre">notebooks/03a_s2s_train.ipynb</span></code></p>
 </div></blockquote>
 <p>We will outline how one can implement their own data-driven models. Several examples, including ED, ResNet, UNet, and FNO have been provided in the main repository.</p>
-<section id="step-1">
-<h2>Step 1<a class="headerlink" href="#step-1" title="Link to this heading">#</a></h2>
-<p>Define your model class.</p>
+<p><strong>Step 1</strong>: Define your model class.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># An example can be found for e.g. &lt;YOUR_MODEL&gt; == fno
 
 $ touch chaosbench/models/&lt;YOUR_MODEL&gt;.py
 </pre></div>
 </div>
-</section>
-<section id="step-2">
-<h2>Step 2<a class="headerlink" href="#step-2" title="Link to this heading">#</a></h2>
-<p>Import and initialize your model in the main <code class="docutils literal notranslate"><span class="pre">chaosbench/models/model.py</span></code> file, given the pseudocode below.</p>
+<p><strong>Step 2</strong>: Import and initialize your model in the main <code class="docutils literal notranslate"><span class="pre">chaosbench/models/model.py</span></code> file, given the pseudocode below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Examples for lagged_ae, fno, resnet, unet are provided</span>
 
 <span class="kn">import</span> <span class="nn">lightning.pytorch</span> <span class="k">as</span> <span class="nn">pl</span>
@@ -431,10 +414,7 @@ $ touch chaosbench/models/&lt;YOUR_MODEL&gt;.py
       
 </pre></div>
 </div>
-</section>
-<section id="step-3">
-<h2>Step 3<a class="headerlink" href="#step-3" title="Link to this heading">#</a></h2>
-<p>Run the <code class="docutils literal notranslate"><span class="pre">train.py</span></code> script. We recommend using GPUs for training.</p>
+<p><strong>Step 3</strong>: Run the <code class="docutils literal notranslate"><span class="pre">train.py</span></code> script. We recommend using GPUs for training.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># The _s2s suffix identifies data-driven models
 
 $ python train.py --config_filepath chaosbench/configs/&lt;YOUR_MODEL&gt;_s2s.yaml
@@ -443,7 +423,6 @@ $ python train.py --config_filepath chaosbench/configs/&lt;YOUR_MODEL&gt;_s2s.ya
 <blockquote>
 <div><p><strong>NOTE</strong>: Now you will notice that there is a <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> file. We will define the definition of each field next, allowing for greater control over different training strategies.</p>
 </div></blockquote>
-</section>
 <div class="toctree-wrapper compound">
 </div>
 </section>
@@ -502,23 +481,6 @@ $ python train.py --config_filepath chaosbench/configs/&lt;YOUR_MODEL&gt;_s2s.ya
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1">Step 1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2">Step 2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3">Step 3</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
