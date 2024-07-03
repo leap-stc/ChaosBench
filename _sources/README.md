@@ -1,14 +1,15 @@
 # ChaosBench: A Multi-Channel, Physics-Based Benchmark for Subseasonal-to-Seasonal Climate Prediction
 
-
 <div align="center">
 <a href="https://leap-stc.github.io/ChaosBench"><img src="https://img.shields.io/badge/View-Documentation-blue?style=for-the-badge)" alt="Homepage"/></a>
   <a href="https://arxiv.org/abs/2402.00712"><img src="https://img.shields.io/badge/ArXiV-2402.00712-b31b1b.svg" alt="arXiv"/></a>
 <a href="https://huggingface.co/datasets/LEAP/ChaosBench"><img src="https://img.shields.io/badge/Dataset-HuggingFace-ffd21e" alt="Huggingface Dataset"/></a>
 <a href="https://github.com/leap-stc/ChaosBench/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-GNU%20GPL-green" alt="License Badge"/></a>
 </div>
+</br>
 
-ChaosBench is a benchmark project to improve and extend the predictability range of deep weather emulators to the subseasonal-to-seasonal (S2S) range. 
+ChaosBench is a benchmark project to improve and extend the predictability range of deep weather emulators to the subseasonal-to-seasonal (S2S) range. Predictability at this scale is more challenging due to its: (1) __double sensitivities__ to intial condition (in weather-scale) and boundary condition (in climate-scale), (2) __butterfly effect__, and our (3) __inherent lack of understanding__ of physical processes operating at this scale. Thus, given the __high socioeconomic stakes__ for accurate, reliable, and stable S2S forecasts (e.g., for disaster/extremes preparedness), this benchmark is timely for DL-accelerated solutions.
+
 
 
 ## Features
