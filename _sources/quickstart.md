@@ -1,6 +1,6 @@
 # Quickstart
 
-> **_NOTE:_**  If you find any problems, feel free to contact us or raise a GitHub issue. 
+> **_NOTE:_**  Only need the dataset? Jump directly to **Step 2**. If you find any problems, feel free to contact us or raise a GitHub issue. 
 
 **Step 0**: Clone the [ChaosBench](https://github.com/leap-stc/ChaosBench) Github repository
 

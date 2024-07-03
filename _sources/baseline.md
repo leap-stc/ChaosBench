@@ -1,5 +1,5 @@
 # Baseline Models
-We differentiate between physics-based and data-driven models. The former is succintly illustrated as in the figure below. 
+We differentiate between physics-based and data-driven models.
 
 ## Model Definition
 - __Physics-Based Models (including control/perturbed forecasts)__:
