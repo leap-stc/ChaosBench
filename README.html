@@ -408,19 +408,17 @@ document.write(`
 <a href="https://huggingface.co/datasets/LEAP/ChaosBench"><img src="https://img.shields.io/badge/Dataset-HuggingFace-ffd21e" alt="Huggingface Dataset"/></a>
 <a href="https://github.com/leap-stc/ChaosBench/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-GNU%20GPL-green" alt="License Badge"/></a>
 </div>
-<p>ChaosBench is a benchmark project to improve long-term forecasting of chaotic systems, in particular subseasonal-to-seasonal (S2S) climate, using ML approaches.</p>
+<p>ChaosBench is a benchmark project to improve and extend the predictability range of deep weather emulators to the subseasonal-to-seasonal (S2S) range.</p>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Link to this heading">#</a></h2>
-<hr class="docutils" />
 <p><img alt="Overview of ChaosBench" src="_images/chaosbench_scheme-scheme.jpg" /></p>
 <p>1️⃣ <strong>Diverse Observations</strong>. Spanning over 45 years (1979 - 2023), we include ERA5/LRA5/ORAS5 reanalysis for a fully-coupled Earth system emulation (atmosphere-terrestrial-sea-ice)</p>
-<p>2️⃣ <strong>Diverse Baselines</strong>. Wide selection of physics-based forecasts from leading national agencies in Europe, the UK, America, and Asia</p>
-<p>3️⃣ <strong>Differentiable Physics Metrics</strong>. Introduces two differentiable physics-based metrics to minimize the decay of power spectra at long forecasting horizon (blurriness)</p>
-<p>4️⃣ <strong>Large-Scale Benchmarking</strong>. Systematic evaluation (deterministic, probabilistic, physics-based) for state-of-the-art ML-based weather emulators like ViT/ClimaX, PanguWeather, GraphCast, and FourcastNetV2</p>
+<p>2️⃣ <strong>Diverse Baselines</strong>. Wide selection of physics-based forecasts from leading national weather agencies in Europe, the UK, America, and Asia</p>
+<p>3️⃣ <strong>Differentiable Physics Metrics</strong>. In addition to deterministic and probabilistic metrics, we introduce two differentiable physics-based metrics to minimize the decay of power spectra at long forecasting horizon (reduce blurriness)</p>
+<p>4️⃣ <strong>Large-Scale Benchmarking</strong>. Systematic large-scale evaluation for state-of-the-art ML-based weather emulators like ViT/ClimaX, PanguWeather, GraphCast, and FourcastNetV2</p>
 </section>
 <section id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h2>
-<hr class="docutils" />
 <ul class="simple">
 <li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/motivation.html">Motivation</a></p></li>
 <li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/quickstart.html">Quickstart</a></p></li>
@@ -429,7 +427,6 @@ document.write(`
 </section>
 <section id="build-your-own-model">
 <h2>Build Your Own Model<a class="headerlink" href="#build-your-own-model" title="Link to this heading">#</a></h2>
-<hr class="docutils" />
 <ul class="simple">
 <li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/training.html">Training</a></p></li>
 <li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/evaluation.html">Evaluation</a></p></li>
@@ -437,14 +434,12 @@ document.write(`
 </section>
 <section id="benchmarking">
 <h2>Benchmarking<a class="headerlink" href="#benchmarking" title="Link to this heading">#</a></h2>
-<hr class="docutils" />
 <ul class="simple">
 <li><p><a class="reference external" href="https://leap-stc.github.io/ChaosBench/baseline.html">Baseline Models</a></p></li>
 </ul>
 </section>
 <section id="citation">
 <h2>Citation<a class="headerlink" href="#citation" title="Link to this heading">#</a></h2>
-<hr class="docutils" />
 <p>If you find any of the code and dataset useful, feel free to acknowledge our work through:</p>
 <div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@article</span><span class="p">{</span><span class="nl">nathaniel2024chaosbench</span><span class="p">,</span>
 <span class="w">  </span><span class="na">title</span><span class="p">=</span><span class="s">{Chaosbench: A multi-channel, physics-based benchmark for subseasonal-to-seasonal climate prediction}</span><span class="p">,</span>
