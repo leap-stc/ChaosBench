@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 import torch.special as special
@@ -7,7 +8,6 @@ from xskillscore import crps_ensemble, crps_gaussian
 from pathlib import Path
 
 from chaosbench import config, utils
-
 
 def get_adjusting_weights():
     latitudes = torch.arange(90, -91.5, -1.5)
@@ -169,15 +169,15 @@ class ACC(nn.Module):
         
         # Retrieve climatology
         self.normalization_file = {
-                'era5': Path(config.DATA_DIR) / 'climatology' / 'climatology_era5.zarr', 
-                'lra5': Path(config.DATA_DIR) / 'climatology' / 'climatology_lra5.zarr', 
-                'oras5': Path(config.DATA_DIR) / 'climatology' / 'climatology_oras5.zarr'
+            'era5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_era5.zarr'),
+            'lra5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_lra5.zarr'),
+            'oras5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_oras5.zarr'),
         }
         
         self.normalization_mean = {
-                'era5': xr.open_dataset(self.normalization_file['era5'], engine='zarr')['mean'],
-                'lra5': xr.open_dataset(self.normalization_file['lra5'], engine='zarr')['mean'],
-                'oras5': xr.open_dataset(self.normalization_file['oras5'], engine='zarr')['mean'],
+            'era5': xr.open_dataset(self.normalization_file['era5'], engine='zarr')['mean'],
+            'lra5': xr.open_dataset(self.normalization_file['lra5'], engine='zarr')['mean'],
+            'oras5': xr.open_dataset(self.normalization_file['oras5'], engine='zarr')['mean'],
         }
         
     def forward(self, predictions, targets, param, source):
@@ -613,14 +613,14 @@ class CRPSS(nn.Module):
         self.crps = CRPS(lat_adjusted=False) # latitude adjustment done only once...
         self.mae = MAE(lat_adjusted=False) # latitude adjustment done only once...
         self.normalization_file = {
-                'era5': Path(config.DATA_DIR) / 'climatology' / 'climatology_era5_spatial.zarr',
-                'lra5': Path(config.DATA_DIR) / 'climatology' / 'climatology_lra5_spatial.zarr',
-                'oras5': Path(config.DATA_DIR) / 'climatology' / 'climatology_oras5_spatial.zarr'
+            'era5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_era5.zarr'),
+            'lra5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_lra5.zarr'),
+            'oras5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_oras5.zarr'),
         }
         self.normalization = {
-                'era5': xr.open_dataset(self.normalization_file['era5'], engine='zarr'),
-                'lra5': xr.open_dataset(self.normalization_file['lra5'], engine='zarr'),
-                'oras5': xr.open_dataset(self.normalization_file['oras5'], engine='zarr'),
+            'era5': xr.open_dataset(self.normalization_file['era5'], engine='zarr'),
+            'lra5': xr.open_dataset(self.normalization_file['lra5'], engine='zarr'),
+            'oras5': xr.open_dataset(self.normalization_file['oras5'], engine='zarr'),
         }
 
     def forward(self, predictions, targets, doys, param, source):

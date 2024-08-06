@@ -6,13 +6,14 @@ lightning==2.0.9
 matplotlib==3.7.2
 numpy==1.25.2
 pandas==2.0.3
-PyYAML==6.0
 PyYAML==6.0.1
 scipy==1.12.0
 seaborn==0.13.2
 timm==0.9.7
 torch==2.0.1
+torchvision==0.15.2
 torchist==0.2.1
+tensorboard==2.14.0
 tqdm==4.66.1
 xarray==2023.8.0
 climpred==2.4.0

@@ -1,9 +1,33 @@
+import os
+import fsspec
+import re
 import torch
 import xarray as xr
 from pathlib import Path
 import numpy as np
 from datetime import datetime
 from chaosbench import config
+
+def filter_files(
+    directory, 
+    pattern
+):
+    "List files in the specified cloud bucket and filter them based on the pattern."
+    
+    if 'gs://' in str(config.DATA_DIR):
+        filesystem = 'gcs'
+    else:
+        filesystem = 'file'
+        
+    fs = fsspec.filesystem(filesystem)
+
+    all_files = fs.ls(directory)
+    protocol = fs.protocol[0]
+    prepend = '' if protocol == 'file' else f'{protocol}://'
+    filtered_files = [f'{prepend}{f}' for f in all_files if re.match(pattern, f.split('/')[-1])]
+    
+    return filtered_files
+    
 
 def convert_time(
     timestamp, 
@@ -29,10 +53,10 @@ def denormalize(
     
     # For some use-cases (eg. climatology, persistence forecasts), we use ERA5 as the benchmark climatology
     try:
-        normalization_file = Path(config.DATA_DIR) / 'climatology' / f'climatology_{dataset_name}.zarr'
+        normalization_file = os.path.join(config.DATA_DIR, 'climatology', f'climatology_{dataset_name}.zarr')
         normalization = xr.open_dataset(normalization_file, engine='zarr')
     except:
-        normalization_file = Path(config.DATA_DIR) / 'climatology' / f'climatology_era5.zarr'
+        normalization_file = os.path.join(config.DATA_DIR, 'climatology', f'climatology_era5.zarr')
         normalization = xr.open_dataset(normalization_file, engine='zarr')
     
     # Get their mean and sigma values
