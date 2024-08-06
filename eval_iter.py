@@ -79,7 +79,7 @@ def main(args):
             for year in args.eval_years:
                 pattern = rf'.*{year}\d{{4}}\.zarr$'
                 output_files[param_class].extend(
-                    utils.filter_files(output_filepath, pattern),
+                    utils.filter_files(output_filepath, pattern)
                 )
             
             output_files[param_class].sort()

@@ -35,15 +35,15 @@ class S2SObsDataset(Dataset):
     ) -> None:
         
         self.data_dir = [
-            os.path.join(config.DATA_DIR, "era5"),
-            os.path.join(config.DATA_DIR, "lra5"),
-            os.path.join(config.DATA_DIR, "oras5"),
+            os.path.join(config.DATA_DIR, 'era5'),
+            os.path.join(config.DATA_DIR, 'lra5'),
+            os.path.join(config.DATA_DIR, 'oras5'),
         ]
         
         self.normalization_file = [
-            os.path.join(config.DATA_DIR, "climatology", "climatology_era5.zarr"),
-            os.path.join(config.DATA_DIR, "climatology", "climatology_lra5.zarr"),
-            os.path.join(config.DATA_DIR, "climatology", "climatology_oras5.zarr"),
+            os.path.join(config.DATA_DIR, 'climatology', 'climatology_era5.zarr'),
+            os.path.join(config.DATA_DIR, 'climatology', 'climatology_lra5.zarr'),
+            os.path.join(config.DATA_DIR, 'climatology', 'climatology_oras5.zarr'),
         ]
         
         self.years = [str(year) for year in years]
@@ -83,19 +83,6 @@ class S2SObsDataset(Dataset):
         self.sigma_era5 = xr.open_dataset(self.normalization_file[0], engine='zarr')['sigma'].values[:, np.newaxis, np.newaxis]
         self.sigma_lra5 = xr.open_dataset(self.normalization_file[1], engine='zarr')['sigma'].values[lra5_idx, np.newaxis, np.newaxis]
         self.sigma_oras5 = xr.open_dataset(self.normalization_file[2], engine='zarr')['sigma'].values[oras5_idx, np.newaxis, np.newaxis]
-        
-
-    def filter_files(self, directory, pattern):
-        """
-        List files in the specified cloud bucket and filter them based on the pattern.
-        """
-        all_files = self.fs.ls(directory)
-        protocol = self.fs.protocol[0]
-        prepend = '' if protocol == 'file' else f'{protocol}://'
-        filtered_files = [f'{prepend}{f}' for f in all_files if re.match(pattern, f.split('/')[-1])]
-        
-        return filtered_files
-        
     
     def __len__(self):
         data_length = len(self.file_paths[0]) - self.n_step - self.lead_time
