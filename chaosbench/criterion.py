@@ -613,9 +613,9 @@ class CRPSS(nn.Module):
         self.crps = CRPS(lat_adjusted=False) # latitude adjustment done only once...
         self.mae = MAE(lat_adjusted=False) # latitude adjustment done only once...
         self.normalization_file = {
-            'era5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_era5.zarr'),
-            'lra5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_lra5.zarr'),
-            'oras5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_oras5.zarr'),
+            'era5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_era5_spatial.zarr'),
+            'lra5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_lra5_spatial.zarr'),
+            'oras5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_oras5_spatial.zarr'),
         }
         self.normalization = {
             'era5': xr.open_dataset(self.normalization_file['era5'], engine='zarr'),
