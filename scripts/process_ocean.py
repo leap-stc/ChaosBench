@@ -1,5 +1,3 @@
-import cdsapi
-
 import xarray as xr
 from pathlib import Path
 import config
@@ -16,7 +14,10 @@ import cdsapi
 def main():
     """
     Main driver to download ORAS5 data based on individual variable
+    See https://cds.climate.copernicus.eu/api-how-to on how to configure the API
     """
+    RESOLUTION = '1.5' # Highest is 0.25
+
     # Initialize CDS API
     c = cdsapi.Client()
     
@@ -31,8 +32,8 @@ def main():
             
             logging.info(f'Downloading {year}/{month}...')
             
-            output_file = output_dir / f'oras5_full_1.5deg_{year}{month}.tar.gz'
-            processed_sample_file = output_dir / f'oras5_full_1.5deg_{year}{month}01.zarr'
+            output_file = output_dir / f'oras5_full_{RESOLUTION}deg_{year}{month}.tar.gz'
+            processed_sample_file = output_dir / f'oras5_full_{RESOLUTION}deg_{year}{month}01.zarr'
             
             
             # Skip downloading if file exists
@@ -71,7 +72,8 @@ def main():
                     ds['nav_lon'] = xr.where(ds['nav_lon'] < 0, ds['nav_lon'] + 360, ds['nav_lon'])
                     
                     # Process 1: Regridding to ERA5 target grid
-                    new_lon, new_lat = np.meshgrid(np.linspace(0, 360, num=240, endpoint=False), np.linspace(-90, 90, num=121))
+                    N_X, N_Y = 360 // float(RESOLUTION), 180 // float(RESOLUTION)
+                    new_lon, new_lat = np.meshgrid(np.linspace(0, 360, num=int(N_X), endpoint=False), np.linspace(-90, 90, num=int(N_Y+1)))
                     regridded_ds = xr.Dataset()
                     
                     for var in list(ds.data_vars)[:1]:
@@ -97,7 +99,7 @@ def main():
                     
                 # Process 4: Break down into daily .zarr (cloud-optimized)
                 for n_idx in range(num_days):
-                    output_daily_file = output_dir / f'oras5_full_1.5deg_{year}{month}{str(n_idx+1).zfill(2)}.zarr'
+                    output_daily_file = output_dir / f'oras5_full_{RESOLUTION}deg_{year}{month}{str(n_idx+1).zfill(2)}.zarr'
                     all_ds.to_zarr(output_daily_file)
                 
                 # Process 5: Remove intermediary files

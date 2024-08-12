@@ -14,5 +14,5 @@ data_args:
     val_years: [2016, 2017, 2018, 2019, 2020, 2021]
     n_step: 1
     lead_time: 1
-    land_vars: ['skt', 'src', 'stl1', 'stl2', 'stl3', 'swvl1', 'swvl2', 'swvl3']
-    ocean_vars: ['somxl010', 'somxl030', 'sosaline', 'sossheig', 'sosstsst']
+    land_vars: []
+    ocean_vars: []

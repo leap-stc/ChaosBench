@@ -10,7 +10,10 @@ import cdsapi
 def main():
     """
     Main driver to download LRA5 data based on individual variable
+    See https://cds.climate.copernicus.eu/api-how-to on how to configure the API
     """
+    RESOLUTION = '1.5' # Highest is 0.25
+
     # Initialize CDS API
     c = cdsapi.Client()
     
@@ -25,8 +28,8 @@ def main():
             
             logging.info(f'Downloading {year}/{month}...')
             
-            output_file = output_dir / f'lra5_full_1.5deg_{year}{month}.nc'
-            processed_sample_file = output_dir / f'lra5_full_1.5deg_{year}{month}01.zarr'
+            output_file = output_dir / f'lra5_full_{RESOLUTION}deg_{year}{month}.nc'
+            processed_sample_file = output_dir / f'lra5_full_{RESOLUTION}deg_{year}{month}01.zarr'
             
             # Skip downloading if file exists 
             if processed_sample_file.exists():
@@ -42,7 +45,7 @@ def main():
                         'month': [month],
                         'day': config.DAYS,
                         'time': '00:00',
-                        'grid': ['1.5', '1.5'],
+                        'grid': [RESOLUTION, RESOLUTION],
                         'format': 'netcdf',
                     },
                     output_file)
@@ -56,7 +59,7 @@ def main():
                 for n_idx in range(n_timesteps):
                     subset_ds = ds.isel(time=n_idx)
                     yy, mm, dd = ds.time[n_idx].dt.strftime('%Y-%m-%d').item().split('-')
-                    output_daily_file = output_dir / f'lra5_full_1.5deg_{yy}{mm}{dd}.zarr'
+                    output_daily_file = output_dir / f'lra5_full_{RESOLUTION}deg_{yy}{mm}{dd}.zarr'
                     subset_ds.to_zarr(output_daily_file)
                 
                 output_file.unlink()
