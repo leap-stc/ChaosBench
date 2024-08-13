@@ -13,7 +13,7 @@ def main(args):
     Main driver to download ERA5 data based on individual variable
     See https://cds.climate.copernicus.eu/api-how-to on how to configure the API
     """
-    RESOLUTION = (args.resolution) 
+    RESOLUTION = str(args.resolution) 
     assert float(RESOLUTION) >= 0.25, 'Highest resolution is 0.25-degree, provide coarser one e.g., 1.5'
 
     # Initialize CDS API
