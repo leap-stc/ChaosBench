@@ -1,3 +1,4 @@
+import argparse
 import xarray as xr
 from pathlib import Path
 import config
@@ -7,12 +8,13 @@ logging.basicConfig(level=logging.INFO)
 
 import cdsapi
 
-def main():
+def main(args):
     """
     Main driver to download ERA5 data based on individual variable
     See https://cds.climate.copernicus.eu/api-how-to on how to configure the API
     """
-    RESOLUTION = '1.5' # Highest is 0.25
+    RESOLUTION = (args.resolution) 
+    assert float(RESOLUTION) >= 0.25, 'Highest resolution is 0.25-degree, provide coarser one e.g., 1.5'
 
     # Initialize CDS API
     c = cdsapi.Client()
@@ -67,5 +69,8 @@ def main():
                 output_file.unlink()
 
 if __name__ == "__main__":
-    main()
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--resolution', default='1.5', help='Provide the resolution of preference, e.g., 1.5 for 1.5-degree...')
+    
+    args = parser.parse_args()
+    main(args)
