@@ -119,7 +119,6 @@ class ResNet(nn.Module):
         self.out_conv = nn.Conv2d(64, output_size, 1)
 
 
-
     def forward(self, x):
         IS_MERGED = False # To handle legacy code where the inputs are separated by pressure level
         

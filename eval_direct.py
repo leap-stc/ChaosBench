@@ -62,7 +62,7 @@ def main(args):
     """
     assert args.task_num in [1, 2]
     
-    print(f'Evaluating reanlysis against {args.model_name}...')
+    print(f'Evaluating reanalysis against {args.model_name}...')
     
     #########################################
     ####### Evaluation initialization #######
@@ -99,14 +99,19 @@ def main(args):
             ckpt_filepath = list(ckpt_filepath.glob('*.ckpt'))[0]
             baseline = model.S2SBenchmarkModel(model_args=model_args, data_args=data_args)
             baseline = baseline.load_from_checkpoint(ckpt_filepath)
-            baselines.append(copy.deepcopy(baseline))
+            baselines.append(copy.deepcopy(baseline.eval()))
         
         ## Prepare input/output dataset
         lra5_vars, oras5_vars = baseline.hparams.get('land_vars', []), baseline.hparams.get('ocean_vars', [])
-        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=lra5_vars, ocean_vars=oras5_vars)
+        input_dataset = dataset.S2SObsDataset(
+            years=args.eval_years, n_step=config.N_STEPS-1, land_vars=lra5_vars, ocean_vars=oras5_vars
+        )
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
+        output_dataset = dataset.S2SObsDataset(
+            years=args.eval_years, n_step=config.N_STEPS-1, 
+            land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False
+        )
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
     
@@ -115,10 +120,16 @@ def main(args):
         IS_EXTERNAL = True
         PARAM_LIST = {'era5': config.CLIMAX_VARS if args.task_num == 1 else config.HEADLINE_VARS, 'lra5': args.lra5, 'oras5': args.oras5}
         
-        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
+        input_dataset = dataset.S2SObsDataset(
+            years=args.eval_years, n_step=config.N_STEPS-1, 
+            land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False
+        )
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
+        output_dataset = dataset.S2SObsDataset(
+            years=args.eval_years, n_step=config.N_STEPS-1, 
+            land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False
+        )
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
         ## List external prediction
@@ -136,7 +147,7 @@ def main(args):
                 
         all_preds = np.array(all_preds)
 
-    ##################### Initialize criteria ######################
+    ##################### Initialize criteria #####################
     RMSE = criterion.RMSE()
     Bias = criterion.Bias()
     ACC = criterion.ACC()
@@ -157,7 +168,10 @@ def main(args):
     for input_batch, output_batch in tqdm(zip(input_dataloader, output_dataloader), total=len(input_dataloader)):
         
         _, preds_x, preds_y = input_batch
-        _, truth_x, truth_y = output_batch
+        timestamps, truth_x, truth_y = output_batch
+
+        # Pre-processing (e.g., get day-of-years for climatology-related metrics...)
+        doys = utils.get_doys_from_timestep(timestamps)
         
         assert preds_y.size(1) == truth_y.size(1)
         N_STEPS = truth_y.size(1)
@@ -210,7 +224,7 @@ def main(args):
                         bias = Bias(unique_preds, unique_labels).cpu().numpy()
                         
                         ################################## Criterion 3: ACC ######################################
-                        acc = ACC(unique_preds, unique_labels, param, param_class).cpu().numpy()
+                        acc = ACC(unique_preds, unique_labels, doys[:, delta-1], param, param_class).cpu().numpy()
                         
                         ################################## Criterion 4: SSIM ######################################
                         ssim = SSIM(unique_preds, unique_labels).cpu().numpy()
@@ -240,8 +254,7 @@ def main(args):
 
                         all_param_idx += 1
                         param_idx = param_idx + 1 if param_exist else param_idx
-
-        
+                        
         all_rmse.append(step_rmse)
         all_bias.append(step_bias)
         all_acc.append(step_acc)

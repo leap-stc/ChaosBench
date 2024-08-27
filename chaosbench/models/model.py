@@ -36,11 +36,11 @@ class S2SBenchmarkModel(pl.LightningModule):
             
         elif 'unet' in self.model_args['model_name']:
             self.model = cnn.UNet(input_size = input_size,
-                                   output_size = output_size)
+                                  output_size = output_size)
             
         elif 'resnet' in self.model_args['model_name']:
             self.model = cnn.ResNet(input_size = input_size,
-                                   output_size = output_size)
+                                    output_size = output_size)
             
         elif 'vae' in self.model_args['model_name']:
             self.model = ae.VAE(input_size = input_size,
@@ -158,14 +158,12 @@ class S2SBenchmarkModel(pl.LightningModule):
                                                    n_step=self.data_args['n_step'],
                                                    lead_time=self.data_args['lead_time'],
                                                    land_vars=self.data_args['land_vars'],
-                                                   ocean_vars=self.data_args['ocean_vars']
-                                                  )
+                                                   ocean_vars=self.data_args['ocean_vars'])
         self.val_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'], 
                                                  n_step=self.data_args['n_step'],
                                                  lead_time=self.data_args['lead_time'],
                                                  land_vars=self.data_args['land_vars'],
-                                                 ocean_vars=self.data_args['ocean_vars']
-                                                )
+                                                 ocean_vars=self.data_args['ocean_vars'])
         
 
     def train_dataloader(self):

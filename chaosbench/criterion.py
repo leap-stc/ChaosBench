@@ -169,9 +169,9 @@ class ACC(nn.Module):
         
         # Retrieve climatology
         self.normalization_file = {
-                'era5': Path(config.DATA_DIR) / 'climatology' / 'climatology_era5.zarr', 
-                'lra5': Path(config.DATA_DIR) / 'climatology' / 'climatology_lra5.zarr', 
-                'oras5': Path(config.DATA_DIR) / 'climatology' / 'climatology_oras5.zarr'
+                'era5': Path(config.DATA_DIR) / 'climatology' / 'climatology_era5_spatial.zarr',
+                'lra5': Path(config.DATA_DIR) / 'climatology' / 'climatology_lra5_spatial.zarr',
+                'oras5': Path(config.DATA_DIR) / 'climatology' / 'climatology_oras5_spatial.zarr'
         }
         
         self.normalization_mean = {
@@ -180,19 +180,19 @@ class ACC(nn.Module):
                 'oras5': xr.open_dataset(self.normalization_file['oras5'], engine='zarr')['mean'],
         }
         
-    def forward(self, predictions, targets, param, source):
+    def forward(self, predictions, targets, doys, param, source):
         
         # Retrieve mean climatology
-        climatology = torch.tensor(self.normalization_mean[source].sel(param=param).values).to(config.device)
-        
-        # Compute only valid values
-        valid_mask = ~torch.isnan(predictions) & ~torch.isnan(targets)
-        predictions, targets = predictions[valid_mask], targets[valid_mask]
-        
+        climatology = torch.tensor(self.normalization_mean[source].sel(doy=doys, param=param).values).to(config.device)
+
         # Compute anomalies
         anomalies_targets = targets - climatology
         anomalies_predictions = predictions - climatology
-         
+        
+        # Compute only valid values
+        valid_mask = ~torch.isnan(anomalies_predictions) & ~torch.isnan(anomalies_targets)
+        anomalies_predictions, anomalies_targets = anomalies_predictions[valid_mask], anomalies_targets[valid_mask]
+        
         if self.lat_adjusted:
             anomalies_targets = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * anomalies_targets
             anomalies_predictions = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * anomalies_predictions
@@ -628,8 +628,8 @@ class CRPSS(nn.Module):
         opts = dict(device=predictions.device, dtype=predictions.dtype)
         
         # Get climatology
-        clima_mean = self.normalization[source]['mean'].sel(doy=doys, param=param).values
-        clima_sigma = self.normalization[source]['sigma'].sel(doy=doys, param=param).values
+        clima_mean = torch.tensor(self.normalization[source]['mean'].sel(doy=doys, param=param).values).to(config.device)
+        clima_sigma = torch.tensor(self.normalization[source]['sigma'].sel(doy=doys, param=param).values).to(config.device)
  
         if self.lat_adjusted:
             predictions = self.weights.size(1) * (self.weights / torch.sum(self.weights)) * predictions 

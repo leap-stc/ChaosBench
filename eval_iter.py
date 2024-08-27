@@ -1,4 +1,5 @@
 import os
+import datetime
 import argparse
 import yaml
 import numpy as np
@@ -40,7 +41,7 @@ def main(args):
         (Data-driven models)       3) `python eval_iter.py --model_name unet_s2s --eval_years 2022 --version_num 0`
     
     """
-    print(f'Evaluating reanlysis against {args.model_name}...')
+    print(f'Evaluating reanalysis against {args.model_name}...')
     
     #########################################
     ####### Evaluation initialization #######
@@ -98,10 +99,16 @@ def main(args):
         IS_PERSISTENCE = True
         PARAM_LIST = {'era5': utils.get_param_level_list(), 'lra5': config.LRA5_PARAMS, 'oras5': config.ORAS5_PARAMS}
         
-        input_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
+        input_dataset = dataset.S2SObsDataset(
+            years=args.eval_years, n_step=config.N_STEPS-1, 
+            land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False
+        )
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
+        output_dataset = dataset.S2SObsDataset(
+            years=args.eval_years, n_step=config.N_STEPS-1, 
+            land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False
+        )
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
     
@@ -113,11 +120,14 @@ def main(args):
         input_dataset = dataset.S2SEvalDataset(s2s_name=args.model_name, years=args.eval_years, is_normalized=False)
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
-        output_dataset = dataset.S2SObsDataset(years=args.eval_years, n_step=config.N_STEPS-1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
+        output_dataset = dataset.S2SObsDataset(
+            years=args.eval_years, n_step=config.N_STEPS-1, 
+            land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False
+        )
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
         
     ## Case 3: Data-driven models
-    else:
+    elif 's2s' in args.model_name:
         IS_AI_MODEL = True
         PARAM_LIST = {'era5': utils.get_param_level_list(), 'lra5': args.lra5, 'oras5': args.oras5}
 
@@ -136,16 +146,23 @@ def main(args):
         ckpt_filepath = log_dir / f'lightning_logs/version_{args.version_num}/checkpoints/'
         ckpt_filepath = list(ckpt_filepath.glob('*.ckpt'))[0]
         baseline = baseline.load_from_checkpoint(ckpt_filepath)
+        baseline.eval()
         
-        land_vars = baseline.hparams.get('data_args', {}).get('land_vars', [])
-        ocean_vars = baseline.hparams.get('data_args', {}).get('ocean_vars', [])
+        lra5_vars = baseline.hparams.get('data_args', {}).get('land_vars', [])
+        oras5_vars = baseline.hparams.get('data_args', {}).get('ocean_vars', [])
 
         ## Prepare input/output dataset
-        input_dataset = dataset.S2SObsDataset(args.eval_years, config.N_STEPS-1, 1, land_vars, ocean_vars)
+        input_dataset = dataset.S2SObsDataset(args.eval_years, config.N_STEPS-1, land_vars=lra5_vars, ocean_vars=oras5_vars)
         input_dataloader = DataLoader(input_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-        output_dataset = dataset.S2SObsDataset(args.eval_years, config.N_STEPS-1, 1, land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False)
+        output_dataset = dataset.S2SObsDataset(
+            args.eval_years, config.N_STEPS-1, 
+            land_vars=config.LRA5_PARAMS, ocean_vars=config.ORAS5_PARAMS, is_normalized=False
+        )
         output_dataloader = DataLoader(output_dataset, batch_size=BATCH_SIZE, shuffle=False)
+        
+    else:
+        raise NotImplementedError('Inference type has yet to be implemented...')
         
     
     ####################### Initialize criteria ###################
@@ -170,7 +187,10 @@ def main(args):
         
         ## Step metric placeholders
         step_rmse, step_bias, step_acc, step_ssim, step_sdiv, step_sres = dict(), dict(), dict(), dict(), dict(), dict()
-    
+        
+        # Pre-processing (e.g., get day-of-years for climatology-related metrics...)
+        doys = [doy for year in args.eval_years for doy in range(1, 367 if datetime.date(int(year), 12, 31).timetuple().tm_yday == 366 else 366)]
+
         ## Extract metric for each param/level
         for i, (param_class, params) in enumerate(ALL_PARAM_LIST.items()):
 
@@ -183,10 +203,12 @@ def main(args):
                 param_exist = param in PARAM_LIST[param_class]
 
                 ## Handling predictions
-                unique_preds = input_dataset[param_class][:output_dataset[param_class].shape[0], j].double()
+                unique_preds = input_dataset[param_class][:output_dataset[param_class].shape[0], j]
+                unique_preds = unique_preds.double().to(config.device)
                 
                 ## Handling labels
-                unique_labels = output_dataset[param_class][:, j].double()
+                unique_labels = output_dataset[param_class][:, j]
+                unique_labels = unique_labels.double().to(config.device)
                 
                 ################################## Criterion 1: RMSE #####################################
                 error = RMSE(unique_preds, unique_labels).cpu().numpy()
@@ -195,7 +217,7 @@ def main(args):
                 bias = Bias(unique_preds, unique_labels).cpu().numpy()
 
                 ################################## Criterion 3: ACC ######################################
-                acc = ACC(unique_preds, unique_labels, param, param_class).cpu().numpy()
+                acc = ACC(unique_preds, unique_labels, doys, param, param_class).cpu().numpy()
 
                 ################################## Criterion 4: SSIM ######################################
                 ssim = SSIM(unique_preds, unique_labels).cpu().numpy()
@@ -212,7 +234,7 @@ def main(args):
                 step_ssim[param] = [ssim] * (config.N_STEPS - 1)
                 step_sdiv[param] = [sdiv] * (config.N_STEPS - 1)
                 step_sres[param] = [sres] * (config.N_STEPS - 1)
-                 
+
         all_rmse.append(step_rmse)
         all_bias.append(step_bias)
         all_acc.append(step_acc)
@@ -226,7 +248,10 @@ def main(args):
         for input_batch, output_batch in tqdm(zip(input_dataloader, output_dataloader), total=len(input_dataloader)):
 
             _, preds_x, preds_y = input_batch
-            _, truth_x, truth_y = output_batch
+            timestamps, truth_x, truth_y = output_batch
+            
+            # Pre-processing (e.g., get day-of-years for climatology-related metrics...)
+            doys = utils.get_doys_from_timestep(timestamps)
            
             ## Step metric placeholders
             step_rmse, step_bias, step_acc, step_ssim, step_sdiv, step_sres = dict(), dict(), dict(), dict(), dict(), dict()
@@ -260,14 +285,9 @@ def main(args):
                             param_exist = param in PARAM_LIST[param_class]
 
                             ## Handling predictions
-                            if IS_AI_MODEL:
-                                unique_preds = preds[:, param_idx] if param_exist else torch.full((BATCH_SIZE, 121, 240), torch.nan)
-                                unique_preds = utils.denormalize(unique_preds, param, param_class)
-                                unique_preds = unique_preds.double().to(config.device)
-
-                            else:
-                                unique_preds = preds[:, param_idx] if param_exist else torch.full((BATCH_SIZE, 121,240), torch.nan)
-                                unique_preds = unique_preds.double().to(config.device)
+                            unique_preds = preds[:, param_idx] if param_exist else torch.full((BATCH_SIZE, 121, 240), torch.nan)
+                            unique_preds = utils.denormalize(unique_preds, param, param_class) if IS_AI_MODEL else unique_preds
+                            unique_preds = unique_preds.double().to(config.device)
                             
                             ## Handling labels
                             unique_labels = targs[:, all_param_idx]
@@ -280,7 +300,7 @@ def main(args):
                             bias = Bias(unique_preds, unique_labels).cpu().numpy()
 
                             ################################## Criterion 3: ACC ######################################
-                            acc = ACC(unique_preds, unique_labels, param, param_class).cpu().numpy()
+                            acc = ACC(unique_preds, unique_labels, doys[:, step_idx], param, param_class).cpu().numpy()
 
                             ################################## Criterion 4: SSIM ######################################
                             ssim = SSIM(unique_preds, unique_labels).cpu().numpy()
