@@ -159,7 +159,8 @@ class S2SBenchmarkModel(pl.LightningModule):
                                                    lead_time=self.data_args['lead_time'],
                                                    land_vars=self.data_args['land_vars'],
                                                    ocean_vars=self.data_args['ocean_vars'])
-        self.val_dataset = dataset.S2SObsDataset(years=self.data_args['train_years'], 
+        
+        self.val_dataset = dataset.S2SObsDataset(years=self.data_args['val_years'], 
                                                  n_step=self.data_args['n_step'],
                                                  lead_time=self.data_args['lead_time'],
                                                  land_vars=self.data_args['land_vars'],
