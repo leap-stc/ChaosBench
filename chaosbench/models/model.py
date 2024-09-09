@@ -169,10 +169,10 @@ class S2SBenchmarkModel(pl.LightningModule):
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, 
-                          num_workers=self.model_args['num_workers'], 
+                          num_workers=self.model_args['num_workers'], pin_memory=True, 
                           batch_size=self.data_args['batch_size'], shuffle=True)
 
     def val_dataloader(self):
         return DataLoader(self.val_dataset, 
-                          num_workers=self.model_args['num_workers'], 
+                          num_workers=self.model_args['num_workers'], pin_memory=True, 
                           batch_size=self.data_args['batch_size'])
