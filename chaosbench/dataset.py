@@ -8,7 +8,7 @@ import numpy as np
 from datetime import datetime
 import re
 
-from chaosbench import config
+from chaosbench import config, utils
 
 class S2SObsDataset(Dataset):
     """
@@ -18,6 +18,7 @@ class S2SObsDataset(Dataset):
         years <List[int]>      : list of years to load and process,
         n_step <int>           : number of contiguous timesteps included in the data (default: 1)
         lead_time <int>        : delta_t ahead in time, useful for direct prediction (default: 1)
+        atmos_vars <List[str]> : list of atmos variables to include (default: ALL)`
         land_vars <List[str]>  : list of land variables to include (default: empty)`
         ocean_vars <List[str]> : list of sea/ice variables to include (default: empty)`
         is_normalized <bool>   : flag to indicate whether we should perform normalization or not (default: True)
@@ -28,6 +29,7 @@ class S2SObsDataset(Dataset):
         years: List[int],
         n_step: int = 1,
         lead_time: int = 1,
+        atmos_vars: List[str] = [],
         land_vars: List[str] = [],
         ocean_vars: List[str] = [],
         is_normalized: bool = True
@@ -48,6 +50,7 @@ class S2SObsDataset(Dataset):
         self.years = [str(year) for year in years]
         self.n_step = n_step
         self.lead_time = lead_time
+        self.atmos_vars = utils.get_param_level_list() if len(atmos_vars) == 0 else atmos_vars
         self.land_vars = land_vars
         self.ocean_vars = ocean_vars
         self.is_normalized = is_normalized
@@ -71,17 +74,18 @@ class S2SObsDataset(Dataset):
         self.file_paths = [era5_files, lra5_files, oras5_files]
         
         # Subsetting
-        lra5_idx = [idx for idx, param in enumerate(config.LRA5_PARAMS) if param in self.land_vars]
-        oras5_idx = [idx for idx, param in enumerate(config.ORAS5_PARAMS) if param in self.ocean_vars]
+        self.era5_idx = [utils.get_param_level_idx(*param_level.split('-')) for param_level in self.atmos_vars]
+        self.lra5_idx = [idx for idx, param in enumerate(config.LRA5_PARAMS) if param in self.land_vars]
+        self.oras5_idx = [idx for idx, param in enumerate(config.ORAS5_PARAMS) if param in self.ocean_vars]
         
         # Retrieve climatology (i.e., mean and sigma) to normalize
-        self.mean_era5 = xr.open_dataset(self.normalization_file[0], engine='zarr')['mean'].values[:, np.newaxis, np.newaxis]
-        self.mean_lra5 = xr.open_dataset(self.normalization_file[1], engine='zarr')['mean'].values[lra5_idx, np.newaxis, np.newaxis]
-        self.mean_oras5 = xr.open_dataset(self.normalization_file[2], engine='zarr')['mean'].values[oras5_idx, np.newaxis, np.newaxis]
+        self.mean_era5 = xr.open_dataset(self.normalization_file[0], engine='zarr')['mean'].values[self.era5_idx, np.newaxis, np.newaxis]
+        self.mean_lra5 = xr.open_dataset(self.normalization_file[1], engine='zarr')['mean'].values[self.lra5_idx, np.newaxis, np.newaxis]
+        self.mean_oras5 = xr.open_dataset(self.normalization_file[2], engine='zarr')['mean'].values[self.oras5_idx, np.newaxis, np.newaxis]
         
-        self.sigma_era5 = xr.open_dataset(self.normalization_file[0], engine='zarr')['sigma'].values[:, np.newaxis, np.newaxis]
-        self.sigma_lra5 = xr.open_dataset(self.normalization_file[1], engine='zarr')['sigma'].values[lra5_idx, np.newaxis, np.newaxis]
-        self.sigma_oras5 = xr.open_dataset(self.normalization_file[2], engine='zarr')['sigma'].values[oras5_idx, np.newaxis, np.newaxis]
+        self.sigma_era5 = xr.open_dataset(self.normalization_file[0], engine='zarr')['sigma'].values[self.era5_idx, np.newaxis, np.newaxis]
+        self.sigma_lra5 = xr.open_dataset(self.normalization_file[1], engine='zarr')['sigma'].values[self.lra5_idx, np.newaxis, np.newaxis]
+        self.sigma_oras5 = xr.open_dataset(self.normalization_file[2], engine='zarr')['sigma'].values[self.oras5_idx, np.newaxis, np.newaxis]
         
 
     def __len__(self):
@@ -109,6 +113,7 @@ class S2SObsDataset(Dataset):
         # Permutation / reshaping
         era5_data, lra5_data, oras5_data = np.array(era5_data), np.array(lra5_data), np.array(oras5_data)
         era5_data = era5_data.reshape(era5_data.shape[0], -1, era5_data.shape[-2], era5_data.shape[-1]) # Merge (param, level) dims
+        era5_data = era5_data[:, self.era5_idx] # Subset selected
         
         # Normalize
         if self.is_normalized:

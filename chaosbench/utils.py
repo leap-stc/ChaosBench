@@ -50,7 +50,7 @@ def denormalize(
     
 def get_param_level_idx(param, level):
     """Given param and level, get flattended index especially for atmospheric dataset"""
-    return config.PARAMS.index(param) * len(config.PRESSURE_LEVELS) + config.PRESSURE_LEVELS.index(level)
+    return config.PARAMS.index(str(param)) * len(config.PRESSURE_LEVELS) + config.PRESSURE_LEVELS.index(int(level))
 
 def flat_to_level(data):
     """Given flattened (param-level) to (param, level) dataset"""
