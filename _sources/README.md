@@ -10,6 +10,7 @@
 
 ChaosBench is a benchmark project to improve and extend the predictability range of deep weather emulators to the subseasonal-to-seasonal (S2S) range. Predictability at this scale is more challenging due to its: (1) __double sensitivities__ to intial condition (in weather-scale) and boundary condition (in climate-scale), (2) __butterfly effect__, and our (3) __inherent lack of understanding__ of physical processes operating at this scale. Thus, given the __high socioeconomic stakes__ for accurate, reliable, and stable S2S forecasts (e.g., for disaster/extremes preparedness), this benchmark is timely for DL-accelerated solutions.
 
+> 💡 View our interactive __leaderboard__ [here](https://leap-stc.github.io/ChaosBench/leaderboard.html)
 
 
 ## Features
