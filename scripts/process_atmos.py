@@ -57,12 +57,12 @@ def main(args):
                 # Break down into daily .zarr (cloud-optimized)
                 ds = xr.open_dataset(output_file)
                 ds['z'] = ds['z'] / config.G_CONSTANT ## Convert to gpm
-                n_timesteps = len(ds.time)
+                n_timesteps = len(ds.valid_time)
                 
                 ## list() over multiple days
                 for n_idx in range(n_timesteps):
-                    subset_ds = ds.isel(time=n_idx)
-                    yy, mm, dd = ds.time[n_idx].dt.strftime('%Y-%m-%d').item().split('-')
+                    subset_ds = ds.isel(valid_time=n_idx)
+                    yy, mm, dd = ds.valid_time[n_idx].dt.strftime('%Y-%m-%d').item().split('-')
                     output_daily_file = output_dir / f'era5_full_{RESOLUTION}deg_{yy}{mm}{dd}.zarr'
                     subset_ds.to_zarr(output_daily_file)
                 

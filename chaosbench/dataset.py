@@ -1,14 +1,13 @@
 import torch
-from torch.utils.data import Dataset
-from typing import List
-from pathlib import Path
 import glob
 import xarray as xr
 import numpy as np
-from datetime import datetime
 import re
-
+from torch.utils.data import Dataset
+from typing import List
+from pathlib import Path
 from chaosbench import config
+from datetime import datetime
 
 class S2SObsDataset(Dataset):
     """

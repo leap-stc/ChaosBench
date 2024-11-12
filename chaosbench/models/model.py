@@ -60,8 +60,10 @@ class S2SBenchmarkModel(pl.LightningModule):
             
         elif 'segformer' in self.model_args['model_name']:
             self.model = vit.Segformer(input_size = input_size)
-            
-        
+        elif 'cnn' in self.model_args['model_name']:
+            self.model = ae.EncoderDecoder(input_size = input_size,
+                                           output_size = output_size)
+             
         ##################################
         # INITIALIZE YOUR OWN MODEL HERE #
         ##################################
