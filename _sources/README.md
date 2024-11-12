@@ -16,7 +16,7 @@ ChaosBench is a benchmark project to improve and extend the predictability range
 
 ![Overview of ChaosBench](docs/scheme/chaosbench_scheme-scheme.jpg)
 
-1️⃣ __Diverse Observations__. Spanning over 45 years (1979 - 2023), we include ERA5/LRA5/ORAS5 reanalysis for a fully-coupled Earth system emulation (atmosphere-terrestrial-sea-ice)
+1️⃣ __Diverse Observations__. Spanning over 45 years (1979-), we include ERA5/LRA5/ORAS5 reanalysis for a fully-coupled Earth system emulation (atmosphere-terrestrial-sea-ice)
 
 2️⃣ __Diverse Baselines__. Wide selection of physics-based forecasts from leading national weather agencies in Europe, the UK, America, and Asia
 
