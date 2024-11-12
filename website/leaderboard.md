@@ -4,7 +4,7 @@ This interactive page is inspired by the WeatherBench 2 design (https://sites.re
 All results are evaluated on the year 2022. 
 
 ## Deterministic Models
-[Interactive Control](https://github.com/leap-stc/ChaosBench/tree/main/website/html/control.html)
+[Interactive Control](https://raw.githubusercontent.com/leap-stc/ChaosBench/refs/heads/main/website/html/control.html)
 
 ## Ensemble Models
-[Interactive Ensemble](https://github.com/leap-stc/ChaosBench/tree/main/website/html/ensemble.html)
+[Interactive Ensemble](https://raw.githubusercontent.com/leap-stc/ChaosBench/refs/heads/main/website/html/ensemble.html)
