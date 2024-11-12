@@ -36,6 +36,7 @@ ChaosBench is a benchmark project to improve and extend the predictability range
 
 ## Benchmarking
 - [Baseline Models](https://leap-stc.github.io/ChaosBench/baseline.html)
+- [Leaderboard](https://leap-stc.github.io/ChaosBench/leaderboard.html)
 
 ## Citation
 If you find any of the code and dataset useful, feel free to acknowledge our work through:

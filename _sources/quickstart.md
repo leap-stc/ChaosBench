@@ -18,21 +18,26 @@ $ chmod +x process.sh
 ```
 **Step 3**: Download the data 
 ```
-# Required for inputs and climatology (e.g., normalization)
+# Required for inputs and climatology (e.g., for normalization; 1979-)
 $ ./process.sh era5
 $ ./process.sh lra5
 $ ./process.sh oras5
 $ ./process.sh climatology
 
-# Optional: control (deterministic) forecasts
+# Optional: control (deterministic) forecasts (2018-)
 $ ./process.sh ukmo
 $ ./process.sh ncep
 $ ./process.sh cma
 $ ./process.sh ecmwf
 
-# Optional: perturbed (ensemble) forecasts
+# Optional: perturbed (ensemble) forecasts (2022-)
 $ ./process.sh ukmo_ensemble
 $ ./process.sh ncep_ensemble
 $ ./process.sh cma_ensemble
 $ ./process.sh ecmwf_ensemble
+
+# Optional: state-of-the-art (deterministic) forecasts (2022-)
+$ ./process.sh panguweather
+$ ./process.sh fourcastnetv2
+$ ./process.sh graphcast
 ```
