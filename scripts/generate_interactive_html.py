@@ -62,7 +62,7 @@ def configure_layout(fig, title, metrics, headline_vars):
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=-0.2,
+            y=-0.3,
             xanchor="left",
         )
     )
