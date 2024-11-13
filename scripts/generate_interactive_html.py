@@ -14,7 +14,8 @@ def generate_trace(df, model_name, metric, headline_var, color):
         name=f"{model_name} vs. ERA5",
         customdata=[f"{metric}-{headline_var}"],
         line=dict(width=3, color=color),
-        visible=(metric == 'rmse' and headline_var == 't-850')
+        visible=(metric == 'rmse' and headline_var == 't-850'),
+        hovertemplate="Score: %{y}<extra></extra>"
     )
 
 
@@ -57,7 +58,13 @@ def configure_layout(fig, title, metrics, headline_vars):
         }],
         title=title,
         xaxis_title="Number of Days Ahead",
-        hovermode="x unified"
+        hovermode="x unified",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.2,
+            xanchor="left",
+        )
     )
 
 
@@ -94,7 +101,7 @@ def plot_metrics(metrics, headline_vars, model_names, data_path, output_dir, tit
 def main():
     """
     Main driver to generate interactive HTML for metrics display
-    Usage example: `python compute_climatology.py --dataset_name era5 --is_spatial 0`
+    Usage example: `python generate_interactive_html.py`
     """
     
     output_dir = Path('../website/html')
