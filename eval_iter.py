@@ -60,25 +60,27 @@ def main(args):
         PARAM_LIST = {'era5': utils.get_param_level_list(), 'lra5': config.LRA5_PARAMS, 'oras5': config.ORAS5_PARAMS}
         
         input_filepath = {
-                'era5': Path(config.DATA_DIR) / 'climatology' / 'climatology_era5_spatial.zarr',
-                'lra5': Path(config.DATA_DIR) / 'climatology' / 'climatology_lra5_spatial.zarr',
-                'oras5': Path(config.DATA_DIR) / 'climatology' / 'climatology_oras5_spatial.zarr',
+            'era5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_era5.zarr'),
+            'lra5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_lra5.zarr'),
+            'oras5': os.path.join(config.DATA_DIR, 'climatology', 'climatology_oras5.zarr'),
         }
 
         input_dataset = {
-                'era5': xr.open_dataset(input_filepath['era5'], engine='zarr')['mean'].values,
-                'lra5': xr.open_dataset(input_filepath['lra5'], engine='zarr')['mean'].values,
-                'oras5': xr.open_dataset(input_filepath['oras5'], engine='zarr')['mean'].values,
+            'era5': xr.open_dataset(input_filepath['era5'], engine='zarr')['mean'].values,
+            'lra5': xr.open_dataset(input_filepath['lra5'], engine='zarr')['mean'].values,
+            'oras5': xr.open_dataset(input_filepath['oras5'], engine='zarr')['mean'].values,
         }
  
         # Retrieve all output files
         output_files = {'era5': [], 'lra5': [], 'oras5': []}
         for param_class, _ in output_files.items():
-            output_filepath = Path(config.DATA_DIR) / param_class
+            
+            output_filepath = os.path.join(config.DATA_DIR, param_class)
+            pattern = rf'.*{year}\d{{4}}\.zarr$'
             
             for year in args.eval_years:
                 output_files[param_class].extend(
-                    [f for f in list(output_filepath.glob(f'*{year}*.zarr')) if re.match(rf'.*{year}\d{{4}}\.zarr$', str(f.name))]
+                    [f"gs://{f}" for f in config.fs.ls(output_filepath) if re.match(pattern, str(f))]
                 )
             
             output_files[param_class].sort()

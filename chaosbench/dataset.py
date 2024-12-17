@@ -1,3 +1,4 @@
+import os
 import torch
 from torch.utils.data import Dataset
 from typing import List
@@ -36,15 +37,15 @@ class S2SObsDataset(Dataset):
     ) -> None:
         
         self.data_dir = [
-            Path(config.DATA_DIR) / 'era5',
-            Path(config.DATA_DIR) / 'lra5',
-            Path(config.DATA_DIR) / 'oras5'
+            os.path.join(config.DATA_DIR, 'era5'),
+            os.path.join(config.DATA_DIR, 'lra5'),
+            os.path.join(config.DATA_DIR, 'oras5')
         ]
         
         self.normalization_file = [
-            Path(config.DATA_DIR) / 'climatology' / 'climatology_era5.zarr',
-            Path(config.DATA_DIR) / 'climatology' / 'climatology_lra5.zarr',
-            Path(config.DATA_DIR) / 'climatology' / 'climatology_oras5.zarr'
+            os.path.join(config.DATA_DIR, 'climatology', 'climatology_era5.zarr'),
+            os.path.join(config.DATA_DIR, 'climatology', 'climatology_lra5.zarr'),
+            os.path.join(config.DATA_DIR, 'climatology', 'climatology_oras5.zarr'),
         ]
         
         self.years = [str(year) for year in years]
@@ -57,18 +58,13 @@ class S2SObsDataset(Dataset):
         
         # Subset files that match with patterns (eg. years specified)
         era5_files, lra5_files, oras5_files = list(), list(), list()
+        
         for year in self.years:
             pattern = rf'.*{year}\d{{4}}\.zarr$'
             
-            curr_files = [
-                list(self.data_dir[0].glob(f'*{year}*.zarr')),
-                list(self.data_dir[1].glob(f'*{year}*.zarr')),
-                list(self.data_dir[2].glob(f'*{year}*.zarr'))
-            ]
-            
-            era5_files.extend([f for f in curr_files[0] if re.match(pattern, str(f.name))])
-            lra5_files.extend([f for f in curr_files[1] if re.match(pattern, str(f.name))])
-            oras5_files.extend([f for f in curr_files[2] if re.match(pattern, str(f.name))])
+            era5_files.extend([f"gs://{f}" for f in config.fs.ls(self.data_dir[0]) if re.match(pattern, str(f))])
+            lra5_files.extend([f"gs://{f}" for f in config.fs.ls(self.data_dir[1]) if re.match(pattern, str(f))])
+            oras5_files.extend([f"gs://{f}" for f in config.fs.ls(self.data_dir[2]) if re.match(pattern, str(f))])
         
         era5_files.sort(); lra5_files.sort(); oras5_files.sort()
         self.file_paths = [era5_files, lra5_files, oras5_files]
@@ -153,8 +149,8 @@ class S2SEvalDataset(Dataset):
         assert s2s_name in list(config.S2S_CENTERS.keys())
         
         self.s2s_name = s2s_name
-        self.data_dir = Path(config.DATA_DIR) / f'{self.s2s_name}_ensemble' if is_ensemble else Path(config.DATA_DIR) / self.s2s_name 
-        self.normalization_file = Path(config.DATA_DIR) / 'climatology' / f'climatology_{self.s2s_name}.zarr'
+        self.data_dir = os.path.join(config.DATA_DIR, f'{self.s2s_name}_ensemble') if is_ensemble else os.path.join(config.DATA_DIR, f'{self.s2s_name}')
+        self.normalization_file = os.path.join(config.DATA_DIR, 'climatology', f'climatology_{self.s2s_name}.zarr')
         
         # Check if years specified are within valid bounds
         self.years = years
@@ -169,9 +165,9 @@ class S2SEvalDataset(Dataset):
         
         for year in self.years:
             pattern = rf'.*{year}\d{{4}}\.zarr$'
-            curr_files = list(self.data_dir.glob(f'*{year}*.zarr'))
+
             file_paths.extend(
-                [f for f in curr_files if re.match(pattern, str(f.name))]
+                [f for f in config.fs.ls(self.data_dir) if re.match(pattern, str(f))]
             )
             
         # Subset files that match with patterns (eg. years specified)
