@@ -80,7 +80,7 @@ def main(args):
             
             for year in args.eval_years:
                 output_files[param_class].extend(
-                    [f"gs://{f}" for f in config.fs.ls(output_filepath) if re.match(pattern, str(f))]
+                    [os.path.join(output_filepath, f) for f in os.listdir(output_filepath) if re.match(pattern, str(f))]
                 )
             
             output_files[param_class].sort()

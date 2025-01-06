@@ -62,9 +62,15 @@ class S2SObsDataset(Dataset):
         for year in self.years:
             pattern = rf'.*{year}\d{{4}}\.zarr$'
             
-            era5_files.extend([f"gs://{f}" for f in config.fs.ls(self.data_dir[0]) if re.match(pattern, str(f))])
-            lra5_files.extend([f"gs://{f}" for f in config.fs.ls(self.data_dir[1]) if re.match(pattern, str(f))])
-            oras5_files.extend([f"gs://{f}" for f in config.fs.ls(self.data_dir[2]) if re.match(pattern, str(f))])
+            era5_files.extend(
+                [os.path.join(self.data_dir[0], f) for f in os.listdir(self.data_dir[0]) if re.match(pattern, str(f))]
+            )
+            lra5_files.extend(
+                [os.path.join(self.data_dir[1], f) for f in os.listdir(self.data_dir[1]) if re.match(pattern, str(f))]
+            )
+            oras5_files.extend(
+                [os.path.join(self.data_dir[2], f) for f in os.listdir(self.data_dir[2]) if re.match(pattern, str(f))]
+            )
         
         era5_files.sort(); lra5_files.sort(); oras5_files.sort()
         self.file_paths = [era5_files, lra5_files, oras5_files]

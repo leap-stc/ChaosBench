@@ -1,12 +1,11 @@
 import os
-import gcsfs
 from pathlib import Path
 import torch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-fs = gcsfs.GCSFileSystem()
 
 ################## CHANGE THIS TO YOUR OWN #####################
-DATA_DIR = "gs://leap-persistent-ro/events/ChaosBenchHackathon"
+ABS_PATH = Path(__file__).resolve().parent.parent
+DATA_DIR = ABS_PATH / 'data'
 ################################################################
 
 PRESSURE_LEVELS = [10,   50,  100,  200,  300,  500,  700,  850,  925, 1000]
