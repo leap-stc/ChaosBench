@@ -91,7 +91,8 @@ jobs:
       - name: Setup Mambaforge
         uses: conda-incubator/setup-miniconda@v2
         with:
-          miniforge-variant: Mambaforge
+          miniforge-variant: Miniforge3
+          miniforge-version: 24.11.3-2
           miniforge-version: latest
           python-version: "3.10"  # binderbot is failing with python 3.11
           activate-environment: ${{ inputs.environment_name }}
