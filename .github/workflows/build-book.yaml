@@ -93,7 +93,6 @@ jobs:
         with:
           miniforge-variant: Miniforge3
           miniforge-version: 24.11.3-2
-          miniforge-version: latest
           python-version: "3.10"  # binderbot is failing with python 3.11
           activate-environment: ${{ inputs.environment_name }}
           use-mamba: true
