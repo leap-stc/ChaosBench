@@ -1,6 +1,10 @@
 # ChaosBench: A Multi-Channel, Physics-Based Benchmark for Subseasonal-to-Seasonal Climate Prediction
 
 <div align="center">
+  <h3>NeurIPS 2024 Oral</h3>
+</div>
+
+<div align="center">
 <a href="https://leap-stc.github.io/ChaosBench"><img src="https://img.shields.io/badge/View-Documentation-blue?style=for-the-badge)" alt="Homepage"/></a>
   <a href="https://arxiv.org/abs/2402.00712"><img src="https://img.shields.io/badge/ArXiV-2402.00712-b31b1b.svg" alt="arXiv"/></a>
 <a href="https://huggingface.co/datasets/LEAP/ChaosBench"><img src="https://img.shields.io/badge/Dataset-HuggingFace-ffd21e" alt="Huggingface Dataset"/></a>
